@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingLotEquipmentMapper">
+    
+    <resultMap type="ParkingLotEquipment" id="ParkingLotEquipmentResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="name"    column="name"    />
+        <result property="cameraserialnumber"    column="cameraSerialNumber"    />
+        <result property="motherboardserialnumber"    column="motherboardSerialNumber"    />
+        <result property="direction"    column="direction"    />
+        <result property="controlplate"    column="controlPlate"    />
+        <result property="onedisplay"    column="oneDisplay"    />
+        <result property="twodisplay"    column="twoDisplay"    />
+        <result property="threedisplay"    column="threeDisplay"    />
+        <result property="fourdisplay"    column="fourDisplay"    />
+        <result property="qrcode"    column="qrCode"    />
+        <result property="state"    column="state"    />
+        <result property="ipadress"    column="ipAdress"    />
+        <result property="departurewithoutrecords"    column="departureWithoutRecords"    />
+        <result property="licenseplatanticounterfeiting"    column="licensePlatAntiCounterfeiting"    />
+        <result property="specificvehicleexit"    column="specificVehicleExit"    />
+        <result property="residualscreen"    column="residualScreen"    />
+        <result property="volume"    column="volume"    />
+        <result property="numberone"    column="numberone"    />
+        <result property="numbertwo"    column="numbertwo"    />
+        <result property="numberthree"    column="numberThree"    />
+    </resultMap>
+
+    <sql id="selectParkingLotEquipmentVo">
+        select id, parkingLotInformationId, name, cameraSerialNumber, motherboardSerialNumber, direction, controlPlate, oneDisplay, twoDisplay, threeDisplay, fourDisplay, qrCode, state, ipAdress, departureWithoutRecords, licensePlatAntiCounterfeiting, specificVehicleExit, residualScreen, volume, numberone, numbertwo, numberThree from parking_lot_equipment
+    </sql>
+
+    <select id="selectParkingLotEquipmentList" parameterType="ParkingLotEquipment" resultMap="ParkingLotEquipmentResult">
+        <include refid="selectParkingLotEquipmentVo"/>
+        <where>  
+            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="cameraserialnumber != null  and cameraserialnumber != ''"> and cameraSerialNumber = #{cameraserialnumber}</if>
+            <if test="motherboardserialnumber != null  and motherboardserialnumber != ''"> and motherboardSerialNumber = #{motherboardserialnumber}</if>
+            <if test="direction != null  and direction != ''"> and direction = #{direction}</if>
+            <if test="controlplate != null  and controlplate != ''"> and controlPlate = #{controlplate}</if>
+            <if test="onedisplay != null  and onedisplay != ''"> and oneDisplay = #{onedisplay}</if>
+            <if test="twodisplay != null  and twodisplay != ''"> and twoDisplay = #{twodisplay}</if>
+            <if test="threedisplay != null  and threedisplay != ''"> and threeDisplay = #{threedisplay}</if>
+            <if test="fourdisplay != null  and fourdisplay != ''"> and fourDisplay = #{fourdisplay}</if>
+            <if test="qrcode != null  and qrcode != ''"> and qrCode = #{qrcode}</if>
+            <if test="state != null  and state != ''"> and state = #{state}</if>
+            <if test="ipadress != null  and ipadress != ''"> and ipAdress = #{ipadress}</if>
+            <if test="departurewithoutrecords != null  and departurewithoutrecords != ''"> and departureWithoutRecords = #{departurewithoutrecords}</if>
+            <if test="licenseplatanticounterfeiting != null  and licenseplatanticounterfeiting != ''"> and licensePlatAntiCounterfeiting = #{licenseplatanticounterfeiting}</if>
+            <if test="specificvehicleexit != null  and specificvehicleexit != ''"> and specificVehicleExit = #{specificvehicleexit}</if>
+            <if test="residualscreen != null  and residualscreen != ''"> and residualScreen = #{residualscreen}</if>
+            <if test="volume != null "> and volume = #{volume}</if>
+            <if test="numberone != null  and numberone != ''"> and numberone = #{numberone}</if>
+            <if test="numbertwo != null  and numbertwo != ''"> and numbertwo = #{numbertwo}</if>
+            <if test="numberthree != null  and numberthree != ''"> and numberThree = #{numberthree}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingLotEquipmentById" parameterType="Long" resultMap="ParkingLotEquipmentResult">
+        <include refid="selectParkingLotEquipmentVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingLotEquipment" parameterType="ParkingLotEquipment" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_lot_equipment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="cameraserialnumber != null and cameraserialnumber != ''">cameraSerialNumber,</if>
+            <if test="motherboardserialnumber != null">motherboardSerialNumber,</if>
+            <if test="direction != null and direction != ''">direction,</if>
+            <if test="controlplate != null">controlPlate,</if>
+            <if test="onedisplay != null">oneDisplay,</if>
+            <if test="twodisplay != null">twoDisplay,</if>
+            <if test="threedisplay != null">threeDisplay,</if>
+            <if test="fourdisplay != null">fourDisplay,</if>
+            <if test="qrcode != null and qrcode != ''">qrCode,</if>
+            <if test="state != null">state,</if>
+            <if test="ipadress != null and ipadress != ''">ipAdress,</if>
+            <if test="departurewithoutrecords != null">departureWithoutRecords,</if>
+            <if test="licenseplatanticounterfeiting != null">licensePlatAntiCounterfeiting,</if>
+            <if test="specificvehicleexit != null">specificVehicleExit,</if>
+            <if test="residualscreen != null">residualScreen,</if>
+            <if test="volume != null">volume,</if>
+            <if test="numberone != null">numberone,</if>
+            <if test="numbertwo != null">numbertwo,</if>
+            <if test="numberthree != null">numberThree,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="cameraserialnumber != null and cameraserialnumber != ''">#{cameraserialnumber},</if>
+            <if test="motherboardserialnumber != null">#{motherboardserialnumber},</if>
+            <if test="direction != null and direction != ''">#{direction},</if>
+            <if test="controlplate != null">#{controlplate},</if>
+            <if test="onedisplay != null">#{onedisplay},</if>
+            <if test="twodisplay != null">#{twodisplay},</if>
+            <if test="threedisplay != null">#{threedisplay},</if>
+            <if test="fourdisplay != null">#{fourdisplay},</if>
+            <if test="qrcode != null and qrcode != ''">#{qrcode},</if>
+            <if test="state != null">#{state},</if>
+            <if test="ipadress != null and ipadress != ''">#{ipadress},</if>
+            <if test="departurewithoutrecords != null">#{departurewithoutrecords},</if>
+            <if test="licenseplatanticounterfeiting != null">#{licenseplatanticounterfeiting},</if>
+            <if test="specificvehicleexit != null">#{specificvehicleexit},</if>
+            <if test="residualscreen != null">#{residualscreen},</if>
+            <if test="volume != null">#{volume},</if>
+            <if test="numberone != null">#{numberone},</if>
+            <if test="numbertwo != null">#{numbertwo},</if>
+            <if test="numberthree != null">#{numberthree},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingLotEquipment" parameterType="ParkingLotEquipment">
+        update parking_lot_equipment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="cameraserialnumber != null and cameraserialnumber != ''">cameraSerialNumber = #{cameraserialnumber},</if>
+            <if test="motherboardserialnumber != null">motherboardSerialNumber = #{motherboardserialnumber},</if>
+            <if test="direction != null and direction != ''">direction = #{direction},</if>
+            <if test="controlplate != null">controlPlate = #{controlplate},</if>
+            <if test="onedisplay != null">oneDisplay = #{onedisplay},</if>
+            <if test="twodisplay != null">twoDisplay = #{twodisplay},</if>
+            <if test="threedisplay != null">threeDisplay = #{threedisplay},</if>
+            <if test="fourdisplay != null">fourDisplay = #{fourdisplay},</if>
+            <if test="qrcode != null and qrcode != ''">qrCode = #{qrcode},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="ipadress != null and ipadress != ''">ipAdress = #{ipadress},</if>
+            <if test="departurewithoutrecords != null">departureWithoutRecords = #{departurewithoutrecords},</if>
+            <if test="licenseplatanticounterfeiting != null">licensePlatAntiCounterfeiting = #{licenseplatanticounterfeiting},</if>
+            <if test="specificvehicleexit != null">specificVehicleExit = #{specificvehicleexit},</if>
+            <if test="residualscreen != null">residualScreen = #{residualscreen},</if>
+            <if test="volume != null">volume = #{volume},</if>
+            <if test="numberone != null">numberone = #{numberone},</if>
+            <if test="numbertwo != null">numbertwo = #{numbertwo},</if>
+            <if test="numberthree != null">numberThree = #{numberthree},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingLotEquipmentById" parameterType="Long">
+        delete from parking_lot_equipment where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingLotEquipmentByIds" parameterType="String">
+        delete from parking_lot_equipment where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--//通过序列号获取推送数据设备信息
+    ParkingLotEquipment findParkingLotEquipmentBySerialno(String cameraSerialNumber);-->
+    <select id="findParkingLotEquipmentBySerialno" resultMap="ParkingLotEquipmentResult">
+        select direction,name from parking_lot_equipment where cameraSerialNumber=#{cameraSerialNumber}
+    </select>
+<!--    //查询停车id通过序列号
+    String findBySerialno(String serialno);-->
+<select id="findBySerialno" resultType="Long">
+    select l.id from parking_lot_equipment  p left join parking_lot_information l on p.parkingLotInformationId=l.id where cameraSerialNumber=#{cameraSerialNumber}
+</select>
+</mapper>

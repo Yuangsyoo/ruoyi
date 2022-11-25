@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingLotInformationMapper">
+    
+    <resultMap type="ParkingLotInformation" id="ParkingLotInformationResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="picture"    column="picture"    />
+        <result property="contacts"    column="contacts"    />
+        <result property="phone"    column="phone"    />
+        <result property="qq"    column="qq"    />
+        <result property="address"    column="address"    />
+        <result property="state"    column="state"    />
+        <result property="number"    column="number"    />
+        <result property="payleavingtime"    column="payLeavingTime"    />
+        <result property="monthlyfee"    column="monthlyFee"    />
+        <result property="chargedescription"    column="chargeDescription"    />
+        <result property="starttime"    column="startTime"    />
+        <result property="endtime"    column="endTime"    />
+        <result property="minmonths"    column="minMonths"    />
+        <result property="maxmonths"    column="maxMonths"    />
+        <result property="monthlycardpurchase"    column="monthlyCardPurchase"    />
+        <result property="temporaryvehiclerestrictions"    column="temporaryVehicleRestrictions"    />
+        <result property="platformpaymentState"    column="platformPayment_state"    />
+        <result property="overtimecompensation"    column="overtimeCompensation"    />
+        <result property="norecorddeparture"    column="noRecordDeparture"    />
+        <result property="alipaypaymentState"    column="alipayPayment_state"    />
+        <result property="wechatpaymentState"    column="weChatPayment_state"    />
+        <result property="unionpaypaymentState"    column="unionPayPayment_state"    />
+        <result property="etcpaymentState"    column="etcPayment_state"    />
+        <result property="ruralcreditpaymentState"    column="ruralCreditPayment_state"    />
+        <result property="platformpaymentId"    column="platformPayment_id"    />
+        <result property="alipaypaymentId"    column="alipayPayment_id"    />
+        <result property="wechatpaymentId"    column="weChatPayment_id"    />
+        <result property="unionpaypaymentId"    column="unionPayPayment_id"    />
+        <result property="etcpaymentId"    column="etcPayment_id"    />
+        <result property="ruralcreditpaymentId"    column="ruralCreditPayment_id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="numbertwo"    column="numberTwo"    />
+        <result property="numberthree"    column="numberThree"    />
+        <result property="numberfour"    column="numberFour"    />
+    </resultMap>
+
+    <sql id="selectParkingLotInformationVo">
+        select id, name, picture, contacts, phone, qq, address, state, number, payLeavingTime, monthlyFee, chargeDescription, startTime, endTime, minMonths, maxMonths, monthlyCardPurchase, temporaryVehicleRestrictions, platformPayment_state, overtimeCompensation, noRecordDeparture, alipayPayment_state, weChatPayment_state, unionPayPayment_state, etcPayment_state, ruralCreditPayment_state, platformPayment_id, alipayPayment_id, weChatPayment_id, unionPayPayment_id, etcPayment_id, ruralCreditPayment_id, company_id, numberTwo, numberThree, numberFour from parking_lot_information
+    </sql>
+
+    <select id="selectParkingLotInformationList" parameterType="ParkingLotInformation" resultMap="ParkingLotInformationResult">
+        <include refid="selectParkingLotInformationVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="picture != null  and picture != ''"> and picture = #{picture}</if>
+            <if test="contacts != null  and contacts != ''"> and contacts = #{contacts}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="qq != null  and qq != ''"> and qq = #{qq}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="state != null  and state != ''"> and state = #{state}</if>
+            <if test="number != null "> and number = #{number}</if>
+            <if test="payleavingtime != null "> and payLeavingTime = #{payleavingtime}</if>
+            <if test="monthlyfee != null "> and monthlyFee = #{monthlyfee}</if>
+            <if test="chargedescription != null  and chargedescription != ''"> and chargeDescription = #{chargedescription}</if>
+            <if test="starttime != null "> and startTime = #{starttime}</if>
+            <if test="endtime != null "> and endTime = #{endtime}</if>
+            <if test="minmonths != null "> and minMonths = #{minmonths}</if>
+            <if test="maxmonths != null "> and maxMonths = #{maxmonths}</if>
+            <if test="monthlycardpurchase != null  and monthlycardpurchase != ''"> and monthlyCardPurchase = #{monthlycardpurchase}</if>
+            <if test="temporaryvehiclerestrictions != null  and temporaryvehiclerestrictions != ''"> and temporaryVehicleRestrictions = #{temporaryvehiclerestrictions}</if>
+            <if test="platformpaymentState != null  and platformpaymentState != ''"> and platformPayment_state = #{platformpaymentState}</if>
+            <if test="overtimecompensation != null  and overtimecompensation != ''"> and overtimeCompensation = #{overtimecompensation}</if>
+            <if test="norecorddeparture != null  and norecorddeparture != ''"> and noRecordDeparture = #{norecorddeparture}</if>
+            <if test="alipaypaymentState != null  and alipaypaymentState != ''"> and alipayPayment_state = #{alipaypaymentState}</if>
+            <if test="wechatpaymentState != null  and wechatpaymentState != ''"> and weChatPayment_state = #{wechatpaymentState}</if>
+            <if test="unionpaypaymentState != null  and unionpaypaymentState != ''"> and unionPayPayment_state = #{unionpaypaymentState}</if>
+            <if test="etcpaymentState != null  and etcpaymentState != ''"> and etcPayment_state = #{etcpaymentState}</if>
+            <if test="ruralcreditpaymentState != null  and ruralcreditpaymentState != ''"> and ruralCreditPayment_state = #{ruralcreditpaymentState}</if>
+            <if test="platformpaymentId != null "> and platformPayment_id = #{platformpaymentId}</if>
+            <if test="alipaypaymentId != null "> and alipayPayment_id = #{alipaypaymentId}</if>
+            <if test="wechatpaymentId != null "> and weChatPayment_id = #{wechatpaymentId}</if>
+            <if test="unionpaypaymentId != null "> and unionPayPayment_id = #{unionpaypaymentId}</if>
+            <if test="etcpaymentId != null "> and etcPayment_id = #{etcpaymentId}</if>
+            <if test="ruralcreditpaymentId != null "> and ruralCreditPayment_id = #{ruralcreditpaymentId}</if>
+            <if test="companyId != null  and company_id != ''"> and company_id = #{companyId}</if>
+            <if test="numbertwo != null  and numbertwo != ''"> and numberTwo = #{numbertwo}</if>
+            <if test="numberthree != null  and numberthree != ''"> and numberThree = #{numberthree}</if>
+            <if test="numberfour != null  and numberfour != ''"> and numberFour = #{numberfour}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingLotInformationById" parameterType="Long" resultMap="ParkingLotInformationResult">
+        <include refid="selectParkingLotInformationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingLotInformation" parameterType="ParkingLotInformation" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_lot_information
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="picture != null">picture,</if>
+            <if test="contacts != null">contacts,</if>
+            <if test="phone != null">phone,</if>
+            <if test="qq != null">qq,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="state != null and state != ''">state,</if>
+            <if test="number != null">number,</if>
+            <if test="payleavingtime != null">payLeavingTime,</if>
+            <if test="monthlyfee != null">monthlyFee,</if>
+            <if test="chargedescription != null">chargeDescription,</if>
+            <if test="starttime != null">startTime,</if>
+            <if test="endtime != null">endTime,</if>
+            <if test="minmonths != null">minMonths,</if>
+            <if test="maxmonths != null">maxMonths,</if>
+            <if test="monthlycardpurchase != null and monthlycardpurchase != ''">monthlyCardPurchase,</if>
+            <if test="temporaryvehiclerestrictions != null">temporaryVehicleRestrictions,</if>
+            <if test="platformpaymentState != null">platformPayment_state,</if>
+            <if test="overtimecompensation != null">overtimeCompensation,</if>
+            <if test="norecorddeparture != null">noRecordDeparture,</if>
+            <if test="alipaypaymentState != null">alipayPayment_state,</if>
+            <if test="wechatpaymentState != null">weChatPayment_state,</if>
+            <if test="unionpaypaymentState != null">unionPayPayment_state,</if>
+            <if test="etcpaymentState != null">etcPayment_state,</if>
+            <if test="ruralcreditpaymentState != null">ruralCreditPayment_state,</if>
+            <if test="platformpaymentId != null">platformPayment_id,</if>
+            <if test="alipaypaymentId != null">alipayPayment_id,</if>
+            <if test="wechatpaymentId != null">weChatPayment_id,</if>
+            <if test="unionpaypaymentId != null">unionPayPayment_id,</if>
+            <if test="etcpaymentId != null">etcPayment_id,</if>
+            <if test="ruralcreditpaymentId != null">ruralCreditPayment_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="numbertwo != null">numberTwo,</if>
+            <if test="numberthree != null">numberThree,</if>
+            <if test="numberfour != null">numberFour,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="picture != null">#{picture},</if>
+            <if test="contacts != null">#{contacts},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="qq != null">#{qq},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="state != null and state != ''">#{state},</if>
+            <if test="number != null">#{number},</if>
+            <if test="payleavingtime != null">#{payleavingtime},</if>
+            <if test="monthlyfee != null">#{monthlyfee},</if>
+            <if test="chargedescription != null">#{chargedescription},</if>
+            <if test="starttime != null">#{starttime},</if>
+            <if test="endtime != null">#{endtime},</if>
+            <if test="minmonths != null">#{minmonths},</if>
+            <if test="maxmonths != null">#{maxmonths},</if>
+            <if test="monthlycardpurchase != null and monthlycardpurchase != ''">#{monthlycardpurchase},</if>
+            <if test="temporaryvehiclerestrictions != null">#{temporaryvehiclerestrictions},</if>
+            <if test="platformpaymentState != null">#{platformpaymentState},</if>
+            <if test="overtimecompensation != null">#{overtimecompensation},</if>
+            <if test="norecorddeparture != null">#{norecorddeparture},</if>
+            <if test="alipaypaymentState != null">#{alipaypaymentState},</if>
+            <if test="wechatpaymentState != null">#{wechatpaymentState},</if>
+            <if test="unionpaypaymentState != null">#{unionpaypaymentState},</if>
+            <if test="etcpaymentState != null">#{etcpaymentState},</if>
+            <if test="ruralcreditpaymentState != null">#{ruralcreditpaymentState},</if>
+            <if test="platformpaymentId != null">#{platformpaymentId},</if>
+            <if test="alipaypaymentId != null">#{alipaypaymentId},</if>
+            <if test="wechatpaymentId != null">#{wechatpaymentId},</if>
+            <if test="unionpaypaymentId != null">#{unionpaypaymentId},</if>
+            <if test="etcpaymentId != null">#{etcpaymentId},</if>
+            <if test="ruralcreditpaymentId != null">#{ruralcreditpaymentId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="numbertwo != null">#{numbertwo},</if>
+            <if test="numberthree != null">#{numberthree},</if>
+            <if test="numberfour != null">#{numberfour},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingLotInformation" parameterType="ParkingLotInformation">
+        update parking_lot_information
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="picture != null">picture = #{picture},</if>
+            <if test="contacts != null">contacts = #{contacts},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="qq != null">qq = #{qq},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="state != null and state != ''">state = #{state},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="payleavingtime != null">payLeavingTime = #{payleavingtime},</if>
+            <if test="monthlyfee != null">monthlyFee = #{monthlyfee},</if>
+            <if test="chargedescription != null">chargeDescription = #{chargedescription},</if>
+            <if test="starttime != null">startTime = #{starttime},</if>
+            <if test="endtime != null">endTime = #{endtime},</if>
+            <if test="minmonths != null">minMonths = #{minmonths},</if>
+            <if test="maxmonths != null">maxMonths = #{maxmonths},</if>
+            <if test="monthlycardpurchase != null and monthlycardpurchase != ''">monthlyCardPurchase = #{monthlycardpurchase},</if>
+            <if test="temporaryvehiclerestrictions != null">temporaryVehicleRestrictions = #{temporaryvehiclerestrictions},</if>
+            <if test="platformpaymentState != null">platformPayment_state = #{platformpaymentState},</if>
+            <if test="overtimecompensation != null">overtimeCompensation = #{overtimecompensation},</if>
+            <if test="norecorddeparture != null">noRecordDeparture = #{norecorddeparture},</if>
+            <if test="alipaypaymentState != null">alipayPayment_state = #{alipaypaymentState},</if>
+            <if test="wechatpaymentState != null">weChatPayment_state = #{wechatpaymentState},</if>
+            <if test="unionpaypaymentState != null">unionPayPayment_state = #{unionpaypaymentState},</if>
+            <if test="etcpaymentState != null">etcPayment_state = #{etcpaymentState},</if>
+            <if test="ruralcreditpaymentState != null">ruralCreditPayment_state = #{ruralcreditpaymentState},</if>
+            <if test="platformpaymentId != null">platformPayment_id = #{platformpaymentId},</if>
+            <if test="alipaypaymentId != null">alipayPayment_id = #{alipaypaymentId},</if>
+            <if test="wechatpaymentId != null">weChatPayment_id = #{wechatpaymentId},</if>
+            <if test="unionpaypaymentId != null">unionPayPayment_id = #{unionpaypaymentId},</if>
+            <if test="etcpaymentId != null">etcPayment_id = #{etcpaymentId},</if>
+            <if test="ruralcreditpaymentId != null">ruralCreditPayment_id = #{ruralcreditpaymentId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="numbertwo != null">numberTwo = #{numbertwo},</if>
+            <if test="numberthree != null">numberThree = #{numberthree},</if>
+            <if test="numberfour != null">numberFour = #{numberfour},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingLotInformationById" parameterType="Long">
+        delete from parking_lot_information where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingLotInformationByIds" parameterType="String">
+        delete from parking_lot_information where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

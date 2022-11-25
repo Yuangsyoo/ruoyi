@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingRecordMapper">
+    
+    <resultMap type="ParkingRecord" id="ParkingRecordResult">
+        <result property="id"    column="id"    />
+        <result property="license"    column="license"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="admissiontime"    column="admissionTime"    />
+        <result property="exittime"    column="exitTime"    />
+        <result property="licensepllatecolor"    column="licensePllateColor"    />
+        <result property="ordernumber"    column="orderNumber"    />
+        <result property="orderstate"    column="orderState"    />
+        <result property="paystate"    column="payState"    />
+        <result property="money"    column="money"    />
+        <result property="entranceandexitname"    column="entranceAndExitName"    />
+        <result property="numberone"    column="numberOne"    />
+        <result property="numbertwo"    column="numberTwo"    />
+        <result property="numberthree"    column="numberThree"    />
+    </resultMap>
+
+    <sql id="selectParkingRecordVo">
+        select id, license, parkingLotInformationId, admissionTime, exitTime, licensePllateColor, orderNumber, orderState, payState, money, entranceAndExitName, numberOne, numberTwo, numberThree from parking_record
+    </sql>
+
+    <select id="selectParkingRecordList" parameterType="ParkingRecord" resultMap="ParkingRecordResult">
+        <include refid="selectParkingRecordVo"/>
+        <where>  
+            <if test="license != null  and license != ''"> and license = #{license}</if>
+            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="admissiontime != null "> and admissionTime = #{admissiontime}</if>
+            <if test="exittime != null "> and exitTime = #{exittime}</if>
+            <if test="licensepllatecolor != null  and licensepllatecolor != ''"> and licensePllateColor = #{licensepllatecolor}</if>
+            <if test="ordernumber != null  and ordernumber != ''"> and orderNumber = #{ordernumber}</if>
+            <if test="orderstate != null  and orderstate != ''"> and orderState = #{orderstate}</if>
+            <if test="paystate != null  and paystate != ''"> and payState = #{paystate}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="entranceandexitname != null  and entranceandexitname != ''"> and entranceAndExitName like concat('%', #{entranceandexitname}, '%')</if>
+            <if test="numberone != null  and numberone != ''"> and numberOne = #{numberone}</if>
+            <if test="numbertwo != null  and numbertwo != ''"> and numberTwo = #{numbertwo}</if>
+            <if test="numberthree != null  and numberthree != ''"> and numberThree = #{numberthree}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingRecordById" parameterType="Long" resultMap="ParkingRecordResult">
+        <include refid="selectParkingRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingRecord" parameterType="ParkingRecord">
+        insert into parking_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="license != null">license,</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="admissiontime != null">admissionTime,</if>
+            <if test="exittime != null">exitTime,</if>
+            <if test="licensepllatecolor != null">licensePllateColor,</if>
+            <if test="ordernumber != null and ordernumber != ''">orderNumber,</if>
+            <if test="orderstate != null">orderState,</if>
+            <if test="paystate != null">payState,</if>
+            <if test="money != null">money,</if>
+            <if test="entranceandexitname != null">entranceAndExitName,</if>
+            <if test="numberone != null">numberOne,</if>
+            <if test="numbertwo != null">numberTwo,</if>
+            <if test="numberthree != null">numberThree,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="license != null">#{license},</if>
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="admissiontime != null">#{admissiontime},</if>
+            <if test="exittime != null">#{exittime},</if>
+            <if test="licensepllatecolor != null">#{licensepllatecolor},</if>
+            <if test="ordernumber != null and ordernumber != ''">#{ordernumber},</if>
+            <if test="orderstate != null">#{orderstate},</if>
+            <if test="paystate != null">#{paystate},</if>
+            <if test="money != null">#{money},</if>
+            <if test="entranceandexitname != null">#{entranceandexitname},</if>
+            <if test="numberone != null">#{numberone},</if>
+            <if test="numbertwo != null">#{numbertwo},</if>
+            <if test="numberthree != null">#{numberthree},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingRecord" parameterType="ParkingRecord">
+        update parking_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="license != null">license = #{license},</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="admissiontime != null">admissionTime = #{admissiontime},</if>
+            <if test="exittime != null">exitTime = #{exittime},</if>
+            <if test="licensepllatecolor != null">licensePllateColor = #{licensepllatecolor},</if>
+            <if test="ordernumber != null and ordernumber != ''">orderNumber = #{ordernumber},</if>
+            <if test="orderstate != null">orderState = #{orderstate},</if>
+            <if test="paystate != null">payState = #{paystate},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="entranceandexitname != null">entranceAndExitName = #{entranceandexitname},</if>
+            <if test="numberone != null">numberOne = #{numberone},</if>
+            <if test="numbertwo != null">numberTwo = #{numbertwo},</if>
+            <if test="numberthree != null">numberThree = #{numberthree},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingRecordById" parameterType="Long">
+        delete from parking_record where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingRecordByIds" parameterType="String">
+        delete from parking_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--  //通过停车场id，车牌号查询有无未支付订单
+    ParkingRecord findByLicense(String license,parkingLotInformationId);-->
+    <select id="findByLicense" resultMap="ParkingRecordResult">
+        select * from parking_record where license=#{license} and parkingLotInformationId=#{parkingLotInformationId} and payState=0
+    </select>
+
+    <!-- //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单
+    public ParkingRecord findByLicenseAndPayState(@Param("license") String license, @Param("parkingLotInformationId") Long parkingLotInformationId);
+-->
+    <select id="findByLicenseAndPayState" resultMap="ParkingRecordResult">
+        select * from parking_record where license=#{license} and parkingLotInformationId=#{parkingLotInformationId} and payState=1
+    </select>
+</mapper>
