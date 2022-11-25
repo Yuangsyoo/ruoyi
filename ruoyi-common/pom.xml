@@ -124,7 +124,18 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
+        <!--sdk依赖-->
+        <dependency>
+            <groupId>com.hk</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.4.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.10</version>
+        </dependency>
     </dependencies>
 
 </project>

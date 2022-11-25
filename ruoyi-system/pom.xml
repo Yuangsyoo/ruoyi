@@ -22,11 +22,7 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.hk</groupId>
-            <artifactId>jna</artifactId>
-            <version>5.4.0</version>
-        </dependency>
+
     </dependencies>
 
 </project>

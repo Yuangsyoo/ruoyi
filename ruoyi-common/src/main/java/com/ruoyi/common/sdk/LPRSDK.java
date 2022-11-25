@@ -1,11 +1,10 @@
-package com.ruoyi.system.test;
+package com.ruoyi.common.sdk;
 
 import com.sun.jna.*;
 import com.sun.jna.ptr.ByteByReference;
 
 import java.util.Arrays;
 import java.util.List;
-
 
 
 public interface LPRSDK extends Library {
@@ -409,7 +408,7 @@ public interface LPRSDK extends Library {
 		public static class ByValue extends TH_PlateResult_Pointer implements Structure.ByValue {}
 
 		@Override
-		protected List<String> getFieldOrder() {
+		public List<String> getFieldOrder() {
 			return Arrays.asList(new String[]{"license", "color", "nColor", "nType", "nConfidence", "nBright", "nDirection", "rcLocation", "nTime", "tvPTS", "uBitsTrigType", "nCarBright", "nCarColor",
 					"reserved0", "uId", "struBDTime", "nIsEncrypt", "nPlateTrueWidth", "nPlateDistance", "nIsFakePlate", "car_location","car_brand","featureCode","reserved"});
 		}
@@ -432,10 +431,10 @@ public interface LPRSDK extends Library {
 	
 	/**
 	*  @brief 打开一个设备
-	*  @param  [IN] pStrIP 设备的IP地址
-	*  @param  [IN] wPort 设备的端口号
-	*  @param  [IN] pStrUserName 访问设备所需用户名
-	*  @param  [IN] pStrPassword 访问设备所需密码
+	*  @param    pStrIP 设备的IP地址
+	*  @param    wPort 设备的端口号
+	*  @param    pStrUserName 访问设备所需用户名
+	*  @param    pStrPassword 访问设备所需密码
 	*  @return 返回设备的操作句柄，当打开失败时，返回0
 	*  @ingroup group_device
 	*/
@@ -443,15 +442,14 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 打开一个设备，支持外网访问设备
-	*  @param  [IN] pStrIP 设备的IP地址
-	*  @param  [IN] wPort 设备的端口号
-	*  @param  [IN] pStrUserName 访问设备所需用户名
-	*  @param  [IN] pStrPassword 访问设备所需密码
-	*  @param  [IN] wRtspPort 流媒体的端口号,默认为8557(如果为0表示使用默认端口）
-	*  @param  [IN] network_type 网络类型(0局域网,1外网-PDNS方式)
-	*  @param  [IN] sn 设备序列号
-	*  @param  [IN] app_id 安全验证id
-	*  @param  [IN] app_key 安全验证key
+	*  @param    wPort 设备的端口号
+	*  @param  sn pStrUserName 访问设备所需用户名
+	*  @param    pStrPassword 访问设备所需密码
+	*  @param    wRtspPort 流媒体的端口号,默认为8557(如果为0表示使用默认端口）
+	*  @param    network_type 网络类型(0局域网,1外网-PDNS方式)
+	*  @param    sn 设备序列号
+	*  @param    //app_id 安全验证id
+	*  @param    //app_key 安全验证key
 	*  @return 返回设备的操作句柄，当打开失败时，返回0
 	*  @ingroup group_device
 	*/
@@ -459,7 +457,7 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 关闭一个设备
-	*  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
+	*  @param    handle 由VzLPRClient_Open函数获得的句柄
 	*  @return 0表示成功，-1表示失败
 	*  @ingroup group_device
 	*/
@@ -467,8 +465,8 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 获取连接状态
-	*  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	*  @param  [IN/OUT] pStatus 输入获取状态的变量地址，输出内容为 1已连上，0未连上
+	*  @param    handle 由VzLPRClient_Open函数获得的句柄
+	*  @param  //[IN/OUT] pStatus 输入获取状态的变量地址，输出内容为 1已连上，0未连上
 	*  @return 0表示成功，-1表示失败
 	*  @note   用户可以周期调用该函数来主动查询设备是否断线，以及断线后是否恢复连接
 	*  @ingroup group_device
@@ -477,10 +475,10 @@ public interface LPRSDK extends Library {
 
 		/**
 	*  @brief 开启透明通道
-	*  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	*  @param  [IN] nSerialPort 指定使用设备的串口序号：0表示第一个串口，1表示第二个串口
-	*  @param  [IN] func 接收数据的回调函数
-	*  @param  [IN] pUserData 接收数据回调函数的上下文
+	*  @param    handle 由VzLPRClient_Open函数获得的句柄
+	*  @param    nSerialPort 指定使用设备的串口序号：0表示第一个串口，1表示第二个串口
+	*  @param    func 接收数据的回调函数
+	*  @param    pUserData 接收数据回调函数的上下文
 	*  @return 返回透明通道句柄，0表示失败
 	*  @ingroup group_device
 	*/
@@ -488,9 +486,9 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 透明通道发送数据
-	*  @param [IN] nSerialHandle 由VzLPRClient_SerialStart函数获得的句柄
-	*  @param [IN] pData 将要传输的数据块的首地址
-	*  @param [IN] uSizeData 将要传输的数据块的字节数
+	*  @param   nSerialHandle 由VzLPRClient_SerialStart函数获得的句柄
+	*  @param   pData 将要传输的数据块的首地址
+	*  @param   uSizeData 将要传输的数据块的字节数
 	*  @return 0表示成功，其他值表示失败
 	*  @ingroup group_device
 	*/
@@ -498,7 +496,7 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 透明通道停止发送数据
-	*  @param [IN] nSerialHandle 由VzLPRClient_SerialStart函数获得的句柄
+	*  @param   nSerialHandle 由VzLPRClient_SerialStart函数获得的句柄
 	*  @return 0表示成功，其他值表示失败
 	*  @ingroup group_device
 	*/
@@ -506,9 +504,6 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 设置IO输出，并自动复位(用于开闸)
-	*  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	*  @param  [IN] uChnId IO输出的通道号，从0开始
-	*  @param  [IN] nDuration 延时时间，取值范围[500, 5000]毫秒
 	*  @return 0表示成功，-1表示失败
 	*  @ingroup group_device
 	*/
@@ -516,10 +511,10 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 向白名单表导入客户和车辆记录
-	*  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	*  @param  [IN] rowcount 记录的条数
-	*  @param  [IN] pRowDatas 记录的内容数组的地址
-	*  @param  [OUT] results 每条数据是否导入成功
+	*  @param    handle 由VzLPRClient_Open函数获得的句柄
+	*  @param    rowcount 记录的条数
+	*  @param    pRowDatas 记录的内容数组的地址
+	*  @param  //[OUT] results 每条数据是否导入成功
 	*  @return 0表示成功，-1表示失败
 	*  @ingroup group_database
 	*/
@@ -527,8 +522,8 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 往白名单表中添加一个车辆信息
-	*  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	*  @param  [IN] pVehicle 将要加入的车辆信息，详见结构体定义VZ_LPR_WLIST_VEHICLE
+	*  @param    handle 由VzLPRClient_Open函数获得的句柄
+	*  @param    pVehicle 将要加入的车辆信息，详见结构体定义VZ_LPR_WLIST_VEHICLE
 	*  @return 0表示成功，-1表示失败
 	*  @ingroup group_database
 	*/
@@ -536,7 +531,7 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 清空数据库客户信息和车辆信息
-	 *  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param    handle 由VzLPRClient_Open函数获得的句柄
 	 *  @return 0表示成功，-1表示失败
 	 *  @ingroup group_database
 	 */
@@ -544,10 +539,10 @@ public interface LPRSDK extends Library {
 
 	/**
 	*  @brief 设置识别结果的回调函数
-	*  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	*  @param  [IN] func 识别结果回调函数，如果为NULL，则表示关闭该回调函数的功能
-	*  @param  [IN] pUserData 回调函数中的上下文
-	*  @param  [IN] bEnableImage 指定识别结果的回调是否需要包含截图信息：1为需要，0为不需要
+	*  @param    handle 由VzLPRClient_Open函数获得的句柄
+	*  @param    func 识别结果回调函数，如果为NULL，则表示关闭该回调函数的功能
+	*  @param    pUserData 回调函数中的上下文
+	*  @param    bEnableImage 指定识别结果的回调是否需要包含截图信息：1为需要，0为不需要
 	*  @return 0表示成功，-1表示失败
 	*  @ingroup group_device
 	*/
@@ -556,8 +551,8 @@ public interface LPRSDK extends Library {
 	/**
 	*  @brief 将图像保存为JPEG到指定路径
 	*  @param  nQuality pImgInfo 图像结构体，目前只支持默认的格式，即ImageFormatRGB
-	*  @param  [IN] pFullPathName 设带绝对路径和JPG后缀名的文件名字符串
-	*  @param  [IN] nQuality JPEG压缩的质量，取值范围1~100；
+	*  @param    pFullPathName 设带绝对路径和JPG后缀名的文件名字符串
+	*  @param    nQuality JPEG压缩的质量，取值范围1~100；
 	*  @return 0表示成功，-1表示失败
 	*  @note   给定的文件名中的路径需要存在
 	*  @ingroup group_global
@@ -566,8 +561,8 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 设置设备的日期时间
-	 *  @param [IN] handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param [IN] pDTInfo 将要设置的设备日期时间信息，详见定义 VZ_DATE_TIME_INFO
+	 *  @param   handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param   pDTInfo 将要设置的设备日期时间信息，详见定义 VZ_DATE_TIME_INFO
 	 *  @return 返回值为0表示成功，返回-1表示失败
 	 *  @ingroup group_device
 	 */
@@ -575,10 +570,10 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 根据ID获取车牌图片
-	 *  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param  [IN] id     车牌记录的ID
-	 *  @param  [IN] pdata  存储图片的内存
-	 *  @param  [IN][OUT] size 为传入传出值，传入为图片内存的大小，返回的是获取到jpg图片内存的大小
+	 *  @param    handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param    id     车牌记录的ID
+	 *  @param    pdata  存储图片的内存
+	 *  @param   //[OUT] size 为传入传出值，传入为图片内存的大小，返回的是获取到jpg图片内存的大小
 	 *  @return 返回值为0表示成功，返回-1表示失败
 	 *  @ingroup group_device
 	 */
@@ -586,8 +581,8 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 从数据库删除车辆信息
-	 *  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param  [IN] strPlateID 车牌号码
+	 *  @param    handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param    strPlateID 车牌号码
 	 *  @return 0表示成功，-1表示失败
 	 *  @ingroup group_database
 	 */
@@ -595,8 +590,8 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 设置虚拟线圈，线圈支持更多的顶点
-	 *  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param  [IN] pVirtualLoops 虚拟线圈的结构体指针
+	 *  @param    handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param    pVirtualLoops 虚拟线圈的结构体指针
 	 *  @return 0表示成功，-1表示失败
 	 *  @ingroup group_device
 	 */
@@ -604,8 +599,8 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 获取已设置的虚拟线圈，线圈支持更多的顶点
-	 *  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param  [IN] pVirtualLoops 虚拟线圈的结构体指针
+	 *  @param    handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param    pVirtualLoops 虚拟线圈的结构体指针
 	 *  @return 0表示成功，-1表示失败
 	 *  @ingroup group_device
 	 */
@@ -613,7 +608,7 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 设置视频OSD参数；
-	 *  @param [IN] handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param   handle 由VzLPRClient_Open函数获得的句柄
 	 *  @return 返回值为0表示成功，返回-1表示失败
 	 *  @ingroup group_device
 	 */
@@ -621,7 +616,7 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 获取视频OSD参数；
-	 *  @param [IN] handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param   handle 由VzLPRClient_Open函数获得的句柄
 	 *  @return 返回值为0表示成功，返回-1表示失败
 	 *  @ingroup group_device
 	 */
@@ -629,7 +624,7 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 发送软件触发信号，强制处理当前时刻的数据并输出结果
-	 *  @param  [IN] handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param    handle 由VzLPRClient_Open函数获得的句柄
 	 *  @return 0表示成功，-1表示失败
 	 *  @note   车牌识别结果通过回调函数的方式返回，如果当前视频画面中无车牌，则回调函数不会被调用
 	 *  @ingroup group_device
@@ -638,55 +633,55 @@ public interface LPRSDK extends Library {
 
 	/**
 	 *  @brief 根据句柄获取设备的IP
-	 *  @param [IN]  handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param [OUT] ip  设备类型
-	 *  @param [OUT] strength 额外数据长度。
+	 *  @param    handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param //[OUT] ip  设备类型
+	 *  @param //[OUT] strength 额外数据长度。
 	 *  @return 返回值为0表示成功，返回其他值表示失败。
 	 */
 	int VzLPRClient_GetDeviceIP( int handle, byte[] ip, int max_count );
 
 	/**
 	 *  @brief 保存抓图数据到Jpeg文件
-	 *  @param [IN] handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param [IN] pFullPathName 图片路径
+	 *  @param   handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param   pFullPathName 图片路径
 	 *  @return 返回值为0表示成功，返回其他值表示失败。
 	 */
 	int  VzLPRClient_SaveSnapImageToJpeg(int handle, String pFullPathName);
 
 	/**
 	 *  @brief 保存抓图数据到缓冲区
-	 *  @param [IN] handle 由VzLPRClient_Open函数获得的句柄
-	 *  @param [IN] pDstBuf 接收图片的缓冲区
-	 *  @param [OUT] uSizeBuf 接收图片的缓冲区长度
+	 *  @param   handle 由VzLPRClient_Open函数获得的句柄
+	 *  @param   pDstBuf 接收图片的缓冲区
+	 *  @param //[OUT] uSizeBuf 接收图片的缓冲区长度
 	 *  @return 返回值为大于0表示接收图片的长度，返回其他值表示失败。
 	 */
 	int VzLPRClient_GetSnapImage(int handle, byte[] pDstBuf, int  uSizeBuf);
 
 	/**
 	*  @brief 通过该回调函数获得车牌识别信息
-	*  @param  [IN] handle			由VzLPRClient_Open函数获得的句柄
-	*  @param  [IN] pUserData		回调函数的上下文
-	*  @param  [IN] pResult			车牌信息数组首地址，详见结构体定义 TH_PlateResult
-	*  @param  [IN] uNumPlates		车牌数组中的车牌个数
-	*  @param  [IN] eResultType		车牌识别结果类型，详见枚举类型定义VZ_LPRC_RESULT_TYPE
-	*  @param  [IN] pImgFull		当前帧的图像内容，详见结构体定义VZ_LPRC_IMAGE_INFO
-	*  @param  [IN] pImgPlateClip	当前帧中车牌区域的图像内容数组，其中的元素与车牌信息数组中的对应
+	*  @param    handle			由VzLPRClient_Open函数获得的句柄
+	*  @param    pUserData		回调函数的上下文
+	*  @param    pResult			车牌信息数组首地址，详见结构体定义 TH_PlateResult
+	*  @param    uNumPlates		车牌数组中的车牌个数
+	*  @param    eResultType		车牌识别结果类型，详见枚举类型定义VZ_LPRC_RESULT_TYPE
+	*  @param    pImgFull		当前帧的图像内容，详见结构体定义VZ_LPRC_IMAGE_INFO
+	*  @param    pImgPlateClip	当前帧中车牌区域的图像内容数组，其中的元素与车牌信息数组中的对应
 	*  @return 0表示成功，-1表示失败
 	*  @note   如果需要该回调函数返回截图内容 pImgFull 和pImgPlateClip，需要在设置回调函数（VzLPRClient_SetPlateInfoCallBack）时允许截图内容，否则该回调函数返回的这两个指针为空；
 	*  @note   实时结果（VZ_LPRC_RESULT_REALTIME）的回调是不带截图内容的
 	*  @ingroup group_callback
 	*/
-	public static interface VZLPRC_PLATE_INFO_CALLBACK extends Callback{
+	public static interface VZLPRC_PLATE_INFO_CALLBACK extends Callback {
 	    public void invoke(int handle, Pointer pUserData, TH_PlateResult_Pointer.ByReference pResult, int uNumPlates,
-                           int eResultType, VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgFull, VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgPlateClip);
+						   int eResultType, VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgFull, VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgPlateClip);
 	}
 
 	/**
 	 *  @brief 通过该回调函数获得透明通道接收的数据
-	 *  @param  [IN] nSerialHandle VzLPRClient_SerialStart返回的句柄
-	 *  @param  [IN] pRecvData	接收的数据的首地址
-	 *  @param  [IN] uRecvSize	接收的数据的尺寸
-	 *  @param  [IN] pUserData	回调函数上下文
+	 *  @param    nSerialHandle VzLPRClient_SerialStart返回的句柄
+	 *  @param    pRecvData	接收的数据的首地址
+	 *  @param    uRecvSize	接收的数据的尺寸
+	 *  @param    pUserData	回调函数上下文
 	 *  @ingroup group_callback
 	 */
 	public static interface VZDEV_SERIAL_RECV_DATA_CALLBACK extends Callback {
@@ -695,9 +690,9 @@ public interface LPRSDK extends Library {
 
     /**
      *  @brief 通过该回调函数获得透明通道接收的数据
-     *  @param  [IN] nSerialHandle VzLPRClient_SerialStart返回的句柄
-     *  @param  [IN] pRecvData	接收的数据的首地址
-     *  @param  [IN] uRecvSize	接收的数据的尺寸
+     *  @param    nSerialHandle VzLPRClient_SerialStart返回的句柄
+     *  @param    pRecvData	接收的数据的首地址
+     *  @param    uRecvSize	接收的数据的尺寸
      *  @param   pUserData	回调函数上下文
      *  @ingroup group_callback
      */
@@ -707,8 +702,8 @@ public interface LPRSDK extends Library {
 
     /**
      *  @brief 开始查找设备
-     *  @param  [IN] func 找到的设备通过该回调函数返回
-     *  @param  [IN] pUserData 回调函数中的上下文
+     *  @param    func 找到的设备通过该回调函数返回
+     *  @param    pUserData 回调函数中的上下文
      *  @return 0表示成功，-1表示失败
      *  @ingroup group_global
      */
