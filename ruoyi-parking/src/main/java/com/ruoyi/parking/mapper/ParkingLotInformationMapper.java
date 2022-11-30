@@ -58,4 +58,5 @@ public interface ParkingLotInformationMapper
      * @return 结果
      */
     public int deleteParkingLotInformationByIds(Long[] ids);
+
 }

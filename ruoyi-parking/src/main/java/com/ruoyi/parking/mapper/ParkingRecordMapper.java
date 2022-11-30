@@ -12,9 +12,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ParkingRecordMapper {
 
-    //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单
-    public ParkingRecord findByLicenseAndPayState(@Param("license") String license, @Param("parkingLotInformationId") Long parkingLotInformationId);
-
     /**
      * 查询停车记录
      * 
@@ -65,4 +62,12 @@ public interface ParkingRecordMapper {
 
     //通过停车场id，车牌号查询有无未支付订单
     ParkingRecord findByLicense(@Param("license") String license,@Param("parkingLotInformationId") Long parkingLotInformationId);
+    ParkingRecord findByLicense1(@Param("license") String license,@Param("parkingLotInformationId") Long parkingLotInformationId);
+   /* //通过车牌号，未支付状态查询出来修改状态
+    ParkingRecord editPayState(String license);*/
+
+
+
+    //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
+    List<ParkingRecord> findByParkingLotInformationLicense(@Param("parkingLotInformationId")Long id,@Param("license") String license);
 }

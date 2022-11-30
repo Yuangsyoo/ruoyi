@@ -20,16 +20,16 @@
       <el-form-item label="入场时间" prop="admissiontime">
         <el-date-picker clearable
           v-model="queryParams.admissiontime"
-          type="date"
-          value-format="yyyy-MM-dd"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="请选择入场时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="出场时间" prop="exittime">
         <el-date-picker clearable
           v-model="queryParams.exittime"
-          type="date"
-          value-format="yyyy-MM-dd"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="请选择出场时间">
         </el-date-picker>
       </el-form-item>
@@ -140,12 +140,12 @@
       <el-table-column label="停车场id" align="center" prop="parkinglotinformationid" />
       <el-table-column label="入场时间" align="center" prop="admissiontime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.admissiontime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.admissiontime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="出场时间" align="center" prop="exittime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.exittime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.exittime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor" />
@@ -154,7 +154,11 @@
       <el-table-column label="支付状态" align="center" prop="paystate" />
       <el-table-column label="支付金额" align="center" prop="money" />
       <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />
-      <el-table-column label="预留字段1" align="center" prop="numberone" />
+      <el-table-column label="支付时间" align="center" prop="payTime" >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="预留字段2" align="center" prop="numbertwo" />
       <el-table-column label="预留字段3" align="center" prop="numberthree" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -197,16 +201,16 @@
         <el-form-item label="入场时间" prop="admissiontime">
           <el-date-picker clearable
             v-model="form.admissiontime"
-            type="date"
-            value-format="yyyy-MM-dd"
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="请选择入场时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="出场时间" prop="exittime">
           <el-date-picker clearable
             v-model="form.exittime"
-            type="date"
-            value-format="yyyy-MM-dd"
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="请选择出场时间">
           </el-date-picker>
         </el-form-item>
@@ -228,8 +232,13 @@
         <el-form-item label="出入口名称" prop="entranceandexitname">
           <el-input v-model="form.entranceandexitname" placeholder="请输入出入口名称" />
         </el-form-item>
-        <el-form-item label="预留字段1" prop="numberone">
-          <el-input v-model="form.numberone" placeholder="请输入预留字段1" />
+        <el-form-item label="支付时间" prop="payTime">
+          <el-date-picker clearable
+                          v-model="form.payTime"
+                          type="datetime"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          placeholder="请选择出场时间">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="预留字段2" prop="numbertwo">
           <el-input v-model="form.numbertwo" placeholder="请输入预留字段2" />
@@ -285,7 +294,7 @@ export default {
         paystate: null,
         money: null,
         entranceandexitname: null,
-        numberone: null,
+        payTime: null,
         numbertwo: null,
         numberthree: null
       },
@@ -331,7 +340,7 @@ export default {
         paystate: null,
         money: null,
         entranceandexitname: null,
-        numberone: null,
+        payTime: null,
         numbertwo: null,
         numberthree: null
       };

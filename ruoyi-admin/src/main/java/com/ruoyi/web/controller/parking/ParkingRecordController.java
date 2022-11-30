@@ -1,17 +1,14 @@
 package com.ruoyi.web.controller.parking;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.annotation.Anonymous;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -33,6 +30,8 @@ public class ParkingRecordController extends BaseController
 {
     @Autowired
     private IParkingRecordService parkingRecordService;
+    @Autowired
+    private RedisTemplate<Object,Object>redisTemplate;
 
     /**
      * 查询停车记录列表
@@ -88,6 +87,7 @@ public class ParkingRecordController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody ParkingRecord parkingRecord)
     {
+        redisTemplate.opsForValue().set("123","123",5, TimeUnit.MICROSECONDS);
         return toAjax(parkingRecordService.updateParkingRecord(parkingRecord));
     }
 
@@ -100,5 +100,17 @@ public class ParkingRecordController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(parkingRecordService.deleteParkingRecordByIds(ids));
+    }
+
+
+    @Anonymous
+    @Log(title = "//通过车牌号，未支付状态查询出来修改状态", businessType = BusinessType.UPDATE)
+    @PutMapping("/editPayState")
+    //公共接口  支付服务那边调用
+    public void editPayState(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
+                            ,@RequestParam(value ="license") String license
+                            ,@RequestParam(value ="money") Long money)
+    {
+        parkingRecordService.editPayState(parkingLotInformationId,license,money);
     }
 }

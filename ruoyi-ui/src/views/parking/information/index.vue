@@ -216,7 +216,7 @@
       <el-table-column label="农信支付关联id" align="center" prop="ruralcreditpaymentId" />
       <el-table-column label="公司" align="center" prop="companyId" />
       <el-table-column label="备用字段2" align="center" prop="numbertwo" />
-      <el-table-column label="备用字段3" align="center" prop="numberthree" />
+      <el-table-column label="备用字段3" align="center" prop="idAdress" />
       <el-table-column label="备用字段4" align="center" prop="numberfour" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -347,11 +347,11 @@
         <el-form-item label="公司" prop="companyId">
           <el-input v-model="form.companyId" placeholder="请输入公司" />
         </el-form-item>
-        <el-form-item label="备用字段2" prop="numbertwo">
-          <el-input v-model="form.numbertwo" placeholder="请输入备用字段2" />
+        <el-form-item label="备用字段2" prop="company_id">
+          <el-input v-model="form.company_id" placeholder="公司id" />
         </el-form-item>
-        <el-form-item label="备用字段3" prop="numberthree">
-          <el-input v-model="form.numberthree" placeholder="请输入备用字段3" />
+        <el-form-item label="备用字段3" prop="idAdress">
+          <el-input v-model="form.idAdress" placeholder="ip地址" />
         </el-form-item>
         <el-form-item label="备用字段4" prop="numberfour">
           <el-input v-model="form.numberfour" placeholder="请输入备用字段4" />
@@ -426,8 +426,8 @@ export default {
         etcpaymentId: null,
         ruralcreditpaymentId: null,
         companyId: null,
-        numbertwo: null,
-        numberthree: null,
+        company_id: null,
+        idAdress: null,
         numberfour: null
       },
       // 表单参数
@@ -509,8 +509,8 @@ export default {
         etcpaymentId: null,
         ruralcreditpaymentId: null,
         companyId: null,
-        numbertwo: null,
-        numberthree: null,
+        company_id: null,
+        idAdress: null,
         numberfour: null
       };
       this.resetForm("form");

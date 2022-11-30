@@ -1,6 +1,8 @@
 package com.ruoyi.parking.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.parking.domain.ParkingLotInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
@@ -97,7 +99,7 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     }
     //查询停车场名称通过序列号
     @Override
-    public Long findBySerialno(String serialno) {
+    public ParkingLotInformation findBySerialno(String serialno) {
         return parkingLotEquipmentMapper.findBySerialno(serialno);
     }
 }

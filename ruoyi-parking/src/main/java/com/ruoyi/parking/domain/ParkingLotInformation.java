@@ -160,12 +160,12 @@ public class ParkingLotInformation extends BaseEntity
     private String companyId;
 
     /** 备用字段2 */
-    @Excel(name = "备用字段2")
-    private String numbertwo;
+    @Excel(name = "剩余车位")
+    private Long remainingParkingSpace;
 
     /** 备用字段3 */
-    @Excel(name = "备用字段3")
-    private String numberthree;
+    @Excel(name = "停车场ip地址")
+    private String ipAddress;
 
     /** 备用字段4 */
     @Excel(name = "备用字段4")

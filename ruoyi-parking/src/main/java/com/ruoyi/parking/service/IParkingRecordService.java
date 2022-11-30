@@ -60,6 +60,11 @@ public interface IParkingRecordService
     public int deleteParkingRecordById(Long id);
     //通过停车场id车牌号查询有无未支付订单
     ParkingRecord findByLicense(String license,Long parkingLotInformationId);
-//  //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单，没有放行f
-    ParkingRecord findByLicenseAndPayState(String license, Long parkingLotInformationId);
+
+    //通过停车场id,车牌号，未支付状态查询出来修改状态
+    void editPayState(Long parkingLotInformationId,String license,Long money);
+
+    ParkingRecord findByLicense1(String license, Long id);
+
+    ParkingRecord findByParkingLotInformationLicense(Long id, String license);
 }

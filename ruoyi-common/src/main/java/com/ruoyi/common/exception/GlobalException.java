@@ -1,5 +1,7 @@
 package com.ruoyi.common.exception;
 
+import org.springframework.web.bind.annotation.ControllerAdvice;
+
 /**
  * 全局异常
  * 

@@ -2,6 +2,7 @@ package com.ruoyi.parking.mapper;
 
 import java.util.List;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.parking.domain.ParkingLotInformation;
 
 /**
  * 停车场设备管理Mapper接口
@@ -61,5 +62,5 @@ public interface ParkingLotEquipmentMapper
     //通过序列号获取推送数据设备信息
     ParkingLotEquipment findParkingLotEquipmentBySerialno(String cameraSerialNumber);
     //查询停车场id通过序列号
-    Long findBySerialno(String serialno);
+    ParkingLotInformation findBySerialno(String serialno);
 }

@@ -159,9 +159,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="findParkingLotEquipmentBySerialno" resultMap="ParkingLotEquipmentResult">
         select direction,name from parking_lot_equipment where cameraSerialNumber=#{cameraSerialNumber}
     </select>
-<!--    //查询停车id通过序列号
+<!--    //查询停车场信息通过序列号
     String findBySerialno(String serialno);-->
-<select id="findBySerialno" resultType="Long">
-    select l.id from parking_lot_equipment  p left join parking_lot_information l on p.parkingLotInformationId=l.id where cameraSerialNumber=#{cameraSerialNumber}
+<select id="findBySerialno" resultType="com.ruoyi.parking.domain.ParkingLotInformation">
+    select l.* from parking_lot_equipment  p left join parking_lot_information l on p.parkingLotInformationId=l.id where cameraSerialNumber=#{cameraSerialNumber}
 </select>
 </mapper>

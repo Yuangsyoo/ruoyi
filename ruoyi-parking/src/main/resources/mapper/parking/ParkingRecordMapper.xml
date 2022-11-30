@@ -16,13 +16,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="paystate"    column="payState"    />
         <result property="money"    column="money"    />
         <result property="entranceandexitname"    column="entranceAndExitName"    />
-        <result property="numberone"    column="numberOne"    />
+        <result property="payTime"    column="payTime"    />
         <result property="numbertwo"    column="numberTwo"    />
         <result property="numberthree"    column="numberThree"    />
     </resultMap>
 
     <sql id="selectParkingRecordVo">
-        select id, license, parkingLotInformationId, admissionTime, exitTime, licensePllateColor, orderNumber, orderState, payState, money, entranceAndExitName, numberOne, numberTwo, numberThree from parking_record
+        select id, license, parkingLotInformationId, admissionTime, exitTime, licensePllateColor, orderNumber, orderState, payState, money, entranceAndExitName, payTime, numberTwo, numberThree from parking_record
     </sql>
 
     <select id="selectParkingRecordList" parameterType="ParkingRecord" resultMap="ParkingRecordResult">
@@ -38,14 +38,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paystate != null  and paystate != ''"> and payState = #{paystate}</if>
             <if test="money != null "> and money = #{money}</if>
             <if test="entranceandexitname != null  and entranceandexitname != ''"> and entranceAndExitName like concat('%', #{entranceandexitname}, '%')</if>
-            <if test="numberone != null  and numberone != ''"> and numberOne = #{numberone}</if>
+            <if test="payTime != null  and payTime != ''"> and payTime = #{payTime}</if>
             <if test="numbertwo != null  and numbertwo != ''"> and numberTwo = #{numbertwo}</if>
             <if test="numberthree != null  and numberthree != ''"> and numberThree = #{numberthree}</if>
         </where>
     </select>
     
     <select id="selectParkingRecordById" parameterType="Long" resultMap="ParkingRecordResult">
-        <include refid="selectParkingRecordVo"/>
+        select * from parking_record
         where id = #{id}
     </select>
         
@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paystate != null">payState,</if>
             <if test="money != null">money,</if>
             <if test="entranceandexitname != null">entranceAndExitName,</if>
-            <if test="numberone != null">numberOne,</if>
+            <if test="payTime != null">payTime,</if>
             <if test="numbertwo != null">numberTwo,</if>
             <if test="numberthree != null">numberThree,</if>
          </trim>
@@ -79,7 +79,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paystate != null">#{paystate},</if>
             <if test="money != null">#{money},</if>
             <if test="entranceandexitname != null">#{entranceandexitname},</if>
-            <if test="numberone != null">#{numberone},</if>
+            <if test="payTime != null">#{payTime},</if>
             <if test="numbertwo != null">#{numbertwo},</if>
             <if test="numberthree != null">#{numberthree},</if>
          </trim>
@@ -98,7 +98,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paystate != null">payState = #{paystate},</if>
             <if test="money != null">money = #{money},</if>
             <if test="entranceandexitname != null">entranceAndExitName = #{entranceandexitname},</if>
-            <if test="numberone != null">numberOne = #{numberone},</if>
+            <if test="payTime != null">payTime = #{payTime},</if>
             <if test="numbertwo != null">numberTwo = #{numbertwo},</if>
             <if test="numberthree != null">numberThree = #{numberthree},</if>
         </trim>
@@ -118,9 +118,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--  //通过停车场id，车牌号查询有无未支付订单
     ParkingRecord findByLicense(String license,parkingLotInformationId);-->
-    <select id="findByLicense" resultMap="ParkingRecordResult">
-        select * from parking_record where license=#{license} and parkingLotInformationId=#{parkingLotInformationId} and payState=0
+    <select  id="findByLicense" resultMap="ParkingRecordResult">
+        select  * from parking_record where license=#{license} and parkingLotInformationId=#{parkingLotInformationId} and payState='0'
     </select>
+
 
     <!-- //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单
     public ParkingRecord findByLicenseAndPayState(@Param("license") String license, @Param("parkingLotInformationId") Long parkingLotInformationId);
@@ -128,4 +129,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="findByLicenseAndPayState" resultMap="ParkingRecordResult">
         select * from parking_record where license=#{license} and parkingLotInformationId=#{parkingLotInformationId} and payState=1
     </select>
+
+    <!-- //通过车牌号，未支付状态查询出来修改状态void editPayState(String license);-->
+    <select id="editPayState" resultMap="ParkingRecordResult">
+        select * from parking_record where license=#{license} and paystate=0
+    </select>
+
+    <!--    //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
+    ParkingRecord findByParkingLotInformationLicense(@Param("parkingLotInformationId")Long id,@Param("license") String license);-->
+   <select id="findByParkingLotInformationLicense" resultMap="ParkingRecordResult">
+       select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} order by payTime desc
+   </select>
 </mapper>
