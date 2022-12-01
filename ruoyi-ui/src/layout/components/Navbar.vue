@@ -1,15 +1,26 @@
 <template>
-  <div class="navbar">
+  <div class="navbar" ID="AP">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
     <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
 
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
-        
-        <el-tooltip content="源码地址" effect="dark" placement="bottom">
+
+        <el-select v-model="value" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+
+
+<!--
+ <search id="header-search" class="right-menu-item" />
+
+   <el-tooltip content="源码地址" effect="dark" placement="bottom">
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
         </el-tooltip>
 
@@ -21,14 +32,13 @@
 
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip>-->
 
-      </template>
+
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+            {{name}}
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/user/profile">
@@ -58,6 +68,11 @@ import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
 
 export default {
+  data() {
+    return {
+      name:'',
+    }
+  },
   components: {
     Breadcrumb,
     TopNav,
@@ -69,6 +84,7 @@ export default {
     RuoYiDoc
   },
   computed: {
+
     ...mapGetters([
       'sidebar',
       'avatar',
@@ -106,6 +122,14 @@ export default {
         })
       }).catch(() => {});
     }
+  },mounted() {
+   var a=sessionStorage.getItem("sessionObj")
+   var b= JSON.parse(a);
+   var c=JSON.parse(b.data)
+    this.name=c.username
+
+
+
   }
 }
 </script>
@@ -147,7 +171,7 @@ export default {
 
   .right-menu {
     float: right;
-    height: 100%;
+    height: 70%;
     line-height: 50px;
 
     &:focus {

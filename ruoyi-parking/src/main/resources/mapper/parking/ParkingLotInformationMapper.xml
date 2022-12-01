@@ -37,14 +37,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="unionpaypaymentId"    column="unionPayPayment_id"    />
         <result property="etcpaymentId"    column="etcPayment_id"    />
         <result property="ruralcreditpaymentId"    column="ruralCreditPayment_id"    />
-        <result property="companyId"    column="company_id"    />
+
         <result property="remainingParkingSpace"    column="remainingParkingSpace"    />
-        <result property="ipAddress"    column="ipAddress"    />
         <result property="numberfour"    column="numberFour"    />
     </resultMap>
 
     <sql id="selectParkingLotInformationVo">
-        select id, name, picture, contacts, phone, qq, address, state, number, payLeavingTime, monthlyFee, chargeDescription, startTime, endTime, minMonths, maxMonths, monthlyCardPurchase, temporaryVehicleRestrictions, platformPayment_state, overtimeCompensation, noRecordDeparture, alipayPayment_state, weChatPayment_state, unionPayPayment_state, etcPayment_state, ruralCreditPayment_state, platformPayment_id, alipayPayment_id, weChatPayment_id, unionPayPayment_id, etcPayment_id, ruralCreditPayment_id, company_id, remainingParkingSpace, ipAddress, numberFour from parking_lot_information
+        select id, name, picture, contacts, phone, qq, address, state, number, payLeavingTime, monthlyFee, chargeDescription, startTime, endTime, minMonths, maxMonths, monthlyCardPurchase, temporaryVehicleRestrictions, platformPayment_state, overtimeCompensation, noRecordDeparture, alipayPayment_state, weChatPayment_state, unionPayPayment_state, etcPayment_state, ruralCreditPayment_state, platformPayment_id, alipayPayment_id, weChatPayment_id, unionPayPayment_id, etcPayment_id, ruralCreditPayment_id,  remainingParkingSpace, numberFour from parking_lot_information
     </sql>
 
     <select id="selectParkingLotInformationList" parameterType="ParkingLotInformation" resultMap="ParkingLotInformationResult">
@@ -81,9 +80,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unionpaypaymentId != null "> and unionPayPayment_id = #{unionpaypaymentId}</if>
             <if test="etcpaymentId != null "> and etcPayment_id = #{etcpaymentId}</if>
             <if test="ruralcreditpaymentId != null "> and ruralCreditPayment_id = #{ruralcreditpaymentId}</if>
-            <if test="companyId != null  and company_id != ''"> and company_id = #{companyId}</if>
+
             <if test="remainingParkingSpace != null"> and remainingParkingSpace = #{remainingParkingSpace}</if>
-            <if test="ipAddress != null  and ipAddress != ''"> and ipAddress = #{ipAddress}</if>
             <if test="numberfour != null  and numberfour != ''"> and numberFour = #{numberfour}</if>
         </where>
     </select>
@@ -127,9 +125,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unionpaypaymentId != null">unionPayPayment_id,</if>
             <if test="etcpaymentId != null">etcPayment_id,</if>
             <if test="ruralcreditpaymentId != null">ruralCreditPayment_id,</if>
-            <if test="companyId != null">company_id,</if>
+
             <if test="remainingParkingSpace != null">remainingParkingSpace,</if>
-            <if test="ipAddress != null">ipAddress,</if>
+
             <if test="numberfour != null">numberFour,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -164,9 +162,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unionpaypaymentId != null">#{unionpaypaymentId},</if>
             <if test="etcpaymentId != null">#{etcpaymentId},</if>
             <if test="ruralcreditpaymentId != null">#{ruralcreditpaymentId},</if>
-            <if test="companyId != null">#{companyId},</if>
+
             <if test="remainingParkingSpace != null">#{remainingParkingSpace},</if>
-            <if test="ipAddress != null">#{ipAddress},</if>
+
             <if test="numberfour != null">#{numberfour},</if>
          </trim>
     </insert>
@@ -205,9 +203,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unionpaypaymentId != null">unionPayPayment_id = #{unionpaypaymentId},</if>
             <if test="etcpaymentId != null">etcPayment_id = #{etcpaymentId},</if>
             <if test="ruralcreditpaymentId != null">ruralCreditPayment_id = #{ruralcreditpaymentId},</if>
-            <if test="companyId != null">company_id = #{companyId},</if>
             <if test="remainingParkingSpace != null">remainingParkingSpace = #{remainingParkingSpace},</if>
-            <if test="ipAddress != null">ipAddress = #{ipAddress},</if>
+
             <if test="numberfour != null">numberFour = #{numberfour},</if>
         </trim>
         where id = #{id}

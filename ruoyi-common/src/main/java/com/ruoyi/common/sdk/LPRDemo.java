@@ -10,6 +10,7 @@ public class LPRDemo {
 	         VZDEV_SERIAL_RECV_DATA_CALLBACK SerialCallBack = new VZDEV_SERIAL_RECV_DATA_CALLBACK();
 	         VZLPRC_FIND_DEVICE_CALLBACK_EX findCallBack = new VZLPRC_FIND_DEVICE_CALLBACK_EX();
 	         VZLPRC_WLIST_QUERY_CALLBACK wlistCallback = new VZLPRC_WLIST_QUERY_CALLBACK();
+
 	//关闭设备得控制句柄
 	public void VzLPRClient_Close(int handle){
 	lpr.VzLPRClient_Close(handle);
@@ -21,7 +22,7 @@ public class LPRDemo {
 	   lpr.VzLPRClient_Cleanup();
 	}
 
-	//开杆 int uChnId, int nDuration  参数不知
+	//开杆 int uChnId, int nDuration  参数不知（如何指定哪个停车场哪个设备开闸未知  怀疑后面两个参数控制）
 	public int switchOn(int handle, int uChnId, int nDuration){
 	 int i = lpr.VzLPRClient_SetIOOutputAuto(handle,uChnId,nDuration);
 	 return i;

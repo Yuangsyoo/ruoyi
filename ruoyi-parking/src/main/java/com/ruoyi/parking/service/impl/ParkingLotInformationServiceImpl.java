@@ -52,6 +52,7 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
     @Override
     public int insertParkingLotInformation(ParkingLotInformation parkingLotInformation)
     {
+        parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getNumber());
         return parkingLotInformationMapper.insertParkingLotInformation(parkingLotInformation);
     }
 
