@@ -24,11 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -117,6 +116,7 @@ public class ParkingController extends Thread {
             }
         }
         else {
+            // TODO: 2022/11/30 免费时常放行   关联查收费规则
             // TODO: 2022/11/25 判断是否在白名单范围  在直接放行
             ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
 
@@ -144,12 +144,7 @@ public class ParkingController extends Thread {
                     parkingRecordService.updateParkingRecord(parkingRecord);
                     return;
                 }
-
             }
-
-            // TODO: 2022/11/30 免费时常放行   关联查收费规则
-
-
             //停车场内支付业务逻辑
             //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单，没有放行
            if (parkingRecordService.findByLicense(license,parkingLotInformation.getId())==null){
@@ -242,6 +237,7 @@ public class ParkingController extends Thread {
     }
     //保存进场信息
     private void saveParkingRecord(Date date, int carColor, String s, String name,String license,Long parkingLotInformationId,String imagePath) {
+
         //添加进场信息
         ParkingRecord parkingRecord1 = new ParkingRecord();
         parkingRecord1.setLicense(license);
@@ -261,4 +257,6 @@ public class ParkingController extends Thread {
         parkingRecord1.setEntranceandexitname(name);
         parkingRecordService.insertParkingRecord(parkingRecord1);
     }
+
+
 }

@@ -1,10 +1,7 @@
 package com.ruoyi.common.sdk;
-
 import com.sun.jna.Pointer;
-import org.springframework.context.annotation.Configuration;
-
 import java.io.UnsupportedEncodingException;
-import java.util.Scanner;
+
 
 public class LPRDemo {
 
@@ -15,20 +12,20 @@ public class LPRDemo {
 	         VZLPRC_WLIST_QUERY_CALLBACK wlistCallback = new VZLPRC_WLIST_QUERY_CALLBACK();
 	//关闭设备得控制句柄
 	public void VzLPRClient_Close(int handle){
-		lpr.VzLPRClient_Close(handle);
+	lpr.VzLPRClient_Close(handle);
 
 	}
 
-	  //释放资源
-	  public void VzLPRClient_Cleanup(){
-		   lpr.VzLPRClient_Cleanup();
+	//释放资源
+	public void VzLPRClient_Cleanup(){
+	   lpr.VzLPRClient_Cleanup();
+	}
 
-	  }
-	 //开杆
-	 public int switchOn(int handle, int uChnId, int nDuration){
-		 int i = lpr.VzLPRClient_SetIOOutputAuto(handle,uChnId,nDuration);
-		 return i;
-	 }
+	//开杆 int uChnId, int nDuration  参数不知
+	public int switchOn(int handle, int uChnId, int nDuration){
+	 int i = lpr.VzLPRClient_SetIOOutputAuto(handle,uChnId,nDuration);
+	 return i;
+	}
 
 	public   int InitClient(String ip){
 
@@ -51,16 +48,15 @@ public class LPRDemo {
 
 			/*int callbackindex = lpr.VzLPRClient_SetPlateInfoCallBack(handle, PlateCallBack, Pointer.NULL, 1);
 			System.out.println(callbackindex);
-			
+
 			Scanner input = new Scanner(System.in);
-			
+
 			int end = input.nextInt();
 			System.out.println(end);*/
 
 	}
 	// 根据id获取车牌记录图片数据
-	public boolean LoadImg(int handle, int id)
-	{
+	public boolean LoadImg(int handle, int id) {
 		boolean ret = false;
 
 		int max_size = 1920 * 1080;
@@ -76,10 +72,8 @@ public class LPRDemo {
 
 		return ret;
 	}
-
 	// 添加白名单
-	public int AddWlistPlate( int handle, String plate)
-	{
+	public int AddWlistPlate( int handle, String plate) {
 		int ret = 0;
 
 		try
@@ -123,8 +117,7 @@ public class LPRDemo {
 	}
 
 	// 根据车牌号删除白名单
-	public boolean DeleteWlistByPlate(int handle, String plate)
-	{
+	public boolean DeleteWlistByPlate(int handle, String plate) {
 		boolean ret = false;
 		try {
 			byte[] plate_data = plate.getBytes("GB2312");
@@ -146,8 +139,7 @@ public class LPRDemo {
 		return ret;
 	}
 
-	public boolean QueryWlistByPlate(int handle, String plate)
-	{
+	public boolean QueryWlistByPlate(int handle, String plate) {
 		boolean ret = false;
 		try {
 			byte[] plate_data = plate.getBytes("GB2312");
@@ -169,8 +161,7 @@ public class LPRDemo {
 		return ret;
 	}
 
-	public boolean QueryWlistByPage(int handle, int nPageIndex)
-	{
+	public boolean QueryWlistByPage(int handle, int nPageIndex) {
 		boolean ret = false;
 
 		// 设置起始范围
@@ -216,8 +207,7 @@ public class LPRDemo {
 	}
 
 	// 线圈参数配置
-	public void TestLoopParam(int handle)
-	{
+	public void TestLoopParam(int handle) {
 		LPRSDK.VZ_LPRC_VIRTUAL_LOOPS_EX.ByReference pLoopInfo = new LPRSDK.VZ_LPRC_VIRTUAL_LOOPS_EX.ByReference();
 		lpr.VzLPRClient_GetVirtualLoopEx(handle, pLoopInfo);
 		pLoopInfo.struLoop[0].eCrossDir = 1;
@@ -225,8 +215,7 @@ public class LPRDemo {
 	}
 
 	// 设置相机时间
-	public int SetDateTime(int handle)
-	{
+	public int SetDateTime(int handle) {
 		LPRSDK.VZ_DATE_TIME_INFO.ByReference pDTInfo = new LPRSDK.VZ_DATE_TIME_INFO.ByReference();
 		pDTInfo.uYear = 2019;
 		pDTInfo.nMonth = 5;
@@ -240,8 +229,7 @@ public class LPRDemo {
 	}
 
 	// 设置osd参数
-	public int SetOSDParam(int handle)
-	{
+	public int SetOSDParam(int handle) {
 		LPRSDK.VZ_LPRC_OSD_Param.ByReference osd_param = new LPRSDK.VZ_LPRC_OSD_Param.ByReference();
 		lpr.VzLPRClient_GetOsdParam(handle, osd_param);
 
@@ -255,8 +243,7 @@ public class LPRDemo {
 	}
 
 	// 获取在线状态
-	public int GetIsConnect(int handle)
-	{
+	public int GetIsConnect(int handle) {
 		byte[] state = new byte[1];
 		int ret = lpr.VzLPRClient_IsConnected(handle, state);
 		System.out.println("state:" + state[0]);
@@ -265,8 +252,7 @@ public class LPRDemo {
 	}
 
 	// 测试485数据发送
-	public int SendSerialData(int serial_handle)
-	{
+	public int SendSerialData(int serial_handle) {
 		byte data[] = new byte[]{0x01, 0x02, 0x05, (byte)0xAA, (byte)0xDD};
 		int ret = lpr.VzLPRClient_SerialSend(serial_handle, data, data.length);
 
@@ -275,8 +261,7 @@ public class LPRDemo {
 	}
 
 	// 测试截图
-	public int SnapImg(int handle)
-	{
+	public int SnapImg(int handle) {
 		int img_len = 1280 * 720;
 		byte[] img_data = new byte[img_len];
 		int real_len = lpr.VzLPRClient_GetSnapImage(handle, img_data, img_len);
@@ -287,22 +272,21 @@ public class LPRDemo {
 	}
 
 	//通过该回调函数获得车牌识别信息图片
-	public class VZLPRC_PLATE_INFO_CALLBACK implements LPRSDK.VZLPRC_PLATE_INFO_CALLBACK
-    {
-        public void invoke(int handle,Pointer pUserData,LPRSDK.TH_PlateResult_Pointer.ByReference pResult,int uNumPlates,
-        		int eResultType,LPRSDK.VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgFull,LPRSDK.VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgPlateClip)
-    	{
-        	int type = LPRSDK.VZ_LPRC_RESULT_TYPE.VZ_LPRC_RESULT_REALTIME.ordinal();
-        	if(eResultType != type)
-        	{
-        		// 根据设备句柄，获取当前回调结果设备的IP
+	public class VZLPRC_PLATE_INFO_CALLBACK implements LPRSDK.VZLPRC_PLATE_INFO_CALLBACK {
+		public void invoke(int handle,Pointer pUserData,LPRSDK.TH_PlateResult_Pointer.ByReference pResult,int uNumPlates,
+				int eResultType,LPRSDK.VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgFull,LPRSDK.VZ_LPRC_IMAGE_INFO_Pointer.ByReference pImgPlateClip)
+		{
+			int type = LPRSDK.VZ_LPRC_RESULT_TYPE.VZ_LPRC_RESULT_REALTIME.ordinal();
+			if(eResultType != type)
+			{
+				// 根据设备句柄，获取当前回调结果设备的IP
 				byte[] device_ip = new byte[32];
 				lpr.VzLPRClient_GetDeviceIP(handle, device_ip, 32);
 
 				String ip = new String(device_ip);
 				System.out.println("device ip:" + ip);
 
-        		try {
+				try {
 					String license = new String(pResult.license, "gb2312");
 					System.out.println(license);
 
@@ -313,17 +297,16 @@ public class LPRDemo {
 							+ pResult.struBDTime.bdt_min + pResult.struBDTime.bdt_sec + ".jpg";
 					lpr.VzLPRClient_ImageSaveToJpeg(pImgFull, path, 100);
 				}
-        		catch(UnsupportedEncodingException e)
+				catch(UnsupportedEncodingException e)
 				{
 					System.out.println("exception msg:" + e.getMessage());
 				}
-        	}
-        }
-    }
+			}
+		}
+	}
 
-    // 通过该回调函数获得透明通道接收的数据
-	public class VZDEV_SERIAL_RECV_DATA_CALLBACK implements LPRSDK.VZDEV_SERIAL_RECV_DATA_CALLBACK
-	{
+	// 通过该回调函数获得透明通道接收的数据
+	public class VZDEV_SERIAL_RECV_DATA_CALLBACK implements LPRSDK.VZDEV_SERIAL_RECV_DATA_CALLBACK {
 		public void invoke(int handle,Pointer pRecvData , int uRecvSize, Pointer pUserData )
 		{
 			byte[] serial_data = pRecvData.getByteArray(0, uRecvSize);
@@ -332,16 +315,15 @@ public class LPRDemo {
 		}
 	}
 
-    public class VZLPRC_FIND_DEVICE_CALLBACK_EX implements LPRSDK.VZLPRC_FIND_DEVICE_CALLBACK_EX
-    {
-        public void invoke(String pStrDevName, String pStrIPAddr, short usPort1, short usType, long SL, long SH, String netmask, String gateway, Pointer pUserData)
-        {
-            System.out.println("find ip:" + pStrIPAddr);
-        }
-    }
-    //白名单表和客户信息表的查询反馈结果函数
-	public class VZLPRC_WLIST_QUERY_CALLBACK implements LPRSDK.VZLPRC_WLIST_QUERY_CALLBACK
-	{
+	public class VZLPRC_FIND_DEVICE_CALLBACK_EX implements LPRSDK.VZLPRC_FIND_DEVICE_CALLBACK_EX {
+		public void invoke(String pStrDevName, String pStrIPAddr, short usPort1, short usType, long SL, long SH, String netmask, String gateway, Pointer pUserData)
+		{
+			System.out.println("find ip:" + pStrIPAddr);
+		}
+	}
+
+	//白名单表和客户信息表的查询反馈结果函数
+	public class VZLPRC_WLIST_QUERY_CALLBACK implements LPRSDK.VZLPRC_WLIST_QUERY_CALLBACK {
 		public void invoke( int cbtype,LPRSDK.VZ_LPR_WLIST_VEHICLE.ByReference vehicle,LPRSDK.VZ_LPR_WLIST_CUSTOMER.ByReference pCustomer,Pointer UserData)
 		{
 			System.out.println("VZLPRC_WLIST_QUERY_CALLBACK");
@@ -356,7 +338,7 @@ public class LPRDemo {
 			}
 		}
 	}
-	
+
 
 
 }
