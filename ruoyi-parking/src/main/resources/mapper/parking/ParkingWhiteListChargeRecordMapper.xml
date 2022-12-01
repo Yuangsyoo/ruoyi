@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingWhiteListChargeRecordMapper">
+    
+    <resultMap type="ParkingWhiteListChargeRecord" id="ParkingWhiteListChargeRecordResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkinglotinformationid"    />
+        <result property="paymenttime"    column="paymentTime"    />
+        <result property="paymentmethod"    column="paymentMethod"    />
+        <result property="license"    column="license"    />
+        <result property="starttime"    column="startTime"    />
+        <result property="endtime"    column="endTime"    />
+        <result property="money"    column="money"    />
+        <result property="operator"    column="operator"    />
+        <result property="operationtype"    column="operationType"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectParkingWhiteListChargeRecordVo">
+        select id, parkinglotinformationid, paymentTime, paymentMethod, license, startTime, endTime, money, operator, operationType, remarks from parking_white_list_charge_record
+    </sql>
+
+    <select id="selectParkingWhiteListChargeRecordList" parameterType="ParkingWhiteListChargeRecord" resultMap="ParkingWhiteListChargeRecordResult">
+        <include refid="selectParkingWhiteListChargeRecordVo"/>
+        <where>  
+            <if test="parkinglotinformationid != null "> and parkinglotinformationid = #{parkinglotinformationid}</if>
+            <if test="paymenttime != null "> and paymentTime = #{paymenttime}</if>
+            <if test="paymentmethod != null  and paymentmethod != ''"> and paymentMethod = #{paymentmethod}</if>
+            <if test="license != null  and license != ''"> and license = #{license}</if>
+            <if test="starttime != null "> and startTime = #{starttime}</if>
+            <if test="endtime != null "> and endTime = #{endtime}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+            <if test="operationtype != null  and operationtype != ''"> and operationType = #{operationtype}</if>
+            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingWhiteListChargeRecordById" parameterType="Long" resultMap="ParkingWhiteListChargeRecordResult">
+        <include refid="selectParkingWhiteListChargeRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingWhiteListChargeRecord" parameterType="ParkingWhiteListChargeRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_white_list_charge_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkinglotinformationid,</if>
+            <if test="paymenttime != null">paymentTime,</if>
+            <if test="paymentmethod != null">paymentMethod,</if>
+            <if test="license != null">license,</if>
+            <if test="starttime != null">startTime,</if>
+            <if test="endtime != null">endTime,</if>
+            <if test="money != null">money,</if>
+            <if test="operator != null">operator,</if>
+            <if test="operationtype != null">operationType,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="paymenttime != null">#{paymenttime},</if>
+            <if test="paymentmethod != null">#{paymentmethod},</if>
+            <if test="license != null">#{license},</if>
+            <if test="starttime != null">#{starttime},</if>
+            <if test="endtime != null">#{endtime},</if>
+            <if test="money != null">#{money},</if>
+            <if test="operator != null">#{operator},</if>
+            <if test="operationtype != null">#{operationtype},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingWhiteListChargeRecord" parameterType="ParkingWhiteListChargeRecord">
+        update parking_white_list_charge_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkinglotinformationid = #{parkinglotinformationid},</if>
+            <if test="paymenttime != null">paymentTime = #{paymenttime},</if>
+            <if test="paymentmethod != null">paymentMethod = #{paymentmethod},</if>
+            <if test="license != null">license = #{license},</if>
+            <if test="starttime != null">startTime = #{starttime},</if>
+            <if test="endtime != null">endTime = #{endtime},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="operationtype != null">operationType = #{operationtype},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingWhiteListChargeRecordById" parameterType="Long">
+        delete from parking_white_list_charge_record where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingWhiteListChargeRecordByIds" parameterType="String">
+        delete from parking_white_list_charge_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingWhiteOperationRecordMapper">
+    
+    <resultMap type="ParkingWhiteOperationRecord" id="ParkingWhiteOperationRecordResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkinglotinformationid"    />
+        <result property="license"    column="license"    />
+        <result property="time"    column="time"    />
+        <result property="remarks"    column="remarks"    />
+        <result property="operator"    column="operator"    />
+    </resultMap>
+
+    <sql id="selectParkingWhiteOperationRecordVo">
+        select id, parkinglotinformationid, license, time, remarks, operator from parking_white_list_operation_record
+    </sql>
+
+    <select id="selectParkingWhiteOperationRecordList" parameterType="ParkingWhiteOperationRecord" resultMap="ParkingWhiteOperationRecordResult">
+        <include refid="selectParkingWhiteOperationRecordVo"/>
+        <where>  
+            <if test="parkinglotinformationid != null "> and parkinglotinformationid = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and license = #{license}</if>
+            <if test="time != null "> and time = #{time}</if>
+            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingWhiteOperationRecordById" parameterType="Long" resultMap="ParkingWhiteOperationRecordResult">
+        <include refid="selectParkingWhiteOperationRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingWhiteOperationRecord" parameterType="ParkingWhiteOperationRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_white_list_operation_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkinglotinformationid,</if>
+            <if test="license != null">license,</if>
+            <if test="time != null">time,</if>
+            <if test="remarks != null">remarks,</if>
+            <if test="operator != null">operator,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="license != null">#{license},</if>
+            <if test="time != null">#{time},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="operator != null">#{operator},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingWhiteOperationRecord" parameterType="ParkingWhiteOperationRecord">
+        update parking_white_list_operation_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkinglotinformationid = #{parkinglotinformationid},</if>
+            <if test="license != null">license = #{license},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="operator != null">operator = #{operator},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingWhiteOperationRecordById" parameterType="Long">
+        delete from parking_white_list_operation_record where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingWhiteOperationRecordByIds" parameterType="String">
+        delete from parking_white_list_operation_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

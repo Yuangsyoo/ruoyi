@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingWhiteListMapper">
+    
+    <resultMap type="ParkingWhiteList" id="ParkingWhiteListResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="license"    column="license"    />
+        <result property="starttime"    column="startTime"    />
+        <result property="endtime"    column="endTime"    />
+        <result property="addtime"    column="addTime"    />
+        <result property="name"    column="name"    />
+        <result property="phone"    column="phone"    />
+        <result property="adress"    column="adress"    />
+        <result property="monthlyfee"    column="monthlyFee"    />
+        <result property="state"    column="state"    />
+        <result property="operator"    column="operator"    />
+    </resultMap>
+
+    <sql id="selectParkingWhiteListVo">
+        select id, parkingLotInformationId, license, startTime, endTime, addTime, name, phone, adress, monthlyFee, state, operator from parking_white_list
+    </sql>
+
+    <select id="selectParkingWhiteListList" parameterType="ParkingWhiteList" resultMap="ParkingWhiteListResult">
+        <include refid="selectParkingWhiteListVo"/>
+        <where>  
+            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and license = #{license}</if>
+            <if test="starttime != null "> and startTime = #{starttime}</if>
+            <if test="endtime != null "> and endTime = #{endtime}</if>
+            <if test="addtime != null "> and addTime = #{addtime}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="adress != null  and adress != ''"> and adress = #{adress}</if>
+            <if test="monthlyfee != null "> and monthlyFee = #{monthlyfee}</if>
+            <if test="state != null "> and state = #{state}</if>
+            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingWhiteListById" parameterType="Long" resultMap="ParkingWhiteListResult">
+        <include refid="selectParkingWhiteListVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingWhiteList" parameterType="ParkingWhiteList" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_white_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="license != null and license != ''">license,</if>
+            <if test="starttime != null">startTime,</if>
+            <if test="endtime != null">endTime,</if>
+            <if test="addtime != null">addTime,</if>
+            <if test="name != null">name,</if>
+            <if test="phone != null">phone,</if>
+            <if test="adress != null">adress,</if>
+            <if test="monthlyfee != null">monthlyFee,</if>
+            <if test="state != null">state,</if>
+            <if test="operator != null">operator,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">#{license},</if>
+            <if test="starttime != null">#{starttime},</if>
+            <if test="endtime != null">#{endtime},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="name != null">#{name},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="adress != null">#{adress},</if>
+            <if test="monthlyfee != null">#{monthlyfee},</if>
+            <if test="state != null">#{state},</if>
+            <if test="operator != null">#{operator},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingWhiteList" parameterType="ParkingWhiteList">
+        update parking_white_list
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">license = #{license},</if>
+            <if test="starttime != null">startTime = #{starttime},</if>
+            <if test="endtime != null">endTime = #{endtime},</if>
+            <if test="addtime != null">addTime = #{addtime},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="adress != null">adress = #{adress},</if>
+            <if test="monthlyfee != null">monthlyFee = #{monthlyfee},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="operator != null">operator = #{operator},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingWhiteListById" parameterType="Long">
+        delete from parking_white_list where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingWhiteListByIds" parameterType="String">
+        delete from parking_white_list where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--ParkingWhiteList findByLicense(String license);-->
+    <select id="findByLicense" resultType="com.ruoyi.parking.domain.ParkingWhiteList">
+        select * from parking_white_list where license=#{license} and parkingLotInformationId=#{parkingLotInformationId}
+    </select>
+
+</mapper>
