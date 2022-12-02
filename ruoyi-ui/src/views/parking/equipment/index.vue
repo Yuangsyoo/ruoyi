@@ -109,23 +109,53 @@
     <el-table v-loading="loading" :data="equipmentList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="停车场id" align="center" prop="parkinglotinformationid" />
+      <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="设备名称" align="center" prop="name" />
       <el-table-column label="摄象机序列号" align="center" prop="cameraserialnumber" />
       <el-table-column label="主板序列号" align="center" prop="motherboardserialnumber" />
-      <el-table-column label="0代表进口闸门1代表出口闸门" align="center" prop="direction" />
+      <el-table-column label="0代表进口闸门1代表出口闸门" align="center" prop="direction" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.direction==1">出口闸</span>
+          <span style="color: green" v-else-if="scope.row.direction==0">进口闸</span>
+        </template>
+      </el-table-column>
       <el-table-column label="控制板" align="center" prop="controlplate" />
       <el-table-column label="一行显示" align="center" prop="onedisplay" />
       <el-table-column label="二行显示" align="center" prop="twodisplay" />
       <el-table-column label="三行显示" align="center" prop="threedisplay" />
       <el-table-column label="四行显示" align="center" prop="fourdisplay" />
       <el-table-column label="二维码" align="center" prop="qrcode" />
-      <el-table-column label="0代表正常1代表异常" align="center" prop="state" />
+      <el-table-column label="0代表正常1代表异常" align="center" prop="state">
+        <template scope="scope">
+          <span style="color: red" v-if="scope.row.state==1">异常</span>
+          <span style="color: green" v-else-if="scope.row.state==0">正常</span>
+        </template>
+      </el-table-column>
       <el-table-column label="ip地址" align="center" prop="ipadress" />
-      <el-table-column label="无记录离场0开启1关闭" align="center" prop="departurewithoutrecords" />
-      <el-table-column label="车牌防伪0开启1关闭" align="center" prop="licenseplatanticounterfeiting" />
-      <el-table-column label="特定车辆出0开启1关闭" align="center" prop="specificvehicleexit" />
-      <el-table-column label="余位屏0开启1关闭" align="center" prop="residualscreen" />
+      <el-table-column label="无记录离场0开启1关闭" align="center" prop="departurewithoutrecords" >
+        <template scope="scope">
+          <span style="color: red" v-if="scope.row.departurewithoutrecords==1">关闭</span>
+          <span style="color: green" v-else-if="scope.row.departurewithoutrecords==0">开启</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="车牌防伪0开启1关闭" align="center" prop="licenseplatanticounterfeiting">
+        <template scope="scope">
+          <span style="color: red" v-if="scope.row.licenseplatanticounterfeiting==1">关闭</span>
+          <span style="color: green" v-else-if="scope.row.licenseplatanticounterfeiting==0">开启</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="特定车辆出0开启1关闭" align="center" prop="specificvehicleexit">
+        <template scope="scope">
+          <span style="color: red" v-if="scope.row.specificvehicleexit==1">关闭</span>
+          <span style="color: green" v-else-if="scope.row.specificvehicleexit==0">开启</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="余位屏0开启1关闭" align="center" prop="residualscreen">
+        <template scope="scope">
+          <span style="color: red" v-if="scope.row.residualscreen==1">关闭</span>
+          <span style="color: green" v-else-if="scope.row.residualscreen==0">开启</span>
+        </template>
+      </el-table-column>
       <el-table-column label="音量范围0-10" align="center" prop="volume" />
       <el-table-column label="预留字段" align="center" prop="numberone" />
       <el-table-column label="预留字段2" align="center" prop="numbertwo" />
@@ -161,8 +191,16 @@
     <!-- 添加或修改停车场设备管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="停车场id" prop="parkinglotinformationid">
-          <el-input v-model="form.parkinglotinformationid" placeholder="请输入停车场id" />
+        <el-form-item label="停车场" prop="parkinglotinformationid">
+          <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择">
+            <el-option
+              v-for="item in parkinglotinformations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+
         </el-form-item>
         <el-form-item label="设备名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入设备名称" />
@@ -235,11 +273,13 @@
 
 <script>
 import { listEquipment, getEquipment, delEquipment, addEquipment, updateEquipment } from "@/api/parking/equipment";
+import {getarkinglotinformations} from "@/api/system/user";
 
 export default {
   name: "Equipment",
   data() {
     return {
+      parkinglotinformations:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -308,8 +348,14 @@ export default {
   },
   created() {
     this.getList();
+    this.getarkinglotinformations();
   },
   methods: {
+    getarkinglotinformations(){
+      getarkinglotinformations().then(res=>{
+        this.parkinglotinformations=res.data
+      })
+    },
     /** 查询停车场设备管理列表 */
     getList() {
       this.loading = true;

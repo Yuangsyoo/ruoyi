@@ -11,6 +11,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="operator"    column="operator"    />
         <result property="time"    column="time"    />
         <result property="remarks"    column="remarks"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="iid"></id>
+            <result property="name" column="iname"></result>
+        </association>
+        <association property="parkingLotEquipment" javaType="com.ruoyi.parking.domain.ParkingLotEquipment">
+            <id property="id" column="eid"></id>
+            <result property="name" column="ename"></result>
+        </association>
     </resultMap>
 
     <sql id="selectParkingManualOpeningVo">
@@ -18,13 +26,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectParkingManualOpeningList" parameterType="ParkingManualOpening" resultMap="ParkingManualOpeningResult">
-        <include refid="selectParkingManualOpeningVo"/>
+        select o.*,i.id iid,i.name iname,e.id eid,e.name ename from parking_manual_opening o
+            left join parking_lot_information i on o.parkingLotInformationId=i.id
+            left join parking_lot_equipment e on o.parkingLotEquipmentId=e.id
+
         <where>  
-            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
-            <if test="parkinglotequipmentid != null "> and parkingLotEquipmentId = #{parkinglotequipmentid}</if>
-            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
-            <if test="time != null "> and time = #{time}</if>
-            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+            <if test="parkinglotinformationid != null "> and o.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="parkinglotequipmentid != null "> and  o.parkingLotEquipmentId = #{parkinglotequipmentid}</if>
+            <if test="operator != null  and operator != ''"> and  o.operator = #{operator}</if>
+            <if test="time != null "> and  o.time = #{time}</if>
+            <if test="remarks != null  and remarks != ''"> and  o.remarks = #{remarks}</if>
         </where>
     </select>
     

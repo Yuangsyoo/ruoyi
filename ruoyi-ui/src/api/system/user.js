@@ -140,3 +140,10 @@ export function getarkinglotinformations() {
     method: 'get'
   })
 }
+
+export function getEquipment(parkinglotinformationid) {
+  return request({
+    url: '/parking/equipment/ByParkinglotinformationid/'+parkinglotinformationid,
+    method: 'get'
+  })
+}

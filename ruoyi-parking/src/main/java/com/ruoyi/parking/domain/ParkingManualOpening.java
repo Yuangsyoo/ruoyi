@@ -2,6 +2,7 @@ package com.ruoyi.parking.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -23,14 +24,30 @@ public class ParkingManualOpening extends BaseEntity
     /** 停车场id */
     @Excel(name = "停车场id")
     private Long parkinglotinformationid;
-
+    private ParkingLotInformation parkingLotInformation;
     /** 设备id */
     @Excel(name = "设备id")
     private Long parkinglotequipmentid;
-
+    private ParkingLotEquipment parkingLotEquipment;
     /** 操作员 */
     @Excel(name = "操作员")
     private String operator;
+
+    public ParkingLotInformation getParkingLotInformation() {
+        return parkingLotInformation;
+    }
+
+    public void setParkingLotInformation(ParkingLotInformation parkingLotInformation) {
+        this.parkingLotInformation = parkingLotInformation;
+    }
+
+    public ParkingLotEquipment getParkingLotEquipment() {
+        return parkingLotEquipment;
+    }
+
+    public void setParkingLotEquipment(ParkingLotEquipment parkingLotEquipment) {
+        this.parkingLotEquipment = parkingLotEquipment;
+    }
 
     /** 操作时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")

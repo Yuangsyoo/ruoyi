@@ -65,4 +65,7 @@ public interface ParkingLotEquipmentMapper
     ParkingLotEquipment findParkingLotEquipmentBySerialno(String cameraSerialNumber);
     //查询停车场id通过序列号
     ParkingLotInformation findBySerialno(String serialno);
+
+    List<ParkingLotEquipment> byParkinglotinformationid(Long parkinglotinformationid);
+
 }

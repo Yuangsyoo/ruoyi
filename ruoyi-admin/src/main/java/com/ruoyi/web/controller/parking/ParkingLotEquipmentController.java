@@ -69,6 +69,12 @@ public class ParkingLotEquipmentController extends BaseController
         return success(parkingLotEquipmentService.selectParkingLotEquipmentById(id));
     }
 
+    @GetMapping(value = "/ByParkinglotinformationid/{parkinglotinformationid}")
+    public AjaxResult byParkinglotinformationid(@PathVariable("parkinglotinformationid") Long parkinglotinformationid)
+    {
+       List<ParkingLotEquipment> list=parkingLotEquipmentService.byParkinglotinformationid(parkinglotinformationid);
+        return AjaxResult.success(list);
+    }
     /**
      * 新增停车场设备管理
      */

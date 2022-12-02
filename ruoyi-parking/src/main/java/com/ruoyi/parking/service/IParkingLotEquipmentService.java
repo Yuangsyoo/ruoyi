@@ -65,4 +65,7 @@ public interface IParkingLotEquipmentService
     ParkingLotEquipment findParkingLotEquipmentBySerialno(String serialno);
     //查询停车场名称通过序列号
     ParkingLotInformation findBySerialno(String serialno);
+
+    List<ParkingLotEquipment> byParkinglotinformationid(Long parkinglotinformationid);
+
 }

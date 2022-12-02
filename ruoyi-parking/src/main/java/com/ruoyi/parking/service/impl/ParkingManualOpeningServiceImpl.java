@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.ruoyi.common.sdk.LPRDemo;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
 
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
@@ -64,6 +65,8 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
     public int insertParkingManualOpening(ParkingManualOpening parkingManualOpening)
     {
         parkingManualOpening.setTime(new Date());
+        String username = SecurityUtils.getUsername();
+        parkingManualOpening.setOperator(username);
         ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentMapper.selectParkingLotEquipmentById(parkingManualOpening.getParkinglotequipmentid());
 
 

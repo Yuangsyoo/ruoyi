@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="停车场id" prop="parkinglotinformationid">
-        <el-input
-          v-model="queryParams.parkinglotinformationid"
-          placeholder="请输入停车场id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <el-select v-model="queryParams.parkinglotinformationId" clearable  placeholder="请选择">
+        <el-option
+          v-for="item in parkinglotinformations"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
       <el-form-item label="设备id" prop="parkinglotequipmentid">
         <el-input
           v-model="queryParams.parkinglotequipmentid"
@@ -56,7 +56,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['parking:opening:add']"
-        >新增</el-button>
+        >手动开杆</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -80,24 +80,15 @@
           v-hasPermi="['parking:opening:remove']"
         >删除</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['parking:opening:export']"
-        >导出</el-button>
-      </el-col>
+
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="openingList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="id" />
-      <el-table-column label="停车场id" align="center" prop="parkinglotinformationid" />
-      <el-table-column label="设备id" align="center" prop="parkinglotequipmentid" />
+      <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
+      <el-table-column label="设备" align="center" prop="parkingLotEquipment.name" />
       <el-table-column label="操作员" align="center" prop="operator" />
       <el-table-column label="操作时间" align="center" prop="time" width="180">
         <template slot-scope="scope">
@@ -124,7 +115,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -136,22 +127,27 @@
     <!-- 添加或修改停车场手动开杆管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="停车场id" prop="parkinglotinformationid">
-          <el-input v-model="form.parkinglotinformationid" placeholder="请输入停车场id" />
+        <el-form-item label="停车场" prop="parkinglotinformationid" >
+          <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择" @change="getEquipment(form.parkinglotinformationid)">
+            <el-option
+              v-for="item in parkinglotinformations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+<!--          <el-input v-model="form.parkinglotinformationid" placeholder="请输入停车场id" />-->
         </el-form-item>
-        <el-form-item label="设备id" prop="parkinglotequipmentid">
-          <el-input v-model="form.parkinglotequipmentid" placeholder="请输入设备id" />
-        </el-form-item>
-        <el-form-item label="操作员" prop="operator">
-          <el-input v-model="form.operator" placeholder="请输入操作员" />
-        </el-form-item>
-        <el-form-item label="操作时间" prop="time">
-          <el-date-picker clearable
-            v-model="form.time"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择操作时间">
-          </el-date-picker>
+        <el-form-item label="设备" prop="parkinglotequipmentid">
+          <el-select v-model="form.parkinglotequipmentid" clearable  placeholder="请选择">
+            <el-option
+              v-for="item in parkinglotequipments"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+<!--          <el-input v-model="form.parkinglotequipmentid" placeholder="请输入设备id" />-->
         </el-form-item>
         <el-form-item label="备注" prop="remarks">
           <el-input v-model="form.remarks" placeholder="请输入备注" />
@@ -166,12 +162,15 @@
 </template>
 
 <script>
-import { listOpening, getOpening, delOpening, addOpening, updateOpening } from "@/api/parking/opening";
+import { listOpening, getOpening,delOpening, addOpening, updateOpening } from "@/api/parking/opening";
+import {getarkinglotinformations,getEquipment} from "@/api/system/user";
 
 export default {
   name: "Opening",
   data() {
     return {
+      parkinglotequipments:[],
+      parkinglotinformations:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -208,10 +207,24 @@ export default {
     };
   },
   created() {
+    this.getarkinglotinformations();
     this.getList();
+
   },
   methods: {
+    getEquipment(parkinglotinformationid){
+      this.parkinglotequipments=[],
+      getEquipment(parkinglotinformationid).then(res=>{
+        this.parkinglotequipments=res.data
+      })
+    },
     /** 查询停车场手动开杆管理列表 */
+    /*查询所有停车场*/
+    getarkinglotinformations(){
+      getarkinglotinformations().then(res=>{
+        this.parkinglotinformations=res.data
+      })
+    },
     getList() {
       this.loading = true;
       listOpening(this.queryParams).then(response => {
@@ -257,7 +270,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加停车场手动开杆管理";
+      this.title = "停车场手动开杆";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

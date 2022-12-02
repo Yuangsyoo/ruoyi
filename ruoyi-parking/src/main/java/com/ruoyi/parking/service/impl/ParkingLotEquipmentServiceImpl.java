@@ -103,4 +103,9 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     public ParkingLotInformation findBySerialno(String serialno) {
         return parkingLotEquipmentMapper.findBySerialno(serialno);
     }
+
+    @Override
+    public List<ParkingLotEquipment> byParkinglotinformationid(Long parkinglotinformationid) {
+        return parkingLotEquipmentMapper.byParkinglotinformationid(parkinglotinformationid);
+    }
 }

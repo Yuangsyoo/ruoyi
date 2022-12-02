@@ -1,5 +1,6 @@
 package com.ruoyi.parking.domain;
 
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -21,6 +22,7 @@ public class ParkingLotEquipment extends BaseEntity
     /** 停车场id */
     @Excel(name = "停车场id")
     private Long parkinglotinformationid;
+    private ParkingLotInformation parkingLotInformation;
 
     /** 设备名称 */
     @Excel(name = "设备名称")
@@ -102,7 +104,15 @@ public class ParkingLotEquipment extends BaseEntity
     @Excel(name = "预留字段3")
     private String numberthree;
 
-    public void setId(Long id) 
+    public ParkingLotInformation getParkingLotInformation() {
+        return parkingLotInformation;
+    }
+
+    public void setParkingLotInformation(ParkingLotInformation parkingLotInformation) {
+        this.parkingLotInformation = parkingLotInformation;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

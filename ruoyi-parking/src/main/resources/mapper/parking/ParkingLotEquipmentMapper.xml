@@ -27,6 +27,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="numberone"    column="numberone"    />
         <result property="numbertwo"    column="numbertwo"    />
         <result property="numberthree"    column="numberThree"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="iid"></id>
+            <result property="name" column="iname"></result>
+        </association>
     </resultMap>
 
     <sql id="selectParkingLotEquipmentVo">
@@ -34,29 +38,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectParkingLotEquipmentList" parameterType="ParkingLotEquipment" resultMap="ParkingLotEquipmentResult">
-        <include refid="selectParkingLotEquipmentVo"/>
+        select e.*,i.id iid,i.name iname from parking_lot_equipment e left join parking_lot_information i on e.parkinglotinformationid=i.id
         <where>  
-            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="cameraserialnumber != null  and cameraserialnumber != ''"> and cameraSerialNumber = #{cameraserialnumber}</if>
-            <if test="motherboardserialnumber != null  and motherboardserialnumber != ''"> and motherboardSerialNumber = #{motherboardserialnumber}</if>
-            <if test="direction != null  and direction != ''"> and direction = #{direction}</if>
-            <if test="controlplate != null  and controlplate != ''"> and controlPlate = #{controlplate}</if>
-            <if test="onedisplay != null  and onedisplay != ''"> and oneDisplay = #{onedisplay}</if>
-            <if test="twodisplay != null  and twodisplay != ''"> and twoDisplay = #{twodisplay}</if>
-            <if test="threedisplay != null  and threedisplay != ''"> and threeDisplay = #{threedisplay}</if>
-            <if test="fourdisplay != null  and fourdisplay != ''"> and fourDisplay = #{fourdisplay}</if>
-            <if test="qrcode != null  and qrcode != ''"> and qrCode = #{qrcode}</if>
-            <if test="state != null  and state != ''"> and state = #{state}</if>
-            <if test="ipadress != null  and ipadress != ''"> and ipAdress = #{ipadress}</if>
-            <if test="departurewithoutrecords != null  and departurewithoutrecords != ''"> and departureWithoutRecords = #{departurewithoutrecords}</if>
-            <if test="licenseplatanticounterfeiting != null  and licenseplatanticounterfeiting != ''"> and licensePlatAntiCounterfeiting = #{licenseplatanticounterfeiting}</if>
-            <if test="specificvehicleexit != null  and specificvehicleexit != ''"> and specificVehicleExit = #{specificvehicleexit}</if>
-            <if test="residualscreen != null  and residualscreen != ''"> and residualScreen = #{residualscreen}</if>
-            <if test="volume != null "> and volume = #{volume}</if>
-            <if test="numberone != null  and numberone != ''"> and numberone = #{numberone}</if>
-            <if test="numbertwo != null  and numbertwo != ''"> and numbertwo = #{numbertwo}</if>
-            <if test="numberthree != null  and numberthree != ''"> and numberThree = #{numberthree}</if>
+            <if test="parkinglotinformationid != null "> and e.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="name != null  and name != ''"> and name like e.concat('%', #{name}, '%')</if>
+            <if test="cameraserialnumber != null  and cameraserialnumber != ''"> and e.cameraSerialNumber = #{cameraserialnumber}</if>
+            <if test="motherboardserialnumber != null  and motherboardserialnumber != ''"> and e.motherboardSerialNumber = #{motherboardserialnumber}</if>
+            <if test="direction != null  and direction != ''"> and e.direction = #{direction}</if>
+            <if test="controlplate != null  and controlplate != ''"> and e.controlPlate = #{controlplate}</if>
+            <if test="onedisplay != null  and onedisplay != ''"> and e.oneDisplay = #{onedisplay}</if>
+            <if test="twodisplay != null  and twodisplay != ''"> and e.twoDisplay = #{twodisplay}</if>
+            <if test="threedisplay != null  and threedisplay != ''"> and e.threeDisplay = #{threedisplay}</if>
+            <if test="fourdisplay != null  and fourdisplay != ''"> and e.fourDisplay = #{fourdisplay}</if>
+            <if test="qrcode != null  and qrcode != ''"> and e.qrCode = #{qrcode}</if>
+            <if test="state != null  and state != ''"> and e.state = #{state}</if>
+            <if test="ipadress != null  and ipadress != ''"> and e.ipAdress = #{ipadress}</if>
+            <if test="departurewithoutrecords != null  and departurewithoutrecords != ''"> and e.departureWithoutRecords = #{departurewithoutrecords}</if>
+            <if test="licenseplatanticounterfeiting != null  and licenseplatanticounterfeiting != ''"> and e.licensePlatAntiCounterfeiting = #{licenseplatanticounterfeiting}</if>
+            <if test="specificvehicleexit != null  and specificvehicleexit != ''"> and e.specificVehicleExit = #{specificvehicleexit}</if>
+            <if test="residualscreen != null  and residualscreen != ''"> and e.residualScreen = #{residualscreen}</if>
+            <if test="volume != null "> and e.volume = #{volume}</if>
+            <if test="numberone != null  and numberone != ''"> and e.numberone = #{numberone}</if>
+            <if test="numbertwo != null  and numbertwo != ''"> and e.numbertwo = #{numbertwo}</if>
+            <if test="numberthree != null  and numberthree != ''"> and e.numberThree = #{numberthree}</if>
         </where>
     </select>
     
@@ -164,4 +168,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <select id="findBySerialno" resultType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
     select l.* from parking_lot_equipment  p left join parking_lot_information l on p.parkingLotInformationId=l.id where cameraSerialNumber=#{cameraSerialNumber}
 </select>
+
+   <!-- List<ParkingLotEquipment> byParkinglotinformationid(Long parkinglotinformationid);-->
+    <select id="byParkinglotinformationid" resultType="com.ruoyi.parking.domain.ParkingLotEquipment">
+        select id,name from parking_lot_equipment where parkingLotInformationId=#{parkinglotinformationid}
+    </select>
 </mapper>
