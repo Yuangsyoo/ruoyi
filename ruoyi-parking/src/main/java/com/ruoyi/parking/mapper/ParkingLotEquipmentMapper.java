@@ -1,8 +1,10 @@
 package com.ruoyi.parking.mapper;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
 
 /**
  * 停车场设备管理Mapper接口

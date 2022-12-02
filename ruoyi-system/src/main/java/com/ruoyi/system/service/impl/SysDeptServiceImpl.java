@@ -186,12 +186,14 @@ public class SysDeptServiceImpl implements ISysDeptService
         return UserConstants.UNIQUE;
     }
 
+
+
     /**
      * 校验部门是否有数据权限
      * 
      * @param deptId 部门id
      */
-    @Override
+ @Override
     public void checkDeptDataScope(Long deptId)
     {
         if (!SysUser.isAdmin(SecurityUtils.getUserId()))

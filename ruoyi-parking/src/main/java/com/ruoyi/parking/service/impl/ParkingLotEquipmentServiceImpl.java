@@ -2,7 +2,8 @@ package com.ruoyi.parking.service.impl;
 
 import java.util.List;
 
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;

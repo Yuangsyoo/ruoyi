@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
 import com.ruoyi.parking.mapper.ParkingLotInformationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +63,17 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
     @Override
     public int insertParkingManualOpening(ParkingManualOpening parkingManualOpening)
     {
+        parkingManualOpening.setTime(new Date());
+        ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentMapper.selectParkingLotEquipmentById(parkingManualOpening.getParkinglotequipmentid());
+
+
+        LPRDemo lprDemo = new LPRDemo();
+        int i = lprDemo.InitClient(parkingLotEquipment.getIpadress());
+        lprDemo.switchOn(i,0,500);
+        //关闭设备的控制句柄
+        lprDemo.VzLPRClient_Close(i);
+        //执行结束释放
+        lprDemo.VzLPRClient_Cleanup();
         return parkingManualOpeningMapper.insertParkingManualOpening(parkingManualOpening);
     }
 
@@ -75,17 +86,7 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
     @Override
     public int updateParkingManualOpening(ParkingManualOpening parkingManualOpening)
     {
-        parkingManualOpening.setTime(new Date());
-        ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentMapper.selectParkingLotEquipmentById(parkingManualOpening.getParkinglotequipmentid());
 
-
-        LPRDemo lprDemo = new LPRDemo();
-        int i = lprDemo.InitClient(parkingLotEquipment.getIpadress());
-        lprDemo.switchOn(i,0,500);
-        //关闭设备的控制句柄
-        lprDemo.VzLPRClient_Close(i);
-        //执行结束释放
-        lprDemo.VzLPRClient_Cleanup();
         return parkingManualOpeningMapper.updateParkingManualOpening(parkingManualOpening);
     }
 

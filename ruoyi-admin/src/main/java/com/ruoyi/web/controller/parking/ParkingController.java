@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.CodeGenerateUtils;
 import com.ruoyi.common.utils.DateTime.DateTime;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
 import com.ruoyi.parking.domain.ParkingRecord;
 import com.ruoyi.parking.domain.ParkingWhiteList;
 import com.ruoyi.parking.dto.AlarmInfoPlate;

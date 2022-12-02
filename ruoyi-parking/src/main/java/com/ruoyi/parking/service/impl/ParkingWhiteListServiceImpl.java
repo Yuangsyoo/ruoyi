@@ -3,6 +3,7 @@ package com.ruoyi.parking.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.exception.GlobalException;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.SecurityUtils;

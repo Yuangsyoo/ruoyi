@@ -161,7 +161,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 <!--    //查询停车场信息通过序列号
     String findBySerialno(String serialno);-->
-<select id="findBySerialno" resultType="com.ruoyi.parking.domain.ParkingLotInformation">
+<select id="findBySerialno" resultType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
     select l.* from parking_lot_equipment  p left join parking_lot_information l on p.parkingLotInformationId=l.id where cameraSerialNumber=#{cameraSerialNumber}
 </select>
 </mapper>

@@ -2,6 +2,9 @@ package com.ruoyi.web.controller.parking;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+import com.ruoyi.parking.dto.ParkingLotEquipmentDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +19,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
 import com.ruoyi.parking.service.IParkingLotInformationService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -46,6 +49,12 @@ public class ParkingLotInformationController extends BaseController
         return getDataTable(list);
     }
 
+    @GetMapping("/list1")
+    public AjaxResult getlist()
+    {
+        List<ParkingLotInformation> list = parkingLotInformationService.findParkingLotInformationList();
+        return AjaxResult.success("200",list);
+    }
     /**
      * 导出停车场管理列表
      */
@@ -75,9 +84,9 @@ public class ParkingLotInformationController extends BaseController
     @PreAuthorize("@ss.hasPermi('parking:information:add')")
     @Log(title = "停车场管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody ParkingLotInformation parkingLotInformation)
+    public AjaxResult add(@RequestBody ParkingLotEquipmentDto parkingLotEquipmentDto)
     {
-        return toAjax(parkingLotInformationService.insertParkingLotInformation(parkingLotInformation));
+        return toAjax(parkingLotInformationService.insertParkingLotInformation(parkingLotEquipmentDto));
     }
 
     /**

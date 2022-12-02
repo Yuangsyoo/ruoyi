@@ -133,3 +133,10 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+// 查询所有停车场
+export function getarkinglotinformations() {
+  return request({
+    url: '/parking/information/list1',
+    method: 'get'
+  })
+}

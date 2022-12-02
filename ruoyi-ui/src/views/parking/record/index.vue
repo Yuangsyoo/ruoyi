@@ -150,7 +150,12 @@
       </el-table-column>
       <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor" />
       <el-table-column label="订单编号" align="center" prop="ordernumber" />
-      <el-table-column label="订单状态" align="center" prop="orderstate" />
+      <el-table-column label="订单状态" align="center" prop="orderstate">
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
+          <span style="color: red" v-else-if="scope.row.orderstate==0">未支付</span>
+        </template>
+      </el-table-column>
       <el-table-column label="支付状态" align="center" prop="paystate" />
       <el-table-column label="支付金额" align="center" prop="money" />
       <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />

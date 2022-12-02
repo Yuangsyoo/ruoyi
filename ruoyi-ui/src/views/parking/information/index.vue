@@ -251,6 +251,9 @@
         <el-form-item label="停车场名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入停车场名称" />
         </el-form-item>
+        <el-form-item label="停车场登录密码" prop="name">
+          <el-input v-model="form.loginPassword" placeholder="请输入停车场登录密码" />
+        </el-form-item>
         <el-form-item label="门面照" prop="picture">
           <el-input v-model="form.picture" placeholder="请输入门面照" />
         </el-form-item>
@@ -466,6 +469,7 @@ export default {
     reset() {
       this.form = {
         id: null,
+        loginPassword:null,
         name: null,
         picture: null,
         contacts: null,

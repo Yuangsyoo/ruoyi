@@ -1,8 +1,9 @@
 package com.ruoyi.web.configure;
 
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
 import com.ruoyi.parking.domain.ParkingWhiteList;
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
 import com.ruoyi.parking.service.IParkingLotInformationService;

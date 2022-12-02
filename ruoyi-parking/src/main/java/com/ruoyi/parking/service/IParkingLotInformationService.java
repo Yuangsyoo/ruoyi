@@ -1,7 +1,10 @@
 package com.ruoyi.parking.service;
 
 import java.util.List;
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+import com.ruoyi.parking.dto.ParkingLotEquipmentDto;
+
 
 /**
  * 停车场管理Service接口
@@ -33,7 +36,7 @@ public interface IParkingLotInformationService
      * @param parkingLotInformation 停车场管理
      * @return 结果
      */
-    public int insertParkingLotInformation(ParkingLotInformation parkingLotInformation);
+    public int insertParkingLotInformation(ParkingLotEquipmentDto parkingLotEquipmentDto);
 
     /**
      * 修改停车场管理
@@ -58,4 +61,7 @@ public interface IParkingLotInformationService
      * @return 结果
      */
     public int deleteParkingLotInformationById(Long id);
+
+    List<ParkingLotInformation> findParkingLotInformationList();
+
 }

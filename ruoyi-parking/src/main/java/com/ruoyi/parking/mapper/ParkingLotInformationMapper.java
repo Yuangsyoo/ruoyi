@@ -1,7 +1,9 @@
 package com.ruoyi.parking.mapper;
 
 import java.util.List;
-import com.ruoyi.parking.domain.ParkingLotInformation;
+
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+;
 
 /**
  * 停车场管理Mapper接口
@@ -59,4 +61,5 @@ public interface ParkingLotInformationMapper
      */
     public int deleteParkingLotInformationByIds(Long[] ids);
 
+    List<ParkingLotInformation> findParkingLotInformationList();
 }

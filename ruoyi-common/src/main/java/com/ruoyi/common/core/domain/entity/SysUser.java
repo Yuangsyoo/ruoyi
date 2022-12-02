@@ -27,7 +27,8 @@ public class SysUser extends BaseEntity
 
     /** 部门ID */
     @Excel(name = "部门编号", type = Type.IMPORT)
-    private Long deptId;
+    private Long parkinglotinformationId;
+
 
     /** 用户账号 */
     @Excel(name = "登录名称")
@@ -75,8 +76,7 @@ public class SysUser extends BaseEntity
         @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
         @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
     })
-    private SysDept dept;
-
+    private ParkingLotInformation parkingLotInformation;
     /** 角色对象 */
     private List<SysRole> roles;
 
@@ -89,24 +89,15 @@ public class SysUser extends BaseEntity
     /** 角色ID */
     private Long roleId;
 
-    public SysUser()
-    {
+    private SysRole sysRole;
 
+
+    public SysRole getSysRole() {
+        return sysRole;
     }
 
-    public SysUser(Long userId)
-    {
-        this.userId = userId;
-    }
-
-    public Long getUserId()
-    {
-        return userId;
-    }
-
-    public void setUserId(Long userId)
-    {
-        this.userId = userId;
+    public void setSysRole(SysRole sysRole) {
+        this.sysRole = sysRole;
     }
 
     public boolean isAdmin()
@@ -118,207 +109,175 @@ public class SysUser extends BaseEntity
     {
         return userId != null && 1L == userId;
     }
-
-    public Long getDeptId()
-    {
-        return deptId;
+    public SysUser() {
     }
 
-    public void setDeptId(Long deptId)
-    {
-        this.deptId = deptId;
+    public ParkingLotInformation getParkingLotInformation() {
+        return parkingLotInformation;
     }
 
-    @Xss(message = "用户昵称不能包含脚本字符")
-    @Size(min = 0, max = 30, message = "用户昵称长度不能超过30个字符")
-    public String getNickName()
-    {
-        return nickName;
+    public void setParkingLotInformation(ParkingLotInformation parkingLotInformation) {
+        this.parkingLotInformation = parkingLotInformation;
     }
 
-    public void setNickName(String nickName)
-    {
-        this.nickName = nickName;
+    public Long getUserId() {
+        return userId;
     }
 
-    @Xss(message = "用户账号不能包含脚本字符")
-    @NotBlank(message = "用户账号不能为空")
-    @Size(min = 0, max = 30, message = "用户账号长度不能超过30个字符")
-    public String getUserName()
-    {
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getParkinglotinformationId() {
+        return parkinglotinformationId;
+    }
+
+    public void setParkinglotinformationId(Long parkinglotinformationId) {
+        this.parkinglotinformationId = parkinglotinformationId;
+    }
+
+    public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName)
-    {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    @Email(message = "邮箱格式不正确")
-    @Size(min = 0, max = 50, message = "邮箱长度不能超过50个字符")
-    public String getEmail()
-    {
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email)
-    {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    @Size(min = 0, max = 11, message = "手机号码长度不能超过11个字符")
-    public String getPhonenumber()
-    {
+    public String getPhonenumber() {
         return phonenumber;
     }
 
-    public void setPhonenumber(String phonenumber)
-    {
+    public void setPhonenumber(String phonenumber) {
         this.phonenumber = phonenumber;
     }
 
-    public String getSex()
-    {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(String sex)
-    {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 
-    public String getAvatar()
-    {
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar)
-    {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
-    public String getPassword()
-    {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password)
-    {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getStatus()
-    {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status)
-    {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public String getDelFlag()
-    {
+    public String getDelFlag() {
         return delFlag;
     }
 
-    public void setDelFlag(String delFlag)
-    {
+    public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
     }
 
-    public String getLoginIp()
-    {
+    public String getLoginIp() {
         return loginIp;
     }
 
-    public void setLoginIp(String loginIp)
-    {
+    public void setLoginIp(String loginIp) {
         this.loginIp = loginIp;
     }
 
-    public Date getLoginDate()
-    {
+    public Date getLoginDate() {
         return loginDate;
     }
 
-    public void setLoginDate(Date loginDate)
-    {
+    public void setLoginDate(Date loginDate) {
         this.loginDate = loginDate;
     }
 
-    public SysDept getDept()
-    {
-        return dept;
-    }
 
-    public void setDept(SysDept dept)
-    {
-        this.dept = dept;
-    }
-
-    public List<SysRole> getRoles()
-    {
+    public List<SysRole> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<SysRole> roles)
-    {
+    public void setRoles(List<SysRole> roles) {
         this.roles = roles;
     }
 
-    public Long[] getRoleIds()
-    {
+    public Long[] getRoleIds() {
         return roleIds;
     }
 
-    public void setRoleIds(Long[] roleIds)
-    {
+    public void setRoleIds(Long[] roleIds) {
         this.roleIds = roleIds;
     }
 
-    public Long[] getPostIds()
-    {
+    public Long[] getPostIds() {
         return postIds;
     }
 
-    public void setPostIds(Long[] postIds)
-    {
+    public void setPostIds(Long[] postIds) {
         this.postIds = postIds;
     }
 
-    public Long getRoleId()
-    {
+    public Long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId)
-    {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
+    public SysUser(Long userId)
+    {
+        this.userId = userId;
+    }
+    public SysUser(Long userId, Long parkinglotinformationId, String userName, String nickName, String email, String phonenumber, String sex, String avatar, String password, String status, String delFlag, String loginIp, Date loginDate, SysDept dept, List<SysRole> roles, Long[] roleIds, Long[] postIds, Long roleId) {
+        this.userId = userId;
+        this.parkinglotinformationId = parkinglotinformationId;
+        this.userName = userName;
+        this.nickName = nickName;
+        this.email = email;
+        this.phonenumber = phonenumber;
+        this.sex = sex;
+        this.avatar = avatar;
+        this.password = password;
+        this.status = status;
+        this.delFlag = delFlag;
+        this.loginIp = loginIp;
+        this.loginDate = loginDate;
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("userId", getUserId())
-            .append("deptId", getDeptId())
-            .append("userName", getUserName())
-            .append("nickName", getNickName())
-            .append("email", getEmail())
-            .append("phonenumber", getPhonenumber())
-            .append("sex", getSex())
-            .append("avatar", getAvatar())
-            .append("password", getPassword())
-            .append("status", getStatus())
-            .append("delFlag", getDelFlag())
-            .append("loginIp", getLoginIp())
-            .append("loginDate", getLoginDate())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .append("remark", getRemark())
-            .append("dept", getDept())
-            .toString();
+        this.roles = roles;
+        this.roleIds = roleIds;
+        this.postIds = postIds;
+        this.roleId = roleId;
     }
 }
