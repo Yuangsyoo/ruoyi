@@ -4,7 +4,7 @@
       <!--用户数据-->
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-
+<!--
             <el-form-item label="归属停车场" >
 
               <el-select v-model="queryParams.parkinglotinformationId" clearable  placeholder="请选择">
@@ -16,7 +16,7 @@
                 </el-option>
               </el-select>
 
-            </el-form-item>
+            </el-form-item>-->
 
           <el-form-item label="用户名称" prop="userName">
             <el-input
@@ -454,6 +454,7 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
+      this.queryParams.parkinglotinformationId=localStorage.getItem("uu")
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
           this.userList = response.rows;
           this.total = response.total;

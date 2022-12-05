@@ -1,14 +1,16 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="停车场id" prop="parkinglotinformationid">
-        <el-input
-          v-model="queryParams.parkinglotinformationid"
-          placeholder="请输入停车场id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="停车场" prop="parkinglotinformationid">
+        <el-select v-model="queryParams.parkinglotinformationid" clearable  placeholder="请选择">
+          <el-option
+            v-for="item in parkinglotinformations"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>-->
       <el-form-item label="车牌号" prop="license">
         <el-input
           v-model="queryParams.license"
@@ -17,31 +19,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="开始时间" prop="starttime">
-        <el-date-picker clearable
-          v-model="queryParams.starttime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择开始时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endtime">
-        <el-date-picker clearable
-          v-model="queryParams.endtime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择结束时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-date-picker clearable
-          v-model="queryParams.addtime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择添加时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="白名单用户姓名" prop="name">
+      <el-form-item label="用户姓名" prop="name">
         <el-input
           v-model="queryParams.name"
           placeholder="请输入白名单用户姓名"
@@ -61,22 +39,6 @@
         <el-input
           v-model="queryParams.adress"
           placeholder="请输入地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="月费" prop="monthlyfee">
-        <el-input
-          v-model="queryParams.monthlyfee"
-          placeholder="请输入月费"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态0代表启用1代表禁用" prop="state">
-        <el-input
-          v-model="queryParams.state"
-          placeholder="请输入状态0代表启用1代表禁用"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -144,7 +106,7 @@
     <el-table v-loading="loading" :data="whitelistList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="停车场id" align="center" prop="parkinglotinformationid" />
+      <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="开始时间" align="center" prop="starttime" width="180">
         <template slot-scope="scope">
@@ -164,8 +126,11 @@
       <el-table-column label="白名单用户姓名" align="center" prop="name" />
       <el-table-column label="手机号" align="center" prop="phone" />
       <el-table-column label="地址" align="center" prop="adress" />
-      <el-table-column label="状态0代表启用1代表禁用" align="center" prop="state">
-
+      <el-table-column label="状态" align="center" prop="state">
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.state==0">使用中</span>
+          <span style="color: red" v-else-if="scope.row.state==1">已过期</span>
+        </template>
       </el-table-column>
 
       <el-table-column label="操作员" align="center" prop="operator" />
@@ -200,8 +165,15 @@
     <!-- 添加或修改停车场白名单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="停车场id" prop="parkinglotinformationid">
-          <el-input v-model="form.parkinglotinformationid" placeholder="请输入停车场id" />
+        <el-form-item label="停车场" prop="parkinglotinformationid">
+          <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择">
+            <el-option
+              v-for="item in parkinglotinformations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="车牌号" prop="license">
           <el-input v-model="form.license" placeholder="请输入车牌号" />
@@ -246,11 +218,13 @@
 
 <script>
 import { listWhitelist, getWhitelist, delWhitelist, addWhitelist, updateWhitelist } from "@/api/parking/whitelist";
+import {getarkinglotinformations} from "@/api/system/user";
 
 export default {
   name: "Whitelist",
   data() {
     return {
+      parkinglotinformations:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -303,11 +277,19 @@ export default {
   },
   created() {
     this.getList();
+    this.getarkinglotinformations(localStorage.getItem("uu"));
   },
   methods: {
+
+    getarkinglotinformations(id){
+      getarkinglotinformations(id).then(res=>{
+        this.parkinglotinformations=res.data
+      })
+    },
     /** 查询停车场白名单列表 */
     getList() {
       this.loading = true;
+      this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       listWhitelist(this.queryParams).then(response => {
         this.whitelistList = response.rows;
         this.total = response.total;
@@ -366,6 +348,7 @@ export default {
       getWhitelist(id).then(response => {
         this.form = response.data;
         this.form.monthlyfee=null;
+
         this.open = true;
         this.title = "白名单续期";
       });

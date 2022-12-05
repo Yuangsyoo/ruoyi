@@ -11,6 +11,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="time"    column="time"    />
         <result property="remarks"    column="remarks"    />
         <result property="operator"    column="operator"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
     </resultMap>
 
     <sql id="selectParkingWhiteOperationRecordVo">
@@ -18,13 +22,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectParkingWhiteOperationRecordList" parameterType="ParkingWhiteOperationRecord" resultMap="ParkingWhiteOperationRecordResult">
-        <include refid="selectParkingWhiteOperationRecordVo"/>
+      select w.*,l.id lid,l.name lname from parking_white_list_operation_record w left join parking_lot_information l on w.parkinglotinformationid=l.id
         <where>  
-            <if test="parkinglotinformationid != null "> and parkinglotinformationid = #{parkinglotinformationid}</if>
-            <if test="license != null  and license != ''"> and license = #{license}</if>
-            <if test="time != null "> and time = #{time}</if>
-            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
-            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0 "> and  w.parkinglotinformationid = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and  w.license = #{license}</if>
+            <if test="time != null ">  w.and time = #{time}</if>
+            <if test="remarks != null  and remarks != ''"> and  w.remarks = #{remarks}</if>
+            <if test="operator != null  and operator != ''"> and  w.operator = #{operator}</if>
         </where>
     </select>
     

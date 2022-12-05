@@ -536,4 +536,9 @@ public class SysUserServiceImpl implements ISysUserService
         }
         return successMsg.toString();
     }
+
+    @Override
+    public SysUser getUserByName(String name) {
+        return userMapper.getUserByName(name);
+    }
 }

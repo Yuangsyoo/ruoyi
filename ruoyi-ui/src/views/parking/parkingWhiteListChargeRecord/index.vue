@@ -1,30 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="停车场id" prop="parkinglotinformationid">
-        <el-input
-          v-model="queryParams.parkinglotinformationid"
-          placeholder="请输入停车场id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="缴费时间" prop="paymenttime">
-        <el-date-picker clearable
-          v-model="queryParams.paymenttime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择缴费时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="缴费方式" prop="paymentmethod">
-        <el-input
-          v-model="queryParams.paymentmethod"
-          placeholder="请输入缴费方式"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="车牌号码" prop="license">
         <el-input
           v-model="queryParams.license"
@@ -33,46 +9,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="开始时间" prop="starttime">
-        <el-date-picker clearable
-          v-model="queryParams.starttime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择开始时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endtime">
-        <el-date-picker clearable
-          v-model="queryParams.endtime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择结束时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="实收金额" prop="money">
-        <el-input
-          v-model="queryParams.money"
-          placeholder="请输入实收金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="收费员" prop="operator">
-        <el-input
-          v-model="queryParams.operator"
-          placeholder="请输入收费员"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="remarks">
-        <el-input
-          v-model="queryParams.remarks"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -128,7 +65,7 @@
     <el-table v-loading="loading" :data="parkingWhiteListChargeRecordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="停车场id" align="center" prop="parkinglotinformationid" />
+      <el-table-column label="停车场id" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="缴费时间" align="center" prop="paymenttime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.paymenttime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
@@ -182,7 +119,14 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="停车场id" prop="parkinglotinformationid">
-          <el-input v-model="form.parkinglotinformationid" placeholder="请输入停车场id" />
+          <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择">
+            <el-option
+              v-for="item in parkinglotinformations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="缴费时间" prop="paymenttime">
           <el-date-picker clearable
@@ -234,11 +178,13 @@
 
 <script>
 import { listParkingWhiteListChargeRecord, getParkingWhiteListChargeRecord, delParkingWhiteListChargeRecord, addParkingWhiteListChargeRecord, updateParkingWhiteListChargeRecord } from "@/api/parking/parkingWhiteListChargeRecord";
+import {getarkinglotinformations} from "@/api/system/user";
 
 export default {
   name: "ParkingWhiteListChargeRecord",
   data() {
     return {
+      parkinglotinformations:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -286,9 +232,15 @@ export default {
     this.getList();
   },
   methods: {
+    getarkinglotinformations(id){
+      getarkinglotinformations(id).then(res=>{
+        this.parkinglotinformations=res.data
+      })
+    },
     /** 查询白名单收费记录列表 */
     getList() {
       this.loading = true;
+      this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       listParkingWhiteListChargeRecord(this.queryParams).then(response => {
         this.parkingWhiteListChargeRecordList = response.rows;
         this.total = response.total;
@@ -336,6 +288,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.getarkinglotinformations(localStorage.getItem("uu"));
       this.open = true;
       this.title = "添加白名单收费记录";
     },
@@ -345,6 +298,7 @@ export default {
       const id = row.id || this.ids
       getParkingWhiteListChargeRecord(id).then(response => {
         this.form = response.data;
+        this.getarkinglotinformations(localStorage.getItem("uu"));
         this.open = true;
         this.title = "修改白名单收费记录";
       });

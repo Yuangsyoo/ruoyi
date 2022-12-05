@@ -9,74 +9,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="停车场id" prop="parkinglotinformationid">
-        <el-input
-          v-model="queryParams.parkinglotinformationid"
-          placeholder="请输入停车场id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="入场时间" prop="admissiontime">
-        <el-date-picker clearable
-          v-model="queryParams.admissiontime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择入场时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="出场时间" prop="exittime">
-        <el-date-picker clearable
-          v-model="queryParams.exittime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择出场时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="车牌颜色" prop="licensepllatecolor">
-        <el-input
-          v-model="queryParams.licensepllatecolor"
-          placeholder="请输入车牌颜色"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="订单编号" prop="ordernumber">
-        <el-input
-          v-model="queryParams.ordernumber"
-          placeholder="请输入订单编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="订单状态" prop="orderstate">
-        <el-input
-          v-model="queryParams.orderstate"
-          placeholder="请输入订单状态0代表未支付1代表已支付"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="支付状态" prop="paystate">
         <el-input
           v-model="queryParams.paystate"
           placeholder="请输入支付状态"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="支付金额" prop="money">
-        <el-input
-          v-model="queryParams.money"
-          placeholder="请输入支付金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="出入口名称" prop="entranceandexitname">
-        <el-input
-          v-model="queryParams.entranceandexitname"
-          placeholder="请输入出入口名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -137,7 +73,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车牌号" align="center" prop="license" />
-      <el-table-column label="停车场id" align="center" prop="parkinglotinformationid" />
+      <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="入场时间" align="center" prop="admissiontime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.admissiontime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
@@ -159,13 +95,32 @@
       <el-table-column label="支付状态" align="center" prop="paystate" />
       <el-table-column label="支付金额" align="center" prop="money" />
       <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />
+      <el-table-column label="进口照片" align="center" prop="numbertwo">
+        <template slot-scope="scope">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="url+scope.row.numbertwo">
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="出口照片" align="center" prop="numberthree" >
+
+          <template slot-scope="scope">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="url+scope.row.numberthree"
+              :preview-src-list="url+scope.row.numberthree"
+            ></el-image>
+
+          </template>
+
+
+      </el-table-column>
       <el-table-column label="支付时间" align="center" prop="payTime" >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="预留字段2" align="center" prop="numbertwo" />
-      <el-table-column label="预留字段3" align="center" prop="numberthree" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -200,8 +155,15 @@
         <el-form-item label="车牌号" prop="license">
           <el-input v-model="form.license" placeholder="请输入车牌号" />
         </el-form-item>
-        <el-form-item label="停车场id" prop="parkinglotinformationid">
-          <el-input v-model="form.parkinglotinformationid" placeholder="请输入停车场id" />
+        <el-form-item label="停车场" prop="parkinglotinformationid">
+          <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择">
+            <el-option
+              v-for="item in parkinglotinformations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="入场时间" prop="admissiontime">
           <el-date-picker clearable
@@ -262,11 +224,15 @@
 
 <script>
 import { listRecord, getRecord, delRecord, addRecord, updateRecord } from "@/api/parking/record";
+import {getarkinglotinformations} from "@/api/system/user";
 
 export default {
   name: "Record",
   data() {
     return {
+     /*测试用的base64*/
+      url:'data:image/jpeg;base64,',
+      parkinglotinformations:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -315,13 +281,21 @@ export default {
   },
   created() {
     this.getList();
+    this.getarkinglotinformations(localStorage.getItem("uu"));
   },
   methods: {
+    getarkinglotinformations(id){
+      getarkinglotinformations(id).then(res=>{
+        this.parkinglotinformations=res.data
+      })
+    },
     /** 查询停车记录列表 */
     getList() {
       this.loading = true;
+      this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       listRecord(this.queryParams).then(response => {
         this.recordList = response.rows;
+
         this.total = response.total;
         this.loading = false;
       });

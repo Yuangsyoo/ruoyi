@@ -1,5 +1,6 @@
 package com.ruoyi.parking.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,13 +57,24 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
     @Override
     public List<ParkingLotInformation> selectParkingLotInformationList(ParkingLotInformation parkingLotInformation)
     {
-        return parkingLotInformationMapper.selectParkingLotInformationList(parkingLotInformation);
+
+
+        if (parkingLotInformation.getId()==0){
+            List<ParkingLotInformation>  parkingLotInformations = parkingLotInformationMapper.selectParkingLotInformationList(parkingLotInformation);
+            return parkingLotInformations;
+        }else {
+            List<ParkingLotInformation> list = new ArrayList<>();
+            ParkingLotInformation parkingLotInformation1 = parkingLotInformationMapper.selectParkingLotInformationById(parkingLotInformation.getId());
+            list.add(parkingLotInformation1);
+            return list;
+        }
+
     }
 
     /**
      * 新增停车场管理
      * 
-     * @param parkingLotInformation 停车场管理
+     * @param
      * @return 结果
      */
     @Override
@@ -75,24 +87,24 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
         parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getNumber());
 
         String loginPassword = parkingLotEquipmentDto.getLoginPassword();
-        int i = parkingLotInformationMapper.insertParkingLotInformation(parkingLotInformation);
+        parkingLotInformationMapper.insertParkingLotInformation(parkingLotInformation);
         SysUser user = new SysUser();
         //保存user信息
-        int i1 = creatUser(parkingLotInformation, loginPassword, i, user);
+        Long i1 = creatUser(parkingLotInformation, loginPassword, user);
         //未user添加角色默认高级角色
         creatUserRole(i1);
         return 1;
     }
 
-    private void creatUserRole(int i1) {
+    private void creatUserRole(Long i1) {
         SysUserRole sysUserRole = new SysUserRole();
-        sysUserRole.setUserId(Long.valueOf(i1));
+        sysUserRole.setUserId(i1);
         //默认高级角色
         sysUserRole.setRoleId(3L);
         int i2 = sysUserRoleMapper.creatUserRoleInfo(sysUserRole);
     }
 
-    private int creatUser(ParkingLotInformation parkingLotInformation, String loginPassword, int i, SysUser user) {
+    private Long creatUser(ParkingLotInformation parkingLotInformation, String loginPassword,  SysUser user) {
         //用户登录密码
         user.setPassword(SecurityUtils.encryptPassword(loginPassword));
         user.setUserName(parkingLotInformation.getName());
@@ -101,9 +113,9 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
         user.setCreateBy("添加停车场创建主账号");
         user.setCreateTime(new Date());
         user.setStatus("0");
-        user.setParkinglotinformationId(Long.valueOf(i));
-        int i1 = userService.insertUser(user);
-        return i1;
+        user.setParkinglotinformationId(parkingLotInformation.getId());
+         userService.insertUser(user);
+        return user.getUserId();
     }
 
     /**
@@ -143,7 +155,18 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
     }
 
     @Override
-    public List<ParkingLotInformation> findParkingLotInformationList() {
-        return parkingLotInformationMapper.findParkingLotInformationList();
+    public List<ParkingLotInformation> findParkingLotInformationList(Long id) {
+
+
+        if (id==0){
+            List<ParkingLotInformation>  parkingLotInformations = parkingLotInformationMapper.selectParkingLotInformationList(null);
+            return parkingLotInformations;
+        }else {
+            List<ParkingLotInformation> list = new ArrayList<>();
+            ParkingLotInformation parkingLotInformation1 = parkingLotInformationMapper.selectParkingLotInformationById(id);
+            list.add(parkingLotInformation1);
+            return list;
+        }
+
     }
 }

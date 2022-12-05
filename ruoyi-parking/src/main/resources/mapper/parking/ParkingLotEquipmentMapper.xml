@@ -40,8 +40,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectParkingLotEquipmentList" parameterType="ParkingLotEquipment" resultMap="ParkingLotEquipmentResult">
         select e.*,i.id iid,i.name iname from parking_lot_equipment e left join parking_lot_information i on e.parkinglotinformationid=i.id
         <where>  
-            <if test="parkinglotinformationid != null "> and e.parkingLotInformationId = #{parkinglotinformationid}</if>
-            <if test="name != null  and name != ''"> and name like e.concat('%', #{name}, '%')</if>
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0 "> and e.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="name != null  and name != ''"> and e.name like e.concat('%', #{name}, '%')</if>
             <if test="cameraserialnumber != null  and cameraserialnumber != ''"> and e.cameraSerialNumber = #{cameraserialnumber}</if>
             <if test="motherboardserialnumber != null  and motherboardserialnumber != ''"> and e.motherboardSerialNumber = #{motherboardserialnumber}</if>
             <if test="direction != null  and direction != ''"> and e.direction = #{direction}</if>

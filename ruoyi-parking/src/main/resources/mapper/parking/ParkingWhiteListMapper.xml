@@ -17,6 +17,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="monthlyfee"    column="monthlyFee"    />
         <result property="state"    column="state"    />
         <result property="operator"    column="operator"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
     </resultMap>
 
     <sql id="selectParkingWhiteListVo">
@@ -24,19 +28,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectParkingWhiteListList" parameterType="ParkingWhiteList" resultMap="ParkingWhiteListResult">
-        <include refid="selectParkingWhiteListVo"/>
+       select p.*,l.id lid,l.name lname from parking_white_list p left join parking_lot_information l on p.parkinglotinformationid=l.id
         <where>  
-            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
-            <if test="license != null  and license != ''"> and license = #{license}</if>
-            <if test="starttime != null "> and startTime = #{starttime}</if>
-            <if test="endtime != null "> and endTime = #{endtime}</if>
-            <if test="addtime != null "> and addTime = #{addtime}</if>
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
-            <if test="adress != null  and adress != ''"> and adress = #{adress}</if>
-            <if test="monthlyfee != null "> and monthlyFee = #{monthlyfee}</if>
-            <if test="state != null "> and state = #{state}</if>
-            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0 "> and p.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and p.license = #{license}</if>
+            <if test="starttime != null "> and p.startTime = #{starttime}</if>
+            <if test="endtime != null "> and p.endTime = #{endtime}</if>
+            <if test="addtime != null "> and p.addTime = #{addtime}</if>
+            <if test="name != null  and name != ''"> and name like p.concat('%', #{name}, '%')</if>
+            <if test="phone != null  and phone != ''"> and p.phone = #{phone}</if>
+            <if test="adress != null  and adress != ''"> and p.adress = #{adress}</if>
+            <if test="monthlyfee != null "> and p.monthlyFee = #{monthlyfee}</if>
+            <if test="state != null "> and p.state = #{state}</if>
+            <if test="operator != null  and operator != ''"> and p.operator = #{operator}</if>
         </where>
     </select>
     

@@ -1,34 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="停车场名称" prop="parkinglotinformationid">
-        <el-input
-          v-model="queryParams.parkinglotinformationid"
-          placeholder="请输入停车场名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="车牌号" prop="license">
         <el-input
           v-model="queryParams.license"
           placeholder="请输入车牌号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作时间" prop="time">
-        <el-date-picker clearable
-          v-model="queryParams.time"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="请选择操作时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="备注" prop="remarks">
-        <el-input
-          v-model="queryParams.remarks"
-          placeholder="请输入备注"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -96,7 +72,7 @@
     <el-table v-loading="loading" :data="parkingWhiteListOperationRecordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="id" />
-      <el-table-column label="停车场名称" align="center" prop="parkinglotinformationid" />
+      <el-table-column label="停车场名称" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="操作时间" align="center" prop="time" width="180">
         <template slot-scope="scope">
@@ -137,7 +113,14 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="停车场名称" prop="parkinglotinformationid">
-          <el-input v-model="form.parkinglotinformationid" placeholder="请输入停车场名称" />
+          <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择">
+            <el-option
+              v-for="item in parkinglotinformations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="车牌号" prop="license">
           <el-input v-model="form.license" placeholder="请输入车牌号" />
@@ -167,11 +150,13 @@
 
 <script>
 import { listParkingWhiteListOperationRecord, getParkingWhiteListOperationRecord, delParkingWhiteListOperationRecord, addParkingWhiteListOperationRecord, updateParkingWhiteListOperationRecord } from "@/api/parking/parkingWhiteListOperationRecord";
+import {getarkinglotinformations} from "@/api/system/user";
 
 export default {
   name: "ParkingWhiteListOperationRecord",
   data() {
     return {
+      parkinglotinformations:[],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -211,9 +196,15 @@ export default {
     this.getList();
   },
   methods: {
+    getarkinglotinformations(id){
+      getarkinglotinformations(id).then(res=>{
+        this.parkinglotinformations=res.data
+      })
+    },
     /** 查询白名单操作记录列表 */
     getList() {
       this.loading = true;
+      this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       listParkingWhiteListOperationRecord(this.queryParams).then(response => {
         this.parkingWhiteListOperationRecordList = response.rows;
         this.total = response.total;
@@ -256,6 +247,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.getarkinglotinformations(localStorage.getItem("uu"));
       this.open = true;
       this.title = "添加白名单操作记录";
     },
@@ -264,7 +256,9 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getParkingWhiteListOperationRecord(id).then(response => {
+
         this.form = response.data;
+        this.getarkinglotinformations(localStorage.getItem("uu"));
         this.open = true;
         this.title = "修改白名单操作记录";
       });

@@ -19,6 +19,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="payTime"    column="payTime"    />
         <result property="numbertwo"    column="numberTwo"    />
         <result property="numberthree"    column="numberThree"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
     </resultMap>
 
     <sql id="selectParkingRecordVo">
@@ -26,21 +30,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectParkingRecordList" parameterType="ParkingRecord" resultMap="ParkingRecordResult">
-        <include refid="selectParkingRecordVo"/>
+        select p.*,l.id lid,l.name lname from parking_record p left join parking_lot_information l on p.parkinglotinformationid=l.id
         <where>  
-            <if test="license != null  and license != ''"> and license = #{license}</if>
-            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
-            <if test="admissiontime != null "> and admissionTime = #{admissiontime}</if>
-            <if test="exittime != null "> and exitTime = #{exittime}</if>
-            <if test="licensepllatecolor != null  and licensepllatecolor != ''"> and licensePllateColor = #{licensepllatecolor}</if>
-            <if test="ordernumber != null  and ordernumber != ''"> and orderNumber = #{ordernumber}</if>
-            <if test="orderstate != null  and orderstate != ''"> and orderState = #{orderstate}</if>
-            <if test="paystate != null  and paystate != ''"> and payState = #{paystate}</if>
-            <if test="money != null "> and money = #{money}</if>
-            <if test="entranceandexitname != null  and entranceandexitname != ''"> and entranceAndExitName like concat('%', #{entranceandexitname}, '%')</if>
-            <if test="payTime != null  and payTime != ''"> and payTime = #{payTime}</if>
-            <if test="numbertwo != null  and numbertwo != ''"> and numberTwo = #{numbertwo}</if>
-            <if test="numberthree != null  and numberthree != ''"> and numberThree = #{numberthree}</if>
+            <if test="license != null  and license != ''"> and p.license = #{license}</if>
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0"> and p.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="admissiontime != null "> and p.admissionTime = #{admissiontime}</if>
+            <if test="exittime != null "> and p.exitTime = #{exittime}</if>
+            <if test="licensepllatecolor != null  and licensepllatecolor != ''"> and p.licensePllateColor = #{licensepllatecolor}</if>
+            <if test="ordernumber != null  and ordernumber != ''"> and p.orderNumber = #{ordernumber}</if>
+            <if test="orderstate != null  and orderstate != ''"> and p.orderState = #{orderstate}</if>
+            <if test="paystate != null  and paystate != ''"> and p.payState = #{paystate}</if>
+            <if test="money != null "> and  p.money = #{money}</if>
+            <if test="entranceandexitname != null  and entranceandexitname != ''"> and p.entranceAndExitName like concat('%', #{entranceandexitname}, '%')</if>
+            <if test="payTime != null  and payTime != ''"> and p.payTime = #{payTime}</if>
+            <if test="numbertwo != null  and numbertwo != ''"> and p.numberTwo = #{numbertwo}</if>
+            <if test="numberthree != null  and numberthree != ''"> and p.numberThree = #{numberthree}</if>
         </where>
     </select>
     

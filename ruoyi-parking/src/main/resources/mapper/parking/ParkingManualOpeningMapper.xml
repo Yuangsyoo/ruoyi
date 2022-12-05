@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             left join parking_lot_equipment e on o.parkingLotEquipmentId=e.id
 
         <where>  
-            <if test="parkinglotinformationid != null "> and o.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0 "> and o.parkingLotInformationId = #{parkinglotinformationid}</if>
             <if test="parkinglotequipmentid != null "> and  o.parkingLotEquipmentId = #{parkinglotequipmentid}</if>
             <if test="operator != null  and operator != ''"> and  o.operator = #{operator}</if>
             <if test="time != null "> and  o.time = #{time}</if>

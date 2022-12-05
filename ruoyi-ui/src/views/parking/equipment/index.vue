@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="停车场id" prop="parkinglotinformationid">
-        <el-input
-          v-model="queryParams.parkinglotinformationid"
-          placeholder="请输入停车场id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="设备名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -25,15 +17,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
-      <el-form-item label="进出口闸门" prop="direction">
-        <el-input
-          v-model="queryParams.direction"
-          placeholder="0代表进口闸门1代表出口闸门"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="控制板" prop="controlplate">
         <el-input
           v-model="queryParams.controlplate"
@@ -42,8 +25,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
-
       <el-form-item label="设备状态" prop="state">
         <el-input
           v-model="queryParams.state"
@@ -119,7 +100,14 @@
           <span style="color: green" v-else-if="scope.row.direction==0">进口闸</span>
         </template>
       </el-table-column>
-      <el-table-column label="控制板" align="center" prop="controlplate" />
+      <el-table-column label="控制板" align="center" prop="controlplate" >
+        <template scope="scope">
+          <span style="color: red" v-if="scope.row.direction==0">红</span>
+          <span style="color: yellow" v-else-if="scope.row.direction==1">黄</span>
+          <span style="color: blue" v-else-if="scope.row.direction==2">蓝</span>
+          <span style="color: green" v-else-if="scope.row.direction==4">模拟摄像机</span>
+        </template>
+      </el-table-column>
       <el-table-column label="一行显示" align="center" prop="onedisplay" />
       <el-table-column label="二行显示" align="center" prop="twodisplay" />
       <el-table-column label="三行显示" align="center" prop="threedisplay" />
@@ -211,8 +199,11 @@
         <el-form-item label="主板序列号" prop="motherboardserialnumber">
           <el-input v-model="form.motherboardserialnumber" placeholder="请输入主板序列号" />
         </el-form-item>
-        <el-form-item label="0代表进口闸门1代表出口闸门" prop="direction">
-          <el-input v-model="form.direction" placeholder="请输入0代表进口闸门1代表出口闸门" />
+        <el-form-item label="进出闸门" prop="direction">
+          <template>
+            <el-radio v-model="form.direction" label="0">进口闸门</el-radio>
+            <el-radio v-model="form.direction" label="1">出口闸门</el-radio>
+          </template>
         </el-form-item>
         <el-form-item label="控制板" prop="controlplate">
           <el-input v-model="form.controlplate" placeholder="请输入控制板" />
@@ -232,23 +223,38 @@
         <el-form-item label="二维码" prop="qrcode">
           <el-input v-model="form.qrcode" placeholder="请输入二维码" />
         </el-form-item>
-        <el-form-item label="0代表正常1代表异常" prop="state">
-          <el-input v-model="form.state" placeholder="请输入0代表正常1代表异常" />
+        <el-form-item label="状态" prop="state">
+          <template>
+            <el-radio v-model="form.state" label="0">启用</el-radio>
+            <el-radio v-model="form.state" label="1">禁用</el-radio>
+          </template>
         </el-form-item>
         <el-form-item label="ip地址" prop="ipadress">
           <el-input v-model="form.ipadress" placeholder="请输入ip地址" />
         </el-form-item>
-        <el-form-item label="无记录离场0开启1关闭" prop="departurewithoutrecords">
-          <el-input v-model="form.departurewithoutrecords" placeholder="请输入无记录离场0开启1关闭" />
+        <el-form-item label="无记录离场" prop="departurewithoutrecords">
+          <template>
+            <el-radio v-model="form.departurewithoutrecords" label="0">启用</el-radio>
+            <el-radio v-model="form.departurewithoutrecords" label="1">禁用</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="车牌防伪0开启1关闭" prop="licenseplatanticounterfeiting">
-          <el-input v-model="form.licenseplatanticounterfeiting" placeholder="请输入车牌防伪0开启1关闭" />
+        <el-form-item label="车牌防伪" prop="licenseplatanticounterfeiting">
+          <template>
+            <el-radio v-model="form.licenseplatanticounterfeiting" label="0">启用</el-radio>
+            <el-radio v-model="form.licenseplatanticounterfeiting" label="1">禁用</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="特定车辆出0开启1关闭" prop="specificvehicleexit">
-          <el-input v-model="form.specificvehicleexit" placeholder="请输入特定车辆出0开启1关闭" />
+        <el-form-item label="特定车辆进出" prop="specificvehicleexit">
+          <template>
+            <el-radio v-model="form.specificvehicleexit" label="0">启用</el-radio>
+            <el-radio v-model="form.specificvehicleexit" label="1">禁用</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="余位屏0开启1关闭" prop="residualscreen">
-          <el-input v-model="form.residualscreen" placeholder="请输入余位屏0开启1关闭" />
+        <el-form-item label="余位屏" prop="residualscreen">
+          <template>
+            <el-radio v-model="form.residualscreen" label="0">启用</el-radio>
+            <el-radio v-model="form.residualscreen" label="1">禁用</el-radio>
+          </template>
         </el-form-item>
         <el-form-item label="音量范围0-10" prop="volume">
           <el-input v-model="form.volume" placeholder="请输入音量范围0-10" />
@@ -348,17 +354,18 @@ export default {
   },
   created() {
     this.getList();
-    this.getarkinglotinformations();
+    this.getarkinglotinformations(localStorage.getItem("uu"));
   },
   methods: {
-    getarkinglotinformations(){
-      getarkinglotinformations().then(res=>{
+    getarkinglotinformations(id){
+      getarkinglotinformations(id).then(res=>{
         this.parkinglotinformations=res.data
       })
     },
     /** 查询停车场设备管理列表 */
     getList() {
       this.loading = true;
+      this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       listEquipment(this.queryParams).then(response => {
         this.equipmentList = response.rows;
         this.total = response.total;

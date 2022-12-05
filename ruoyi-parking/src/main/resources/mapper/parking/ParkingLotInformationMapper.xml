@@ -45,10 +45,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <sql id="selectParkingLotInformationVo">
         select id, name, picture, contacts, phone, qq, address, state, number, payLeavingTime, monthlyFee, chargeDescription, startTime, endTime, minMonths, maxMonths, monthlyCardPurchase, temporaryVehicleRestrictions, platformPayment_state, overtimeCompensation, noRecordDeparture, alipayPayment_state, weChatPayment_state, unionPayPayment_state, etcPayment_state, ruralCreditPayment_state, platformPayment_id, alipayPayment_id, weChatPayment_id, unionPayPayment_id, etcPayment_id, ruralCreditPayment_id,  remainingParkingSpace, numberFour from parking_lot_information
     </sql>
-   <!--   List<ParkingLotInformation> findParkingLotInformationList();-->
+
+   <!--   List<ParkingLotInformation> findParkingLotInformationList(Long parkinglotinformationid);-->
     <select id="findParkingLotInformationList" resultType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
         select * from parking_lot_information
+         <where>
+        <if test="id != null and id != 0"> and id = #{id}</if>
+        <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        <if test="contacts != null  and contacts != ''"> and contacts = #{contacts}</if>
+        <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+        <if test="address != null  and address != ''"> and address = #{address}</if>
+    </where>
     </select>
+
+
     <select id="selectParkingLotInformationList" parameterType="ParkingLotInformation" resultMap="ParkingLotInformationResult">
         <include refid="selectParkingLotInformationVo"/>
         <where>  
@@ -94,7 +104,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertParkingLotInformation" parameterType="ParkingLotInformation" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertParkingLotInformation"  keyColumn="id" parameterType="ParkingLotInformation" useGeneratedKeys="true" keyProperty="id">
         insert into parking_lot_information
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>

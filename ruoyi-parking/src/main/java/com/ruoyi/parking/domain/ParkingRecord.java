@@ -2,6 +2,7 @@ package com.ruoyi.parking.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -86,6 +87,8 @@ public class ParkingRecord extends BaseEntity
     /** 预留字段3 */
     @Excel(name = "预留字段3")
     private String numberthree;
+
+    private ParkingLotInformation parkingLotInformation;
 
 
 }

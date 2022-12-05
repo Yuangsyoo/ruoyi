@@ -45,14 +45,15 @@ public class ParkingLotInformationController extends BaseController
     public TableDataInfo list(ParkingLotInformation parkingLotInformation)
     {
         startPage();
+        System.out.println(parkingLotInformation.getId());
         List<ParkingLotInformation> list = parkingLotInformationService.selectParkingLotInformationList(parkingLotInformation);
         return getDataTable(list);
     }
 
-    @GetMapping("/list1")
-    public AjaxResult getlist()
+    @GetMapping("/list1/{id}")
+    public AjaxResult getlist(@PathVariable Long id)
     {
-        List<ParkingLotInformation> list = parkingLotInformationService.findParkingLotInformationList();
+        List<ParkingLotInformation> list = parkingLotInformationService.findParkingLotInformationList(id);
         return AjaxResult.success("200",list);
     }
     /**

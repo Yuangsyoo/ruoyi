@@ -1,22 +1,22 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-select v-model="queryParams.parkinglotinformationId" clearable  placeholder="请选择">
+<!--      <el-select v-model="queryParams.parkinglotinformationid" clearable  placeholder="请选择">
         <el-option
           v-for="item in parkinglotinformations"
           :key="item.id"
           :label="item.name"
           :value="item.id">
         </el-option>
-      </el-select>
-      <el-form-item label="设备id" prop="parkinglotequipmentid">
+      </el-select>-->
+<!--      <el-form-item label="设备id" prop="parkinglotequipmentid">
         <el-input
           v-model="queryParams.parkinglotequipmentid"
           placeholder="请输入设备id"
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item label="操作员" prop="operator">
         <el-input
           v-model="queryParams.operator"
@@ -207,26 +207,27 @@ export default {
     };
   },
   created() {
-    this.getarkinglotinformations();
+    this.getarkinglotinformations(localStorage.getItem("uu"));
     this.getList();
 
   },
   methods: {
     getEquipment(parkinglotinformationid){
-      this.parkinglotequipments=[],
+      this.parkinglotequipments=[];
       getEquipment(parkinglotinformationid).then(res=>{
         this.parkinglotequipments=res.data
       })
     },
     /** 查询停车场手动开杆管理列表 */
     /*查询所有停车场*/
-    getarkinglotinformations(){
-      getarkinglotinformations().then(res=>{
+    getarkinglotinformations(id){
+      getarkinglotinformations(id).then(res=>{
         this.parkinglotinformations=res.data
       })
     },
     getList() {
       this.loading = true;
+      this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       listOpening(this.queryParams).then(response => {
         this.openingList = response.rows;
         this.total = response.total;

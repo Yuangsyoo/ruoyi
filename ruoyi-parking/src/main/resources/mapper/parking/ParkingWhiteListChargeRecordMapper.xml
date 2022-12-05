@@ -16,6 +16,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="operator"    column="operator"    />
         <result property="operationtype"    column="operationType"    />
         <result property="remarks"    column="remarks"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
     </resultMap>
 
     <sql id="selectParkingWhiteListChargeRecordVo">
@@ -23,18 +27,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectParkingWhiteListChargeRecordList" parameterType="ParkingWhiteListChargeRecord" resultMap="ParkingWhiteListChargeRecordResult">
-        <include refid="selectParkingWhiteListChargeRecordVo"/>
+        select w.*,l.id lid,l.name lname from parking_white_list_charge_record w left join parking_lot_information l on w.parkinglotinformationid=l.id
         <where>  
-            <if test="parkinglotinformationid != null "> and parkinglotinformationid = #{parkinglotinformationid}</if>
-            <if test="paymenttime != null "> and paymentTime = #{paymenttime}</if>
-            <if test="paymentmethod != null  and paymentmethod != ''"> and paymentMethod = #{paymentmethod}</if>
-            <if test="license != null  and license != ''"> and license = #{license}</if>
-            <if test="starttime != null "> and startTime = #{starttime}</if>
-            <if test="endtime != null "> and endTime = #{endtime}</if>
-            <if test="money != null "> and money = #{money}</if>
-            <if test="operator != null  and operator != ''"> and operator = #{operator}</if>
-            <if test="operationtype != null  and operationtype != ''"> and operationType = #{operationtype}</if>
-            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0 "> and  w.parkinglotinformationid = #{parkinglotinformationid}</if>
+            <if test="paymenttime != null "> and  w.paymentTime = #{paymenttime}</if>
+            <if test="paymentmethod != null  and paymentmethod != ''"> and  w.paymentMethod = #{paymentmethod}</if>
+            <if test="license != null  and license != ''"> and  w.license = #{license}</if>
+            <if test="starttime != null "> and  w.startTime = #{starttime}</if>
+            <if test="endtime != null "> and  w.endTime = #{endtime}</if>
+            <if test="money != null "> and  w.money = #{money}</if>
+            <if test="operator != null  and operator != ''"> and  w.operator = #{operator}</if>
+            <if test="operationtype != null  and operationtype != ''"> and  w.operationType = #{operationtype}</if>
+            <if test="remarks != null  and remarks != ''"> and  w.remarks = #{remarks}</if>
         </where>
     </select>
     

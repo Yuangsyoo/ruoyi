@@ -1,8 +1,9 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams"  ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="停车场名称" prop="name">
         <el-input
+
           v-model="queryParams.name"
           placeholder="请输入停车场名称"
           clearable
@@ -31,14 +32,6 @@
         <el-input
           v-model="queryParams.address"
           placeholder="请输入地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="停车场状态" prop="state">
-        <el-input
-          v-model="queryParams.state"
-          placeholder="请输入停车场状态0开启1关闭"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -186,7 +179,12 @@
       <el-table-column label="联系电话" align="center" prop="phone" />
       <el-table-column label="QQ号" align="center" prop="qq" />
       <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="停车场状态" align="center" prop="state" />
+      <el-table-column label="停车场状态" align="center" prop="state">
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.state==0">正常</span>
+          <span style="color: red" v-else-if="scope.row.state==1">禁用</span>
+        </template>
+      </el-table-column>
       <el-table-column label="车位个数" align="center" prop="number" />
       <el-table-column label="支付离场时间" align="center" prop="payleavingtime" />
       <el-table-column label="默认月费" align="center" prop="monthlyfee" />
@@ -198,25 +196,66 @@
 
       <el-table-column label="月卡购买最小月数" align="center" prop="minmonths" />
       <el-table-column label="月卡购买最大月数" align="center" prop="maxmonths" />
-      <el-table-column label="是否开启月卡购买0开启1关闭" align="center" prop="monthlycardpurchase" />
-      <el-table-column label="是否开启临时车限制0开启1关闭" align="center" prop="temporaryvehiclerestrictions" />
-      <el-table-column label="是否开启平台支付0开启1关闭" align="center" prop="platformpaymentState" />
-      <el-table-column label="超时补费0开启1关闭" align="center" prop="overtimecompensation" />
-      <el-table-column label="无记录离场收起步价0开启1关闭" align="center" prop="norecorddeparture" />
-      <el-table-column label="是否启用支付宝停车缴费0开启1关闭" align="center" prop="alipaypaymentState" />
-      <el-table-column label="是否启用微信停车缴费0开启1关闭" align="center" prop="wechatpaymentState" />
-      <el-table-column label="是否启用银联停车缴费0开启1关闭" align="center" prop="unionpaypaymentState" />
-      <el-table-column label="是否启用ETC停车缴费0开启1关闭" align="center" prop="etcpaymentState" />
-      <el-table-column label="是否启用农信停车缴费0开启1关闭" align="center" prop="ruralcreditpaymentState" />
-      <el-table-column label="平台支付关联id" align="center" prop="platformpaymentId" />
-      <el-table-column label="支付宝支付关联id" align="center" prop="alipaypaymentId" />
-      <el-table-column label="微信支付关联id" align="center" prop="wechatpaymentId" />
-      <el-table-column label="银联支付关联id" align="center" prop="unionpaypaymentId" />
-      <el-table-column label="ETC支付关联id" align="center" prop="etcpaymentId" />
-      <el-table-column label="农信支付关联id" align="center" prop="ruralcreditpaymentId" />
-      <el-table-column label="剩余车位数" align="center" prop="remainingParkingSpace" />
-
-      <el-table-column label="备用字段4" align="center" prop="numberfour" />
+      <el-table-column label="月卡购买" align="center" prop="monthlycardpurchase">
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.monthlycardpurchase==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.monthlycardpurchase==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="临时车限制" align="center" prop="temporaryvehiclerestrictions" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.temporaryvehiclerestrictions==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.temporaryvehiclerestrictions==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台支付" align="center" prop="platformpaymentState" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.platformpaymentState==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.platformpaymentState==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="超时补费" align="center" prop="overtimecompensation" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.overtimecompensation==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.overtimecompensation==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="无记录离场收起步价" align="center" prop="norecorddeparture" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.norecorddeparture==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.norecorddeparture==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="支付宝停车缴费" align="center" prop="alipaypaymentState" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.alipaypaymentState==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.alipaypaymentState==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="微信停车缴费" align="center" prop="wechatpaymentState">
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.wechatpaymentState==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.wechatpaymentState==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="银联停车缴费" align="center" prop="unionpaypaymentState" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.unionpaypaymentState==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.unionpaypaymentState==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="ETC停车缴费" align="center" prop="etcpaymentState" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.etcpaymentState==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.etcpaymentState==1">关闭</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="农信停车缴费" align="center" prop="ruralcreditpaymentState" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.ruralcreditpaymentState==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.ruralcreditpaymentState==1">关闭</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -269,8 +308,11 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="停车场状态0开启1关闭" prop="state">
-          <el-input v-model="form.state" placeholder="请输入停车场状态0开启1关闭" />
+        <el-form-item label="状态" prop="state">
+            <template>
+              <el-radio v-model="form.state" label="0">启用</el-radio>
+              <el-radio v-model="form.state" label="1">禁用</el-radio>
+            </template>
         </el-form-item>
         <el-form-item label="车位个数" prop="number">
           <el-input v-model="form.number" placeholder="请输入车位个数" />
@@ -285,11 +327,11 @@
           <el-input v-model="form.chargedescription" placeholder="请输入收费说明不参与计算" />
         </el-form-item>
         <el-form-item label="营业起使时间" prop="starttime">
-          <el-input v-model="form.starttime" placeholder="请输入正确的时间格式 例:07:00:00"/>
+          <el-input v-model="form.starttime" placeholder="请输入正确的时间格式 例:00:00:00"/>
 
         </el-form-item>
         <el-form-item label="营业结束时间" prop="endtime">
-          <el-input v-model="form.endtime" placeholder="请输入正确的时间格式 例:07:00:00"/>
+          <el-input v-model="form.endtime" placeholder="请输入正确的时间格式 例:24:00:00"/>
 
         </el-form-item>
         <el-form-item label="月卡购买最小月数" prop="minmonths">
@@ -298,35 +340,65 @@
         <el-form-item label="月卡购买最大月数" prop="maxmonths">
           <el-input v-model="form.maxmonths" placeholder="请输入月卡购买最大月数" />
         </el-form-item>
-        <el-form-item label="是否开启月卡购买0开启1关闭" prop="monthlycardpurchase">
-          <el-input v-model="form.monthlycardpurchase" placeholder="请输入是否开启月卡购买0开启1关闭" />
+        <el-form-item label="月卡购买" prop="monthlycardpurchase">
+          <template>
+            <el-radio v-model="form.monthlycardpurchase" label="0">开启</el-radio>
+            <el-radio v-model="form.monthlycardpurchase" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="是否开启临时车限制0开启1关闭" prop="temporaryvehiclerestrictions">
-          <el-input v-model="form.temporaryvehiclerestrictions" placeholder="请输入是否开启临时车限制0开启1关闭" />
+        <el-form-item label="临时车限制" prop="temporaryvehiclerestrictions">
+          <template>
+            <el-radio v-model="form.temporaryvehiclerestrictions" label="0">开启</el-radio>
+            <el-radio v-model="form.temporaryvehiclerestrictions" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="是否开启平台支付0开启1关闭" prop="platformpaymentState">
-          <el-input v-model="form.platformpaymentState" placeholder="请输入是否开启平台支付0开启1关闭" />
+        <el-form-item label="平台支付" prop="platformpaymentState">
+          <template>
+            <el-radio v-model="form.platformpaymentState" label="0">开启</el-radio>
+            <el-radio v-model="form.platformpaymentState" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="超时补费0开启1关闭" prop="overtimecompensation">
-          <el-input v-model="form.overtimecompensation" placeholder="请输入超时补费0开启1关闭" />
+        <el-form-item label="超时补费" prop="overtimecompensation">
+          <template>
+            <el-radio v-model="form.overtimecompensation" label="0">开启</el-radio>
+            <el-radio v-model="form.overtimecompensation" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="无记录离场收起步价0开启1关闭" prop="norecorddeparture">
-          <el-input v-model="form.norecorddeparture" placeholder="请输入无记录离场收起步价0开启1关闭" />
+        <el-form-item label="无记录离场收起步价" prop="norecorddeparture">
+          <template>
+            <el-radio v-model="form.norecorddeparture" label="0">开启</el-radio>
+            <el-radio v-model="form.norecorddeparture" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="是否启用支付宝停车缴费0开启1关闭" prop="alipaypaymentState">
-          <el-input v-model="form.alipaypaymentState" placeholder="请输入是否启用支付宝停车缴费0开启1关闭" />
+        <el-form-item label="支付宝停车缴费" prop="alipaypaymentState">
+          <template>
+            <el-radio v-model="form.alipaypaymentState" label="0">开启</el-radio>
+            <el-radio v-model="form.alipaypaymentState" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="是否启用微信停车缴费0开启1关闭" prop="wechatpaymentState">
-          <el-input v-model="form.wechatpaymentState" placeholder="请输入是否启用微信停车缴费0开启1关闭" />
+        <el-form-item label="微信停车缴费" prop="wechatpaymentState">
+          <template>
+            <el-radio v-model="form.wechatpaymentState" label="0">开启</el-radio>
+            <el-radio v-model="form.wechatpaymentState" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="是否启用银联停车缴费0开启1关闭" prop="unionpaypaymentState">
-          <el-input v-model="form.unionpaypaymentState" placeholder="请输入是否启用银联停车缴费0开启1关闭" />
+        <el-form-item label="银联停车缴费" prop="unionpaypaymentState">
+          <template>
+            <el-radio v-model="form.unionpaypaymentState" label="0">开启</el-radio>
+            <el-radio v-model="form.unionpaypaymentState" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="是否启用ETC停车缴费0开启1关闭" prop="etcpaymentState">
-          <el-input v-model="form.etcpaymentState" placeholder="请输入是否启用ETC停车缴费0开启1关闭" />
+        <el-form-item label="ETC停车缴费" prop="etcpaymentState">
+          <template>
+            <el-radio v-model="form.etcpaymentState" label="0">开启</el-radio>
+            <el-radio v-model="form.etcpaymentState" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="是否启用农信停车缴费0开启1关闭" prop="ruralcreditpaymentState">
-          <el-input v-model="form.ruralcreditpaymentState" placeholder="请输入是否启用农信停车缴费0开启1关闭" />
+        <el-form-item label="农信停车缴费" prop="ruralcreditpaymentState">
+          <template>
+            <el-radio v-model="form.ruralcreditpaymentState" label="0">开启</el-radio>
+            <el-radio v-model="form.ruralcreditpaymentState" label="1">关闭</el-radio>
+          </template>
         </el-form-item>
         <el-form-item label="平台支付关联id" prop="platformpaymentId">
           <el-input v-model="form.platformpaymentId" placeholder="请输入平台支付关联id" />
@@ -366,6 +438,7 @@ export default {
   name: "Information",
   data() {
     return {
+      ww:true,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -386,6 +459,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        id:null,
         pageNum: 1,
         pageSize: 10,
         name: null,
@@ -449,11 +523,17 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem("uu")===0){
+      this.ww=true;
+    }else {
+      this.ww=false;
+    }
   },
   methods: {
     /** 查询停车场管理列表 */
     getList() {
       this.loading = true;
+      this.queryParams.id=localStorage.getItem("uu")
       listInformation(this.queryParams).then(response => {
         this.informationList = response.rows;
         this.total = response.total;
@@ -464,12 +544,13 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+
     },
     // 表单重置
     reset() {
       this.form = {
         id: null,
-        loginPassword:null,
+        loginPassword:"123456",
         name: null,
         picture: null,
         contacts: null,

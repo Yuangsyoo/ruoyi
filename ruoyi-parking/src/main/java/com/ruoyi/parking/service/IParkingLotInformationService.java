@@ -62,6 +62,6 @@ public interface IParkingLotInformationService
      */
     public int deleteParkingLotInformationById(Long id);
 
-    List<ParkingLotInformation> findParkingLotInformationList();
+    List<ParkingLotInformation> findParkingLotInformationList(Long id);
 
 }

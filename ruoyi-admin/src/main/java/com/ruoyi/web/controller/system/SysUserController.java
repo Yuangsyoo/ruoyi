@@ -253,4 +253,18 @@ public class SysUserController extends BaseController
     {
         return success(deptService.selectDeptTreeList(dept));
     }
+
+
+
+    @GetMapping( "/getUserByName/{name}" )
+    public AjaxResult getUserByName(@PathVariable String name)
+    {
+        try {
+            SysUser user=userService.getUserByName(name);
+            return AjaxResult.success(user.getParkinglotinformationId());
+        } catch (Exception e) {
+            return AjaxResult.success();
+        }
+
+    }
 }

@@ -66,6 +66,7 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
+import {getUserByName} from "@/api/system/user";
 
 export default {
   data() {
@@ -108,6 +109,13 @@ export default {
     }
   },
   methods: {
+    getuser(name){
+      getUserByName(name).then(res=>{
+       if (res){
+         localStorage.setItem("uu",res.data)
+       }
+      })
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
@@ -118,15 +126,27 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
+          localStorage.removeItem("name")
           location.href = '/index';
         })
       }).catch(() => {});
     }
-  },mounted() {
+  },created() {
+
    var a=sessionStorage.getItem("sessionObj")
-   var b= JSON.parse(a);
-   var c=JSON.parse(b.data)
-    this.name=c.username
+   if (localStorage.getItem("name")===null){
+     localStorage.setItem("name",a);
+     var w=localStorage.getItem("name")
+     var q=JSON.parse(w).data;
+     this.name=JSON.parse(q).username
+
+     this.getuser(JSON.parse(q).username)
+
+   }else {
+     var w=localStorage.getItem("name")
+     var q=JSON.parse(w).data;
+     this.name=JSON.parse(q).username
+   }
 
 
 

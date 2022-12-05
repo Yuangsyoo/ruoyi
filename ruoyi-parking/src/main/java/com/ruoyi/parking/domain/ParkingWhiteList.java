@@ -2,6 +2,7 @@ package com.ruoyi.parking.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -74,7 +75,17 @@ public class ParkingWhiteList extends BaseEntity
     @Excel(name = "操作员")
     private String operator;
 
-    public void setId(Long id) 
+    private ParkingLotInformation parkingLotInformation;
+
+    public ParkingLotInformation getParkingLotInformation() {
+        return parkingLotInformation;
+    }
+
+    public void setParkingLotInformation(ParkingLotInformation parkingLotInformation) {
+        this.parkingLotInformation = parkingLotInformation;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

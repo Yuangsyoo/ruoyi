@@ -134,9 +134,9 @@ export function deptTreeSelect() {
   })
 }
 // 查询所有停车场
-export function getarkinglotinformations() {
+export function getarkinglotinformations(id) {
   return request({
-    url: '/parking/information/list1',
+    url: '/parking/information/list1/'+id,
     method: 'get'
   })
 }
@@ -144,6 +144,14 @@ export function getarkinglotinformations() {
 export function getEquipment(parkinglotinformationid) {
   return request({
     url: '/parking/equipment/ByParkinglotinformationid/'+parkinglotinformationid,
+    method: 'get'
+  })
+}
+
+// 查询用户详细
+export function getUserByName(name) {
+  return request({
+    url: '/system/user/getUserByName/' + name,
     method: 'get'
   })
 }

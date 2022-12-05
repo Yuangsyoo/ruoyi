@@ -3,6 +3,7 @@ package com.ruoyi.parking.mapper;
 import java.util.List;
 
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+import org.apache.ibatis.annotations.Param;
 ;
 
 /**
@@ -61,5 +62,7 @@ public interface ParkingLotInformationMapper
      */
     public int deleteParkingLotInformationByIds(Long[] ids);
 
-    List<ParkingLotInformation> findParkingLotInformationList();
+    List<ParkingLotInformation> findParkingLotInformationList(Long id);
+
+    ParkingLotInformation findParkingLotInformations( Long id,ParkingLotInformation parkingLotInformation);
 }

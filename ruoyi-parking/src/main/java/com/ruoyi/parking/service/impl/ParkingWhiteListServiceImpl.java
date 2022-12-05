@@ -74,17 +74,22 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
         }
         //获取停车场信息
        ParkingLotInformation parkingLotInformation=parkingLotInformationMapper.selectParkingLotInformationById(parkingWhiteList.getParkinglotinformationid());
+        if(parkingLotInformation.getMonthlycardpurchase().equals("1")){
+            throw new GlobalException("请开启停车场月卡购买功能");
+        }
         LPRDemo lprDemo = new LPRDemo();
         ParkingLotEquipment parkingLotEquipment = new ParkingLotEquipment();
         parkingLotEquipment.setParkinglotinformationid(parkingLotInformation.getId());
         List<ParkingLotEquipment> parkingLotEquipments = parkingLotEquipmentMapper.selectParkingLotEquipmentList(parkingLotEquipment);
         for (ParkingLotEquipment lotEquipment : parkingLotEquipments) {
+            //获取句柄
             int i = lprDemo.InitClient(lotEquipment.getIpadress());
-            int i1 = lprDemo.AddWlistPlate(i, parkingWhiteList.getLicense());
+            //设备添加白名单
+            lprDemo.AddWlistPlate(i, parkingWhiteList.getLicense());
         }
 
         parkingWhiteList.setAddtime(new Date());
-        parkingWhiteList.setState(1);
+        parkingWhiteList.setState(0);
         //获取操作人名称
         String username = SecurityUtils.getUsername();
         parkingWhiteList.setOperator(username);

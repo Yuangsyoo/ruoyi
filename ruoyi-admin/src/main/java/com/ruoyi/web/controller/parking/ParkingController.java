@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.CodeGenerateUtils;
 import com.ruoyi.common.utils.DateTime.DateTime;
+import com.ruoyi.parking.domain.ParkingBlackList;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
 
 import com.ruoyi.parking.domain.ParkingRecord;
@@ -16,6 +17,7 @@ import com.ruoyi.parking.domain.ParkingWhiteList;
 import com.ruoyi.parking.dto.AlarmInfoPlate;
 import com.ruoyi.parking.dto.Timeval;
 import com.ruoyi.parking.dto.Total;
+import com.ruoyi.parking.mapper.ParkingBlackListMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.IParkingLotEquipmentService;
 import com.ruoyi.parking.service.IParkingLotInformationService;
@@ -60,6 +62,9 @@ public class ParkingController extends Thread {
     private RedisTemplate<Object,Object>redisTemplate;
     @Autowired
     private ParkingWhiteListMapper parkingWhiteListMapper;
+    @Autowired
+    private ParkingBlackListMapper parkingBlackListMapper;
+
     @PostMapping("/operation")
     @Transactional
     public void test1(@RequestBody Total total){
@@ -83,6 +88,16 @@ public class ParkingController extends Thread {
        //等于0则是进口，不等则是出口
         if(parkingLotEquipment.getDirection().equals("0")){
 
+            //判断停车场状态异常停车场不可用 只针对进口
+            if (parkingLotInformation.getState().equals("1")){
+                return;
+            }
+            //黑名单拒绝放行
+           ParkingBlackList parkingBlackList= parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingLotInformation.getId(),license);
+            if (parkingBlackList!=null){
+                //怎末提示？？？
+                return;
+            }
             //通过停车场id，车牌号查询有无未支付订单
             ParkingRecord parkingRecord= parkingRecordService.findByLicense(license,parkingLotInformation.getId());
             if (parkingRecord!=null){
@@ -118,9 +133,8 @@ public class ParkingController extends Thread {
         }
         else {
             // TODO: 2022/11/30 免费时常放行   关联查收费规则
-            // TODO: 2022/11/25 判断是否在白名单范围  在直接放行
             ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
-
+            // 判断是否在白名单范围  在直接放行
             if (byLicense!=null){
                 if (!byLicense.getState().equals("1")){
                     //设备开闸
