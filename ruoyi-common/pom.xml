@@ -140,7 +140,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
         </dependency>
-
+        <!--WebSocket的支持-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 
     </dependencies>
 

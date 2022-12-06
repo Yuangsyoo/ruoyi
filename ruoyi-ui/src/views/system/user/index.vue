@@ -445,7 +445,7 @@ export default {
   created() {
     this.getList();
     this.getDeptTree();
-    this.getarkinglotinformations();
+    this.getarkinglotinformations(localStorage.getItem("uu"));
     this.getConfigKey("sys.user.initPassword").then(response => {
       this.initPassword = response.msg;
     });
@@ -463,8 +463,8 @@ export default {
       );
     },
     /*查询所有停车场*/
-    getarkinglotinformations(){
-      getarkinglotinformations().then(res=>{
+    getarkinglotinformations(id){
+      getarkinglotinformations(id).then(res=>{
         this.parkinglotinformations=res.data
       })
     },
@@ -556,7 +556,6 @@ export default {
 
       this.reset();
       getUser().then(response => {
-        this.getarkinglotinformations();
         this.roleOptions = response.roles;
         this.open = true;
         this.title = "添加用户";
@@ -570,7 +569,7 @@ export default {
 
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
-        this.getarkinglotinformations();
+      
         this.form = response.data;
         this.roleOptions = response.roles;
         this.$set(this.form, "postIds", response.postIds);
