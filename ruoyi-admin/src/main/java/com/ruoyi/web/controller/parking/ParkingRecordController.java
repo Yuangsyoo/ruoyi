@@ -106,7 +106,7 @@ public class ParkingRecordController extends BaseController
     @Anonymous
     @Log(title = "//通过车牌号，未支付状态查询出来修改状态", businessType = BusinessType.UPDATE)
     @PutMapping("/editPayState")
-    //公共接口  支付服务那边调用
+    //公共接口  支付服务那边调用 实付金额  优惠金额  应付金额  支付方式 ************************************
     public void editPayState(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
                             ,@RequestParam(value ="license") String license
                             ,@RequestParam(value ="money") Long money)

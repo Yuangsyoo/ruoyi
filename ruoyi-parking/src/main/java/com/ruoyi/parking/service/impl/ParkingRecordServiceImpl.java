@@ -129,5 +129,10 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         return parkingRecord;
     }
 
+    @Override
+    public ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license) {
+        return  parkingRecordMapper.findByParkingLotInformationLicenseAndPayOrder(id, license);
+    }
+
 
 }

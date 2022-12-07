@@ -67,4 +67,6 @@ public interface IParkingRecordService
     ParkingRecord findByLicense1(String license, Long id);
 
     ParkingRecord findByParkingLotInformationLicense(Long id, String license);
+
+    ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license);
 }

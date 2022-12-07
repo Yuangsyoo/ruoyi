@@ -275,12 +275,12 @@ export default {
       }
     };
   },
+
   created() {
     this.getList();
     this.getarkinglotinformations(localStorage.getItem("uu"));
   },
   methods: {
-
     getarkinglotinformations(id){
       getarkinglotinformations(id).then(res=>{
         this.parkinglotinformations=res.data

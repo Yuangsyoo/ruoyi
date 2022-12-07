@@ -70,4 +70,6 @@ public interface ParkingRecordMapper {
 
     //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
     List<ParkingRecord> findByParkingLotInformationLicense(@Param("parkingLotInformationId")Long id,@Param("license") String license);
+
+    ParkingRecord findByParkingLotInformationLicenseAndPayOrder(@Param("parkingLotInformationId")Long id,@Param("license")String license);
 }

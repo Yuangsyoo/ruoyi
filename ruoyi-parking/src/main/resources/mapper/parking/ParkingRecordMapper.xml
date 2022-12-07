@@ -19,6 +19,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="payTime"    column="payTime"    />
         <result property="numbertwo"    column="numberTwo"    />
         <result property="numberthree"    column="numberThree"    />
+        <result property="discountamount"    column="discountAmount"    />
+        <result property="amountpayable"    column="amountPayable"    />
+        <result property="paymentmethod"    column="paymentMethod"    />
         <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
             <id property="id" column="lid"></id>
             <result property="name" column="lname"></result>
@@ -26,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectParkingRecordVo">
-        select id, license, parkingLotInformationId, admissionTime, exitTime, licensePllateColor, orderNumber, orderState, payState, money, entranceAndExitName, payTime, numberTwo, numberThree from parking_record
+        select * from parking_record
     </sql>
 
     <select id="selectParkingRecordList" parameterType="ParkingRecord" resultMap="ParkingRecordResult">
@@ -70,6 +73,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="payTime != null">payTime,</if>
             <if test="numbertwo != null">numberTwo,</if>
             <if test="numberthree != null">numberThree,</if>
+            <if test="discountamount != null">discountAmount,</if>
+            <if test="amountpayable != null">amountPayable,</if>
+            <if test="paymentmethod != null">paymentMethod ,</if>
+
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -86,6 +93,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="payTime != null">#{payTime},</if>
             <if test="numbertwo != null">#{numbertwo},</if>
             <if test="numberthree != null">#{numberthree},</if>
+            <if test="discountamount != null"> #{discountamount},</if>
+            <if test="amountpayable != null"> #{amountpayable},</if>
+            <if test="paymentmethod != null"> #{paymentmethod},</if>
          </trim>
     </insert>
 
@@ -105,6 +115,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="payTime != null">payTime = #{payTime},</if>
             <if test="numbertwo != null">numberTwo = #{numbertwo},</if>
             <if test="numberthree != null">numberThree = #{numberthree},</if>
+            <if test="discountamount != null">discountAmount = #{discountamount},</if>
+            <if test="amountpayable != null">amountPayable = #{amountpayable},</if>
+            <if test="paymentmethod != null">paymentMethod = #{paymentmethod},</if>
         </trim>
         where id = #{id}
     </update>
@@ -144,4 +157,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
    <select id="findByParkingLotInformationLicense" resultMap="ParkingRecordResult">
        select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} order by payTime desc
    </select>
+
+    <!--    //通过停车场id，车牌号,支付状态获取出场车停车记录
+         ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license);-->
+    <select id="findByParkingLotInformationLicenseAndPayOrder" resultMap="ParkingRecordResult">
+        select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and  payState =0
+    </select>
 </mapper>

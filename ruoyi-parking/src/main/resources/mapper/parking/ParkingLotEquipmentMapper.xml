@@ -161,7 +161,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <!--//通过序列号获取推送数据设备信息
     ParkingLotEquipment findParkingLotEquipmentBySerialno(String cameraSerialNumber);-->
     <select id="findParkingLotEquipmentBySerialno" resultMap="ParkingLotEquipmentResult">
-        select direction,name from parking_lot_equipment where cameraSerialNumber=#{cameraSerialNumber}
+        select * from parking_lot_equipment where cameraSerialNumber=#{cameraSerialNumber}
     </select>
 <!--    //查询停车场信息通过序列号
     String findBySerialno(String serialno);-->

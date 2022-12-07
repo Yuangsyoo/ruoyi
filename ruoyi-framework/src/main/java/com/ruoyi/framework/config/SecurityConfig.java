@@ -114,6 +114,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/login", "/register", "/captchaImage"
                         ,"/parking/operation"
                         ,"parking/record/editPayState"
+                        ,"/api/pushMessage/**"
+                        ,"/websocket/**"
                 ).permitAll()
                 // 静态资源，可匿名访问
                 .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()

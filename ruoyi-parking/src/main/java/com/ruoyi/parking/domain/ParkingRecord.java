@@ -87,7 +87,15 @@ public class ParkingRecord extends BaseEntity
     /** 预留字段3 */
     @Excel(name = "预留字段3")
     private String numberthree;
-
+    /*优惠金额*/
+    @Excel(name = "优惠金额")
+    private Long discountamount;
+    /*应缴金额*/
+    @Excel(name = "应缴金额")
+    private Long amountpayable;
+    /*支付方式*/
+    @Excel(name = "支付方式")
+    private  String paymentmethod;
     private ParkingLotInformation parkingLotInformation;
 
 

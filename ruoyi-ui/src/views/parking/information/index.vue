@@ -185,6 +185,7 @@
           <span style="color: red" v-else-if="scope.row.state==1">禁用</span>
         </template>
       </el-table-column>
+      <el-table-column label="免费时常" align="center" prop="freetime" width="180"/>
       <el-table-column label="车位个数" align="center" prop="number" />
       <el-table-column label="支付离场时间" align="center" prop="payleavingtime" />
       <el-table-column label="默认月费" align="center" prop="monthlyfee" />
@@ -307,6 +308,9 @@
         </el-form-item>
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
+        </el-form-item>
+        <el-form-item label="免费时常" prop="address">
+          <el-input v-model="form.freetime" placeholder="请输入免费时常单位默认分钟" />
         </el-form-item>
         <el-form-item label="状态" prop="state">
             <template>
@@ -550,6 +554,7 @@ export default {
     reset() {
       this.form = {
         id: null,
+        freetime:null,
         loginPassword:"123456",
         name: null,
         picture: null,

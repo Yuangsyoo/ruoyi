@@ -24,7 +24,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -33,7 +33,7 @@
           @click="handleAdd"
           v-hasPermi="['parking:record:add']"
         >新增</el-button>
-      </el-col>
+      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="success"
@@ -84,7 +84,16 @@
           <span>{{ parseTime(scope.row.exittime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor" />
+      <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor">
+        <template slot-scope="scope">
+        <span style="color: red" v-if="scope.row.licensepllatecolor==0">未知</span>
+        <span style="color: blue" v-if="scope.row.licensepllatecolor==1">蓝色</span>
+        <span style="color: yellow" v-if="scope.row.licensepllatecolor==2">黄色</span>
+        <span style="color: black" v-if="scope.row.licensepllatecolor==3">白色</span>
+        <span style="color: green" v-if="scope.row.licensepllatecolor==4">黑色</span>
+        <span style="color: green"  v-else-if="scope.row.licensepllatecolor===5">绿色</span>
+        </template>
+      </el-table-column>
       <el-table-column label="订单编号" align="center" prop="ordernumber" />
       <el-table-column label="订单状态" align="center" prop="orderstate">
         <template scope="scope">
@@ -93,29 +102,28 @@
         </template>
       </el-table-column>
       <el-table-column label="支付状态" align="center" prop="paystate" />
-      <el-table-column label="支付金额" align="center" prop="money" />
+      <el-table-column label="应付金额" align="center" prop="amountpayable" />
+      <el-table-column label="优惠金额" align="center" prop="discountamount" />
+      <el-table-column label="实付金额" align="center" prop="money" />
+      <el-table-column label="支付方式" align="center" prop="paymentmethod" />
       <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />
-      <el-table-column label="进口照片" align="center" prop="numbertwo">
+<!--      <el-table-column label="进口照片" align="center" prop="numbertwo">
         <template slot-scope="scope">
           <el-image
             style="width: 100px; height: 100px"
-            :src="url+scope.row.numbertwo">
+            :src="scope.row.numbertwo">
           </el-image>
         </template>
       </el-table-column>
       <el-table-column label="出口照片" align="center" prop="numberthree" >
-
           <template slot-scope="scope">
             <el-image
               style="width: 100px; height: 100px"
-              :src="url+scope.row.numberthree"
-              :preview-src-list="url+scope.row.numberthree"
+              :src="scope.row.numberthree"
+              :preview-src-list="scope.row.numberthree"
             ></el-image>
-
           </template>
-
-
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="支付时间" align="center" prop="payTime" >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
@@ -230,8 +238,7 @@ export default {
   name: "Record",
   data() {
     return {
-     /*测试用的base64*/
-      url:'data:image/jpeg;base64,',
+
       parkinglotinformations:[],
       // 遮罩层
       loading: true,
@@ -341,12 +348,12 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
+   /* /!** 新增按钮操作 *!/
     handleAdd() {
       this.reset();
       this.open = true;
       this.title = "添加停车记录";
-    },
+    },*/
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
  * 
  * @author ruoyi
  */
+
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @EnableScheduling
 public class RuoYiApplication {
@@ -28,10 +30,6 @@ public class RuoYiApplication {
                 " |  | \\ `'   /|   `-'  /           \n" +
                 " |  |  \\    /  \\      /           \n" +
                 " ''-'   `'-'    `-..-'              ");
-    }
-    @Bean
-    public ServerEndpointExporter serverEndpointExporter() {
-        return new ServerEndpointExporter();
     }
 
 
