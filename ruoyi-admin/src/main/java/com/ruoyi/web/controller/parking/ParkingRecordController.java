@@ -113,4 +113,13 @@ public class ParkingRecordController extends BaseController
     {
         parkingRecordService.editPayState(parkingLotInformationId,license,money);
     }
+
+
+    //查询指定停车场最近离场记录
+    @GetMapping("/getPayRecord/{id}")
+    public AjaxResult getPayRecord(@PathVariable Long id)
+    {
+        List<ParkingRecord> list = parkingRecordService.getPayRecord(id);
+      return AjaxResult.success(list);
+    }
 }

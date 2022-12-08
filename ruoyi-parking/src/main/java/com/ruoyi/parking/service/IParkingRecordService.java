@@ -69,4 +69,7 @@ public interface IParkingRecordService
     ParkingRecord findByParkingLotInformationLicense(Long id, String license);
 
     ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license);
+
+    //查询指定停车场最近离场记录
+    List<ParkingRecord> getPayRecord(Long id);
 }

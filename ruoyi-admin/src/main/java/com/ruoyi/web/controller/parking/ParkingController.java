@@ -1,12 +1,17 @@
 package com.ruoyi.web.controller.parking;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.CodeGenerateUtils;
 import com.ruoyi.common.utils.DateTime.DateTime;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.web.service.TokenService;
+
 import com.ruoyi.framework.websocket.WebSocketService;
 import com.ruoyi.parking.domain.ParkingBlackList;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
@@ -22,12 +27,14 @@ import com.ruoyi.parking.service.IParkingLotEquipmentService;
 import com.ruoyi.parking.service.IParkingLotInformationService;
 import com.ruoyi.parking.service.IParkingRecordService;
 import com.ruoyi.parking.service.impl.ParkingLotInformationServiceImpl;
+import com.ruoyi.system.mapper.SysUserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +56,11 @@ import java.util.concurrent.locks.ReentrantLock;
 @Anonymous
 @Slf4j
 public class ParkingController extends Thread {
+    @Autowired
+    private TokenService tokenService;
+
+
+
     //停车记录
     @Autowired
     private IParkingRecordService parkingRecordService;
@@ -65,10 +77,14 @@ public class ParkingController extends Thread {
     private ParkingWhiteListMapper parkingWhiteListMapper;
     @Autowired
     private ParkingBlackListMapper parkingBlackListMapper;
+    @Autowired
+    private SysUserMapper sysUserMapper;
+    @Autowired
+    private WebSocketService webSocketService;
 
     @PostMapping("/operation")
     @Transactional
-    public void test1(@RequestBody Total total){
+    public void test1(@RequestBody Total total,HttpServletRequest request){
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
         //获取出入场图片
@@ -132,45 +148,6 @@ public class ParkingController extends Thread {
         else {
             //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单
             ParkingRecord byLicense1 = parkingRecordService.findByLicense(license, parkingLotInformation.getId());
-            //停车场免费时常
-            Long freetime = parkingLotInformation.getFreetime();
-
-            long time = DateTime.dateDiff(byLicense1.getAdmissiontime(), date);
-                //如果停车场免费时常大于实际停车时间  放行
-                if(freetime>time){
-                    //设备开闸
-                    SwitchOn(total.getAlarmInfoPlate().getIpaddr());
-                    //停车场车位数加一
-                    updateRemainingParkingSpace(parkingLotInformation);
-                    //获取出闸口设备名称PayOrder
-                    String name = parkingLotEquipment.getName();
-                    //查询没有支付得记录信息
-                    ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
-                    parkingRecord.setExittime(date);
-                    //有bug 要改进
-                    parkingRecord.setPaystate("1");
-                    parkingRecord.setOrderstate("1");
-                    parkingRecord.setMoney(0L);
-                    parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
-                    parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
-                    parkingRecord.setPaymentmethod("免费");
-                    //支付时间
-                    parkingRecord.setPayTime(new Date());
-                    //实际支金额
-                    parkingRecord.setMoney(0L);
-                    //优惠金额
-                    parkingRecord.setDiscountamount(0L);
-                    //应收金额
-                    parkingRecord.setAmountpayable(0L);
-                    //出场后修改停车场记录
-                    parkingRecordService.updateParkingRecord(parkingRecord);
-                    List<ParkingRecord> list = new ArrayList<>();
-                    list.add(parkingRecord);
-                    String s = JSONObject.toJSONString(list);
-                    //WebSocketService发送给前端消息
-                    WebSocketService.sendInfo(s, "admin");
-                    return;
-                }
 
             ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
             // 判断是否在白名单范围  在直接放行
@@ -204,12 +181,17 @@ public class ParkingController extends Thread {
                     //出场后修改停车场记录
 
                     parkingRecordService.updateParkingRecord(parkingRecord);
-                    String s = JSONObject.toJSONString(parkingRecord);
-                    //WebSocketService发送给前端消息
-                    WebSocketService.sendInfo(s, SecurityUtils.getUsername());
+                    List<ParkingRecord> list = new ArrayList<>();
+                    list.add(parkingRecord);
+                    String s = JSON.toJSONString(list);
+                    List<SysUser> list1 = sysUserMapper.findUserList(parkingLotInformation.getId());
+                    for (SysUser user : list1) {
+                        webSocketService.sendMessage(user.getUserName(),s);
+                    }
                     return;
                 }
             }
+
             //停车场内支付业务逻辑
             //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单，没有放行
            if (byLicense1==null){
@@ -229,9 +211,58 @@ public class ParkingController extends Thread {
                updateRemainingParkingSpace(parkingLotInformation);
                redisTemplate.delete(license);
            }
-           //门闸口支付业务逻辑
+           //门闸口支付业务逻辑  
            else {
+               //停车场免费时常
+               Long freetime = parkingLotInformation.getFreetime();
+               // TODO: 2022/12/8   //查询未支付停车记录找到进场时间
+               long time = DateTime.dateDiff(byLicense1.getAdmissiontime(), date);
+               //如果停车场免费时常大于实际停车时间  放行
+               if(freetime>time){
+                   //设备开闸
+                   SwitchOn(total.getAlarmInfoPlate().getIpaddr());
+                   //停车场车位数加一
+                   updateRemainingParkingSpace(parkingLotInformation);
+                   //获取出闸口设备名称PayOrder
+                   String name = parkingLotEquipment.getName();
+                   //查询没有支付得记录信息
+                   ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
+                   parkingRecord.setExittime(date);
+                   //有bug 要改进
+                   parkingRecord.setPaystate("1");
+                   parkingRecord.setOrderstate("1");
+                   parkingRecord.setMoney(0L);
+                   parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                   parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+                   parkingRecord.setPaymentmethod("免费");
+                   //支付时间
+                   parkingRecord.setPayTime(new Date());
+                   //实际支金额
+                   parkingRecord.setMoney(0L);
+                   //优惠金额
+                   parkingRecord.setDiscountamount(0L);
+                   //应收金额
+                   parkingRecord.setAmountpayable(0L);
+                   //出场后修改停车场记录
+                   parkingRecordService.updateParkingRecord(parkingRecord);
+                   List<ParkingRecord> list = new ArrayList<>();
+                   list.add(parkingRecord);
+                   String s = JSON.toJSONString(list);
+                   //WebSocketService发送给前端消息
+                   List<SysUser> list1 = sysUserMapper.findUserList(parkingLotInformation.getId());
+                   for (SysUser user : list1) {
+                       webSocketService.sendMessage(user.getUserName(),s);
+                   }
+                   // 获取当前的用户名称
+                   // WebSocketService.sendInfo(s,"username");
+                   return;
+               }
+
+
+
+               // TODO: 2022/12/8  // 添加业务  websocket在页面显示车辆在出口缴费详情  手动开杆业务待修改
                Date date1 = new Date();
+               // TODO: 2022/12/8  加订单中间状态 推送一吃
                Boolean a=true;
                while(a) {
                    try {
@@ -248,6 +279,7 @@ public class ParkingController extends Thread {
                             a=false;
                        }
                      if (date1.getTime()-date.getTime()>1*1000*60*5){
+
                            //结束循环
                            a=false;
                            log.info("超过5分钟未支付，不允开闸");
@@ -256,6 +288,7 @@ public class ParkingController extends Thread {
                        e.printStackTrace();
                    }
                }
+
            }
 
         }
@@ -265,7 +298,6 @@ public class ParkingController extends Thread {
     private void updateParkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath ) {
         //获取出闸口设备名称
         String name = parkingLotEquipment.getName();
-
         //获取停车场id
         Long id = parkingLotInformation.getId();
         //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
@@ -275,13 +307,21 @@ public class ParkingController extends Thread {
         parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
         //有bug 要改进
         parkingRecord.setPaystate("1");
+        // TODO: 2022/12/8  修改完成订单状态
         parkingRecord.setOrderstate("1");
+        
         parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
         //出场后修改停车场记录
         parkingRecordService.updateParkingRecord(parkingRecord);
-        String s = JSONObject.toJSONString(parkingRecord);
+        List<ParkingRecord> list = new ArrayList<>();
+        list.add(parkingRecord);
+        String s = JSON.toJSONString(list);
         //WebSocketService发送给前端消息
-        WebSocketService.sendInfo(s, SecurityUtils.getUsername());
+        List<SysUser> list1 = sysUserMapper.findUserList(parkingLotInformation.getId());
+        for (SysUser user : list1) {
+            webSocketService.sendMessage(user.getUserName(),s);
+        }
+
 
     }
 

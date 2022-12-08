@@ -42,3 +42,10 @@ export function delRecord(id) {
     method: 'delete'
   })
 }
+// 查询最近缴费记录详细
+export function getPayRecord(id) {
+  return request({
+    url: '/parking/record/getPayRecord/' + id,
+    method: 'get'
+  })
+}

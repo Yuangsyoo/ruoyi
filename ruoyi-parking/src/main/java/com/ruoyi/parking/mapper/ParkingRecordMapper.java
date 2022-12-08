@@ -72,4 +72,7 @@ public interface ParkingRecordMapper {
     List<ParkingRecord> findByParkingLotInformationLicense(@Param("parkingLotInformationId")Long id,@Param("license") String license);
 
     ParkingRecord findByParkingLotInformationLicenseAndPayOrder(@Param("parkingLotInformationId")Long id,@Param("license")String license);
+
+    //查询指定停车场最近离场记录
+    List<ParkingRecord> getPayRecord(Long id);
 }

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingBlackListMapper">
+    
+    <resultMap type="ParkingBlackList" id="ParkingBlackListResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="license"    column="license"    />
+        <result property="time"    column="time"    />
+        <result property="name"    column="name"    />
+        <result property="phone"    column="phone"    />
+        <result property="address"    column="address"    />
+        <result property="remarks"    column="remarks"    />
+        <result property="operator"    column="operator"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
+    </resultMap>
+
+    <sql id="selectParkingBlackListVo">
+        select id, parkingLotInformationId, license, time, name, phone, address, remarks, operator from parking_black_list
+    </sql>
+
+    <select id="selectParkingBlackListList" parameterType="ParkingBlackList" resultMap="ParkingBlackListResult">
+       select b.*,l.id lid,l.name lname from parking_black_list b  left join parking_lot_information l on b.parkinglotinformationid=l.id
+        <where>  
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0"> and  b.parkingLotInformationid = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and  b.license = #{license}</if>
+            <if test="time != null "> and  b.time = #{time}</if>
+            <if test="name != null  and name != ''"> and  b.name like concat('%', #{name}, '%')</if>
+            <if test="phone != null  and phone != ''"> and  b.phone = #{phone}</if>
+            <if test="address != null  and address != ''"> and  b.address = #{address}</if>
+            <if test="remarks != null  and remarks != ''"> and  b.remarks = #{remarks}</if>
+            <if test="operator != null  and operator != ''"> and  b.operator = #{operator}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingBlackListById" parameterType="Long" resultMap="ParkingBlackListResult">
+        <include refid="selectParkingBlackListVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingBlackList" parameterType="ParkingBlackList" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_black_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="license != null and license != ''">license,</if>
+            <if test="time != null">time,</if>
+            <if test="name != null">name,</if>
+            <if test="phone != null">phone,</if>
+            <if test="address != null">address,</if>
+            <if test="remarks != null">remarks,</if>
+            <if test="operator != null">operator,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">#{license},</if>
+            <if test="time != null">#{time},</if>
+            <if test="name != null">#{name},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="address != null">#{address},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="operator != null">#{operator},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingBlackList" parameterType="ParkingBlackList">
+        update parking_black_list
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">license = #{license},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="operator != null">operator = #{operator},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingBlackListById" parameterType="Long">
+        delete from parking_black_list where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingBlackListByIds" parameterType="String">
+        delete from parking_black_list where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- ParkingBlackList selectParkingBlackListByIdAndLicense(Long id, String license);-->
+    <select id="selectParkingBlackListByIdAndLicense" resultMap="ParkingBlackListResult">
+        select * from parking_black_list where parkingLotInformationId=#{parkingLotInformationId} and license=#{license}
+    </select>
+</mapper>

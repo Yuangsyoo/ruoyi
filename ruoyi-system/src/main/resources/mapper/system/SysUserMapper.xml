@@ -50,7 +50,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		    left join sys_user_role ur on u.user_id = ur.user_id
 		    left join sys_role r on r.role_id = ur.role_id
     </sql>
-    
+    <select id="findUserList" resultMap="SysUserResult">
+		select * from sys_user where parkinglotinformationId=#{parkinglotinformationId}
+	</select>
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult" >
 		select u.*,p.id pid,p.name pname,r.role_id rid,r.role_name rname from sys_user u
 		    left join parking_lot_information p on u.parkinglotinformationId=p.id

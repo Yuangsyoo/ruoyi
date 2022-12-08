@@ -1,5 +1,6 @@
 package com.ruoyi.parking.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -132,6 +133,20 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     @Override
     public ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license) {
         return  parkingRecordMapper.findByParkingLotInformationLicenseAndPayOrder(id, license);
+    }
+
+    //查询指定停车场最近离场记录
+    @Override
+    public List<ParkingRecord> getPayRecord(Long id) {
+        if (id!=0){
+            List<ParkingRecord> payRecord = parkingRecordMapper.getPayRecord(id);
+            ParkingRecord parkingRecord = payRecord.get(0);
+            List<ParkingRecord> list = new ArrayList<>();
+            list.add(parkingRecord);
+            return list;
+        }
+        //等于o代表是超级管理员 不要求查看
+      return null;
     }
 
 

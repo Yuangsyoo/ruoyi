@@ -35,6 +35,7 @@ public interface SysUserMapper
      */
     public List<SysUser> selectUnallocatedList(SysUser user);
 
+    public List<SysUser> findUserList(Long parkinglotinformationId);
     /**
      * 通过用户名查询用户
      * 

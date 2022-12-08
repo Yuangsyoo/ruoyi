@@ -163,4 +163,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="findByParkingLotInformationLicenseAndPayOrder" resultMap="ParkingRecordResult">
         select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and  payState =0
     </select>
+
+    <!--//查询指定停车场最近离场记录  支付时间降序
+    List<ParkingRecord> getPayRecord(Long id);-->
+    <select id="getPayRecord" resultMap="ParkingRecordResult">
+        select p.*,l.id lid,l.name lname from parking_record p left join parking_lot_information l on p.parkinglotinformationid=l.id where p.parkingLotInformationId=#{id} and  p.payState=1 order by  p.payTime desc
+    </select>
 </mapper>

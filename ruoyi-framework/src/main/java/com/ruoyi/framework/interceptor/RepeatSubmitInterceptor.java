@@ -38,8 +38,7 @@ public abstract class RepeatSubmitInterceptor implements HandlerInterceptor
             }
             return true;
         }
-        else
-        {
+        else {
             return true;
         }
     }
