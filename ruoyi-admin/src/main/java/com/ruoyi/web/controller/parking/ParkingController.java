@@ -344,7 +344,7 @@ public class ParkingController extends Thread {
         //执行结束释放
         lprDemo.VzLPRClient_Cleanup();
     }
-    //保存进场信息
+    //保存进场信息  dqweqewq
     private void saveParkingRecord(Date date, ParkingLotEquipment parkingLotEquipment,int carColor, String s, String name,String license,Long parkingLotInformationId,String imagePath) {
 
         //添加进场信息
