@@ -85,7 +85,8 @@ public class ParkingController extends Thread {
 
     @PostMapping("/operation")
     @Transactional
-    public void test1(@RequestBody Total total,HttpServletRequest request){
+    public Object test1(@RequestBody Total total){
+        System.out.println(total);
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
         //获取出入场图片
@@ -104,15 +105,18 @@ public class ParkingController extends Thread {
 
        //等于0则是进口，不等则是出口
         if(parkingLotEquipment.getDirection().equals("0")){
-            //判断停车场状态异常停车场不可用 只针对进口
+            //判断停车场状态异常停车场不可用 只针对进口a
             if (parkingLotInformation.getState().equals("1")){
-                return;
+                //实验是否显示content消息info 如果是 ok 表示开闸
+                String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"停车场不可用\",\"is_pay\":\"false\"}}\n";
+                return a;
             }
             //黑名单拒绝放行
            ParkingBlackList parkingBlackList= parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingLotInformation.getId(),license);
             if (parkingBlackList!=null){
-                //怎末提示？？？
-                return;
+                //实验是否显示content消息info 如果是 ok 表示开闸
+            String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"黑名单拒绝放行\",\"is_pay\":\"false\"}}\n";
+                return a;
             }
             //通过停车场id，车牌号查询有无未支付订单
             ParkingRecord parkingRecord= parkingRecordService.findByLicense(license,parkingLotInformation.getId());
@@ -135,11 +139,15 @@ public class ParkingController extends Thread {
                     if (parkingLotInformation.getRemainingParkingSpace()>0){
                         //保存进场信息
                         saveParkingRecord(date,parkingLotEquipment, carColor, s, name,license,parkingLotInformation.getId(),imagePath);
+
                         //设备开闸
                         SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                         // 停车场车位数减一
                         parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getRemainingParkingSpace()-1);
                         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
+                        String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"欢迎光临\",\"is_pay\":\"false\"}}\n";
+                        return a;
+
                     }
                 } finally {
                     lock.unlock();
@@ -190,7 +198,8 @@ public class ParkingController extends Thread {
                     for (SysUser user : list1) {
                         webSocketService.sendMessage(user.getUserName(),s);
                     }
-                    return;
+                    String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
+                    return a;
                 }
             }
 
@@ -202,7 +211,8 @@ public class ParkingController extends Thread {
                //判断支付时间和当前开闸时间是否超过15分钟  超过时间具体业务待想
                if (date.getTime()-parkingRecord1.getPayTime().getTime()>1000*60*5){
                    log.info("支付到离场时间超过15分钟，不允开闸，待处理");
-                   return;
+                   String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超过出场时间\",\"is_pay\":\"true\"}}\n";
+                   return a;
                }
 
                //设备开闸
@@ -255,7 +265,8 @@ public class ParkingController extends Thread {
                    for (SysUser user : list1) {
                        webSocketService.sendMessage(user.getUserName(),s);
                    }
-                   return;
+                   String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
+                   return a;
                }
                List<ParkingRecord> list = new ArrayList<>();
                //订单正在进行中
@@ -285,6 +296,8 @@ public class ParkingController extends Thread {
                            System.out.println("已支付");
                             redisTemplate.delete(license);
                             a=false;
+                           String b="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
+                           return b;
                        }
                      if (date1.getTime()-date.getTime()>1*1000*60*5){
 
@@ -297,10 +310,12 @@ public class ParkingController extends Thread {
                    }
                }
 
+
            }
 
         }
 
+        return null;
     }
     //出场后修改停车场记录
     private void updateParkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath ) {
