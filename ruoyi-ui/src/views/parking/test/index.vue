@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
-    <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+
+   <div style="margin-top:10px;">
+     <span>最近离场缴费信息</span>
+   </div>
+
+    <el-table style="margin-top: 20px;" v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column v-if="false" label="id" align="center" prop="id" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
@@ -55,31 +59,114 @@
                   ></el-image>
                 </template>
             </el-table-column>
-      <el-table-column label="支付时间" align="center" prop="payTime" >
+<!--      <el-table-column label="支付时间" align="center" prop="payTime" >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-<!--          <el-button
+          <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['parking:record:edit']"
-          >修改</el-button>-->
+          >纸币</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['parking:record:remove']"
-          >删除</el-button>
+          >优惠卷</el-button>
         </template>
       </el-table-column>
     </el-table>
 
+
+
+    <div  style="margin-top:150px;">离场代缴费信息</div>
+    <el-table style="margin-top: 20px;" v-loading="false" :data="tableData" @selection-change="handleSelectionChange">
+      <el-table-column v-if="false" label="id" align="center" prop="id" />
+      <el-table-column label="车牌号" align="center" prop="license" />
+      <el-table-column label="订单号" align="center" prop="ordernumber" />
+      <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
+      <el-table-column label="入场时间" align="center" prop="admissiontime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.admissiontime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="出场时间" align="center" prop="exittime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.exittime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
+        </template>
+      </el-table-column>
+<!--      <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor">
+        <template slot-scope="scope">
+          <span style="color: red" v-if="scope.row.licensepllatecolor==0">未知</span>
+          <span style="color: blue" v-if="scope.row.licensepllatecolor==1">蓝色</span>
+          <span style="color: yellow" v-if="scope.row.licensepllatecolor==2">黄色</span>
+          <span style="color: black" v-if="scope.row.licensepllatecolor==3">白色</span>
+          <span style="color: green" v-if="scope.row.licensepllatecolor==4">黑色</span>
+          <span style="color: green"  v-else-if="scope.row.licensepllatecolor===5">绿色</span>
+        </template>
+      </el-table-column>-->
+      <!--      <el-table-column label="订单编号" align="center" prop="ordernumber" />-->
+      <el-table-column label="订单状态" align="center" prop="orderstate">
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
+          <span style="color: red" v-else-if="scope.row.orderstate==0">未支付</span>
+          <span style="color: red" v-else-if="scope.row.orderstate==2">订单进行中</span>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column label="支付状态" v-if="false" align="center" prop="paystate" />-->
+      <el-table-column label="应付金额" align="center" prop="amountpayable" />
+      <el-table-column label="优惠金额" align="center" prop="discountamount" />
+      <el-table-column label="实付金额" align="center" prop="money" />
+<!--      <el-table-column label="支付方式" align="center" prop="paymentmethod" />-->
+<!--      <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />-->
+<!--      <el-table-column label="进口照片" align="center" prop="numbertwo">
+        <template slot-scope="scope">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.numbertwo">
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="出口照片" align="center" prop="numberthree" >
+        <template slot-scope="scope">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.numberthree"
+            :preview-src-list="scope.row.numberthree"
+          ></el-image>
+        </template>
+      </el-table-column>-->
+      <!--   <el-table-column label="支付时间" align="center" prop="payTime" >
+       <template slot-scope="scope">
+           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
+         </template>
+       </el-table-column>-->
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+                    <el-button
+                      size="mini"
+                      type="text"
+                      icon="el-icon-edit"
+                      @click="handleUpdate(scope.row)"
+                      v-hasPermi="['parking:record:edit']"
+                    >纸币</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['parking:record:remove']"
+          >优惠卷</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
     <pagination
       v-show="total>0"
       :total="total"
@@ -89,7 +176,7 @@
     />
 
     <!-- 添加或修改停车记录对话框 -->
-<!--    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+   <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="车牌号" prop="license">
           <el-input v-model="form.license" placeholder="请输入车牌号" />
@@ -157,9 +244,10 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>-->
+    </el-dialog>
   </div>
 </template>
+
 
 <script>
 import { listRecord, getRecord,getPayRecord, delRecord, addRecord, updateRecord } from "@/api/parking/record";
@@ -169,7 +257,7 @@ export default {
   name: "RecentDeparturePayment",
   data() {
     return {
-
+      tableData:[],
       websock:null,
       lockReconnect: false, //是否真正建立连接
       timeout: 28 * 1000, //保持websocket的连接
@@ -225,10 +313,12 @@ export default {
     };
   },
   created() {
+
     // 初始化websocket
     this.initWebSocket();
     this.getPayRecord(localStorage.getItem("uu"));
 
+   this.setInterval1();
   },
   destroyed() {
     //销毁
@@ -236,6 +326,22 @@ export default {
   },
 
   methods: {
+
+    setInterval1(){
+
+       setInterval(()=>{
+              this.getPayRecordOrder();
+
+      },5000)
+    },
+    getPayRecordOrder(){
+      this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
+      this.queryParams.orderstate=2
+      /*重写sql  关联计费规则计算金额*/
+      listRecord(this.queryParams).then(res=>{
+        this.tableData=res.rows
+      })
+    },
 
     initWebSocket() {
 
@@ -412,7 +518,7 @@ getarkinglotinformations(id){
       this.title = "添加停车记录";
     },*/
     /** 修改按钮操作 */
-   /* handleUpdate(row) {
+    handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
       getRecord(id).then(response => {
@@ -420,7 +526,7 @@ getarkinglotinformations(id){
         this.open = true;
         this.title = "修改停车记录";
       });
-    },*/
+    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
@@ -459,4 +565,5 @@ getarkinglotinformations(id){
     }*/
   }
 };
+
 </script>

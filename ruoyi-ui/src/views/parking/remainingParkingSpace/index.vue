@@ -99,6 +99,7 @@
         <template scope="scope">
           <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
           <span style="color: red" v-else-if="scope.row.orderstate==0">未支付</span>
+          <span style="color: red" v-else-if="scope.row.orderstate==2">订单进行中</span>
         </template>
       </el-table-column>
       <el-table-column label="支付状态" align="center" prop="paystate" />
@@ -238,7 +239,6 @@ export default {
   name: "Record",
   data() {
     return {
-
       parkinglotinformations:[],
       // 遮罩层
       loading: true,
@@ -286,14 +286,21 @@ export default {
       }
     };
   },
+
   created() {
-    this.getList();
+    console.log('---1111111111----------------,dayin')
+
     this.getarkinglotinformations(localStorage.getItem("uu"));
+    this.getList();
+
   },
   methods: {
+
+
     getarkinglotinformations(id){
       getarkinglotinformations(id).then(res=>{
         this.parkinglotinformations=res.data
+        console.log(9)
       })
     },
     /** 查询停车记录列表 */

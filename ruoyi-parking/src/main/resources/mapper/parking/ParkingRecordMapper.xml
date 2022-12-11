@@ -139,7 +139,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select  * from parking_record where license=#{license} and parkingLotInformationId=#{parkingLotInformationId} and payState='0'
     </select>
 
-
+    <!--    //通过停车场id，车牌号,支付状态获取出场车停车记录
+             ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license);-->
+    <select id="findByParkingLotInformationLicenseAndPayOrder" resultMap="ParkingRecordResult">
+        select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and  payState =0
+    </select>
     <!-- //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单
     public ParkingRecord findByLicenseAndPayState(@Param("license") String license, @Param("parkingLotInformationId") Long parkingLotInformationId);
 -->
@@ -158,11 +162,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
        select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} order by payTime desc
    </select>
 
-    <!--    //通过停车场id，车牌号,支付状态获取出场车停车记录
-         ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license);-->
-    <select id="findByParkingLotInformationLicenseAndPayOrder" resultMap="ParkingRecordResult">
-        select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and  payState =0
-    </select>
+
 
     <!--//查询指定停车场最近离场记录  支付时间降序
     List<ParkingRecord> getPayRecord(Long id);-->

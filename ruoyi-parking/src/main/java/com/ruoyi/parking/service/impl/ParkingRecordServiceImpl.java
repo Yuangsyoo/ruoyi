@@ -45,8 +45,8 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
      * @return 停车记录
      */
     @Override
-    public List<ParkingRecord> selectParkingRecordList(ParkingRecord parkingRecord)
-    {
+    public List<ParkingRecord> selectParkingRecordList(ParkingRecord parkingRecord) {
+
         return parkingRecordMapper.selectParkingRecordList(parkingRecord);
     }
 

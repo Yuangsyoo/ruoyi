@@ -22,6 +22,7 @@ import com.ruoyi.parking.dto.AlarmInfoPlate;
 import com.ruoyi.parking.dto.Timeval;
 import com.ruoyi.parking.dto.Total;
 import com.ruoyi.parking.mapper.ParkingBlackListMapper;
+import com.ruoyi.parking.mapper.ParkingRecordMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.IParkingLotEquipmentService;
 import com.ruoyi.parking.service.IParkingLotInformationService;
@@ -146,9 +147,10 @@ public class ParkingController extends Thread {
             }
         }
         else {
-            //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单
-            ParkingRecord byLicense1 = parkingRecordService.findByLicense(license, parkingLotInformation.getId());
-
+            /*//通过 停车场id，车牌号，和支付状态查询是否有无未支付订单
+            ParkingRecord byLicense1 = parkingRecordService.findByLicense(license, parkingLotInformation.getId());*/
+            //查询没有支付得记录信息
+            ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
             ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
             // 判断是否在白名单范围  在直接放行
             if (byLicense!=null){
@@ -161,8 +163,8 @@ public class ParkingController extends Thread {
                     String name = parkingLotEquipment.getName();
                     //获取停车场id
                     Long id = parkingLotInformation.getId();
-                    //查询没有支付得记录信息
-                    ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
+              /*      //查询没有支付得记录信息
+                    ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);*/
                     parkingRecord.setExittime(date);
                     parkingRecord.setPayTime(new Date());
                     //有bug 要改进
@@ -171,7 +173,7 @@ public class ParkingController extends Thread {
                     parkingRecord.setMoney(0L);
                     parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
                     parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
-                    parkingRecord.setPaystate("白名单");
+                    parkingRecord.setPaymentmethod("白名单");
                     //实际支金额
                     parkingRecord.setMoney(0L);
                     //优惠金额
@@ -194,11 +196,11 @@ public class ParkingController extends Thread {
 
             //停车场内支付业务逻辑
             //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单，没有放行
-           if (byLicense1==null){
+            if (parkingRecord==null){
                //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
-               ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicense(parkingLotInformation.getId(),license);
+               ParkingRecord parkingRecord1=parkingRecordService.findByParkingLotInformationLicense(parkingLotInformation.getId(),license);
                //判断支付时间和当前开闸时间是否超过15分钟  超过时间具体业务待想
-               if (date.getTime()-parkingRecord.getPayTime().getTime()>1000*60*5){
+               if (date.getTime()-parkingRecord1.getPayTime().getTime()>1000*60*5){
                    log.info("支付到离场时间超过15分钟，不允开闸，待处理");
                    return;
                }
@@ -212,11 +214,12 @@ public class ParkingController extends Thread {
                redisTemplate.delete(license);
            }
            //门闸口支付业务逻辑  
-           else {
+            else {
                //停车场免费时常
                Long freetime = parkingLotInformation.getFreetime();
-               // TODO: 2022/12/8   //查询未支付停车记录找到进场时间
-               long time = DateTime.dateDiff(byLicense1.getAdmissiontime(), date);
+
+               long time = DateTime.dateDiff(parkingRecord.getAdmissiontime(), date);
+
                //如果停车场免费时常大于实际停车时间  放行
                if(freetime>time){
                    //设备开闸
@@ -225,8 +228,7 @@ public class ParkingController extends Thread {
                    updateRemainingParkingSpace(parkingLotInformation);
                    //获取出闸口设备名称PayOrder
                    String name = parkingLotEquipment.getName();
-                   //查询没有支付得记录信息
-                   ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
+
                    parkingRecord.setExittime(date);
                    //有bug 要改进
                    parkingRecord.setPaystate("1");
@@ -253,16 +255,22 @@ public class ParkingController extends Thread {
                    for (SysUser user : list1) {
                        webSocketService.sendMessage(user.getUserName(),s);
                    }
-                   // 获取当前的用户名称
-                   // WebSocketService.sendInfo(s,"username");
                    return;
                }
-
-
-
-               // TODO: 2022/12/8  // 添加业务  websocket在页面显示车辆在出口缴费详情  手动开杆业务待修改
+               List<ParkingRecord> list = new ArrayList<>();
+               //订单正在进行中
+               parkingRecord.setOrderstate("2");
+               //修改订单状态为订单正在进行支付中
+               // TODO: 2022/12/11 调用计费规则显示实际费用
+               parkingRecordService.updateParkingRecord(parkingRecord);
+               list.add(parkingRecord);
+               String s = JSON.toJSONString(list);
+               //WebSocketService发送给前端消息
+               List<SysUser> list1 = sysUserMapper.findUserList(parkingLotInformation.getId());
+               for (SysUser user : list1) {
+                   webSocketService.sendMessage(user.getUserName(),s);
+               }
                Date date1 = new Date();
-               // TODO: 2022/12/8  加订单中间状态 推送一吃
                Boolean a=true;
                while(a) {
                    try {
@@ -307,7 +315,6 @@ public class ParkingController extends Thread {
         parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
         //有bug 要改进
         parkingRecord.setPaystate("1");
-        // TODO: 2022/12/8  修改完成订单状态
         parkingRecord.setOrderstate("1");
         
         parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);

@@ -38,8 +38,10 @@ public class ParkingRecordController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('parking:record:list')")
     @GetMapping("/list")
-    public TableDataInfo list(ParkingRecord parkingRecord)
-    {
+    public TableDataInfo list(ParkingRecord parkingRecord) {
+        if(parkingRecord.getParkinglotinformationid()==0){
+            return null;
+        }
         startPage();
         List<ParkingRecord> list = parkingRecordService.selectParkingRecordList(parkingRecord);
         return getDataTable(list);

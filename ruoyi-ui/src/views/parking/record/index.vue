@@ -99,6 +99,7 @@
         <template scope="scope">
           <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
           <span style="color: red" v-else-if="scope.row.orderstate==0">未支付</span>
+          <span style="color: red" v-else-if="scope.row.orderstate==2">订单进行中</span>
         </template>
       </el-table-column>
       <el-table-column label="支付状态" align="center" prop="paystate" />
