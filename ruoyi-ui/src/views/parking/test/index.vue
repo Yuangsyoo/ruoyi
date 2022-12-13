@@ -8,7 +8,7 @@
     <el-table style="margin-top: 20px;" v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column v-if="false" label="id" align="center" prop="id" />
       <el-table-column label="车牌号" align="center" prop="license" />
-      <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
+<!--      <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />-->
       <el-table-column label="入场时间" align="center" prop="admissiontime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.admissiontime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>

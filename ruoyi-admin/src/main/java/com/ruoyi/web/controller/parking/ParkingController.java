@@ -204,7 +204,7 @@ public class ParkingController extends Thread {
                 }
             }
 
-            //   判断有无优惠卷次卷 停车场id 车牌号  次卷  状态
+            //   判断有无优惠卷次卷 停车场id 车牌号  次卷  状态(待使用状态)
            ParkingCouponrecord parkingCouponrecord=parkingCouponrecordService.findByParkingLotInformationIdAndLicense( parkingLotInformation.getId(),license);
             if (parkingCouponrecord!=null){
                 //设备开闸
