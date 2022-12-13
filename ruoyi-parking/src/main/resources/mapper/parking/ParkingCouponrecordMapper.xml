@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingCouponrecordMapper">
+    
+    <resultMap type="ParkingCouponrecord" id="ParkingCouponrecordResult">
+        <result property="id"    column="id"    />
+        <result property="parkingcouponid"    column="parkingCouponId"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="license"    column="license"    />
+        <result property="ordernumber"    column="orderNumber"    />
+        <result property="time"    column="time"    />
+        <result property="state"    column="state"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
+        <association property="parkingCoupon" javaType="com.ruoyi.parking.domain.ParkingCoupon">
+            <id property="id" column="pid"></id>
+            <result property="name" column="pname"></result>
+        </association>
+    </resultMap>
+
+    <sql id="selectParkingCouponrecordVo">
+        select id, parkingCouponId, parkingLotInformationId, license, orderNumber, time, state from parking_couponrecord
+    </sql>
+
+    <select id="selectParkingCouponrecordList" parameterType="ParkingCouponrecord" resultMap="ParkingCouponrecordResult">
+       select c.* ,l.id lid,l.name lname,p.id pid,p.name pname from parking_couponrecord c
+           left join parking_lot_information l on c.parkingLotInformationId=l.id
+           left join parking_coupon p on c.parkingCouponId=p.id
+
+        <where>  
+            <if test="parkingcouponid != null "> and  c.parkingCouponId = #{parkingcouponid}</if>
+            <if test="parkinglotinformationid != null "> and  c.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and  c.license = #{license}</if>
+            <if test="ordernumber != null  and ordernumber != ''"> and  c.orderNumber = #{ordernumber}</if>
+            <if test="time != null "> and  c.time = #{time}</if>
+            <if test="state != null  and state != ''"> and  c.state = #{state}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingCouponrecordById" parameterType="Long" resultMap="ParkingCouponrecordResult">
+        <include refid="selectParkingCouponrecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingCouponrecord" parameterType="ParkingCouponrecord" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_couponrecord
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parkingcouponid != null">parkingCouponId,</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="license != null and license != ''">license,</if>
+            <if test="ordernumber != null and ordernumber != ''">orderNumber,</if>
+            <if test="time != null">time,</if>
+            <if test="state != null">state,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parkingcouponid != null">#{parkingcouponid},</if>
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">#{license},</if>
+            <if test="ordernumber != null and ordernumber != ''">#{ordernumber},</if>
+            <if test="time != null">#{time},</if>
+            <if test="state != null">#{state},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingCouponrecord" parameterType="ParkingCouponrecord">
+        update parking_couponrecord
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkingcouponid != null">parkingCouponId = #{parkingcouponid},</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">license = #{license},</if>
+            <if test="ordernumber != null and ordernumber != ''">orderNumber = #{ordernumber},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="state != null">state = #{state},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingCouponrecordById" parameterType="Long">
+        delete from parking_couponrecord where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingCouponrecordByIds" parameterType="String">
+        delete from parking_couponrecord where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--ParkingCouponrecord findParkingCouponrecord(@Param("parkingLotInformationId") Long parkingLotInformationId,
+                                                @Param("parkingCouponId")Long parkingCouponId,
+                                                @Param("license")String license);-->
+    <select id="findParkingCouponrecord" resultMap="ParkingCouponrecordResult">
+        select * from parking_couponrecord where parkingLotInformationId=#{parkingLotInformationId} and parkingCouponId=#{parkingCouponId} and license = #{license} and state='0'
+    </select>
+
+<!--   判断有无优惠卷次卷 停车场id 车牌号  次卷  状态
+    ParkingCouponrecord findByParkingLotInformationIdAndLicense(Long id, String license);-->
+    <select id="findByParkingLotInformationIdAndLicense" resultMap="ParkingCouponrecordResult">
+        select p.* from parking_couponrecord p left join parking_coupon c on p.parkingCouponId=c.id
+        where p.parkingLotInformationId=#{parkingLotInformationId} and  p.license = #{license} and  p.state='0' and c.type=0
+    </select>
+
+</mapper>

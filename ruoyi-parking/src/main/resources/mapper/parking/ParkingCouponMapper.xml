@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingCouponMapper">
+    
+    <resultMap type="ParkingCoupon" id="ParkingCouponResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="type"    column="type"    />
+        <result property="name"    column="name"    />
+        <result property="count"    column="count"    />
+        <result property="usetype"    column="useType"    />
+        <result property="qrcodestarttime"    column="qrCodeStartTime"    />
+        <result property="qrcodeendtime"    column="qrCodeEndTime"    />
+        <result property="receiveccount"    column="receivecCount"    />
+        <result property="state"    column="state"    />
+        <result property="qrcode"    column="qrCode"    />
+        <result property="preferentialfacevalue"    column="preferentialFaceValue"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
+    </resultMap>
+
+    <sql id="selectParkingCouponVo">
+        select id, parkingLotInformationId, type, name, count, useType, qrCodeStartTime, qrCodeEndTime, receivecCount, state, qrCode, preferentialFaceValue from parking_coupon
+    </sql>
+
+    <select id="selectParkingCouponList" parameterType="ParkingCoupon" resultMap="ParkingCouponResult">
+        select c.*,l.id lid,l.name lname from parking_coupon c left join parking_lot_information l on c.parkingLotInformationId=l.id
+        <where>  
+            <if test="parkinglotinformationid != null "> and  c.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="type != null "> and  c.type = #{type}</if>
+            <if test="name != null  and name != ''"> and  c.name like concat('%', #{name}, '%')</if>
+            <if test="count != null "> and  c.count = #{count}</if>
+            <if test="usetype != null "> and  c.useType = #{usetype}</if>
+            <if test="qrcodestarttime != null "> and  c.qrCodeStartTime = #{qrcodestarttime}</if>
+            <if test="qrcodeendtime != null "> and  c.qrCodeEndTime = #{qrcodeendtime}</if>
+            <if test="receiveccount != null "> and  c.receivecCount = #{receiveccount}</if>
+            <if test="state != null "> and  c.state = #{state}</if>
+            <if test="qrcode != null  and qrcode != ''"> and  c.qrCode = #{qrcode}</if>
+            <if test="preferentialfacevalue != null "> and  c.preferentialFaceValue = #{preferentialfacevalue}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingCouponById" parameterType="Long" resultMap="ParkingCouponResult">
+       select * from parking_coupon
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingCoupon" parameterType="ParkingCoupon" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_coupon
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="type != null">type,</if>
+            <if test="name != null">name,</if>
+            <if test="count != null">count,</if>
+            <if test="usetype != null">useType,</if>
+            <if test="qrcodestarttime != null">qrCodeStartTime,</if>
+            <if test="qrcodeendtime != null">qrCodeEndTime,</if>
+            <if test="receiveccount != null">receivecCount,</if>
+            <if test="state != null">state,</if>
+            <if test="qrcode != null">qrCode,</if>
+            <if test="preferentialfacevalue != null">preferentialFaceValue,</if>
+
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="type != null">#{type},</if>
+            <if test="name != null">#{name},</if>
+            <if test="count != null">#{count},</if>
+            <if test="usetype != null">#{usetype},</if>
+            <if test="qrcodestarttime != null">#{qrcodestarttime},</if>
+            <if test="qrcodeendtime != null">#{qrcodeendtime},</if>
+            <if test="receiveccount != null">#{receiveccount},</if>
+            <if test="state != null">#{state},</if>
+            <if test="qrcode != null">#{qrcode},</if>
+            <if test="preferentialfacevalue != null">#{preferentialfacevalue},</if>
+
+         </trim>
+    </insert>
+
+    <update id="updateParkingCoupon" parameterType="ParkingCoupon">
+        update parking_coupon
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="count != null">count = #{count},</if>
+            <if test="usetype != null">useType = #{usetype},</if>
+            <if test="qrcodestarttime != null">qrCodeStartTime = #{qrcodestarttime},</if>
+            <if test="qrcodeendtime != null">qrCodeEndTime = #{qrcodeendtime},</if>
+            <if test="receiveccount != null">receivecCount = #{receiveccount},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="qrcode != null">qrCode = #{qrcode},</if>
+            <if test="preferentialfacevalue != null">preferentialFaceValue = #{preferentialfacevalue},</if>
+
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingCouponById" parameterType="Long">
+        delete from parking_coupon where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingCouponByIds" parameterType="String">
+        delete from parking_coupon where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
