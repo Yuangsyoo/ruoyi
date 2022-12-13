@@ -66,19 +66,18 @@
       </el-table-column>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
+          <el-button v-show="scope.row.orderstate===2"
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['parking:record:edit']"
-          >纸币</el-button>
-          <el-button
+          >现金</el-button>
+          <el-button v-show="scope.row.orderstate===2"
             size="mini"
             type="text"
             icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['parking:record:remove']"
+            @click="updateToRecordFromCoupon(scope.row)"
           >优惠卷</el-button>
         </template>
       </el-table-column>
@@ -86,7 +85,7 @@
 
 
 
-    <div  style="margin-top:150px;">离场代缴费信息</div>
+    <div  style="margin-top:150px;">离场待缴费信息</div>
     <el-table style="margin-top: 20px;" v-loading="false" :data="tableData" @selection-change="handleSelectionChange">
       <el-table-column v-if="false" label="id" align="center" prop="id" />
       <el-table-column label="车牌号" align="center" prop="license" />
@@ -156,27 +155,26 @@
                       icon="el-icon-edit"
                       @click="handleUpdate(scope.row)"
                       v-hasPermi="['parking:record:edit']"
-                    >纸币</el-button>
+                    >现金</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['parking:record:remove']"
+            @click="updateToRecordFromCoupon(scope.row)"
           >优惠卷</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <pagination
+<!--    <pagination
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
-    />
+    />-->
 
     <!-- 添加或修改停车记录对话框 -->
-   <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+<!--   <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="车牌号" prop="license">
           <el-input v-model="form.license" placeholder="请输入车牌号" />
@@ -244,13 +242,22 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </el-dialog>-->
   </div>
 </template>
 
 
 <script>
-import { listRecord, getRecord,getPayRecord, delRecord, addRecord, updateRecord } from "@/api/parking/record";
+import {
+  listRecord,
+  getRecord,
+  getPayRecord,
+  delRecord,
+  addRecord,
+  updateRecord,
+  updateToRecord,
+  updateToRecordFromCoupon
+} from "@/api/parking/record";
 import {getarkinglotinformations} from "@/api/system/user";
 
 export default {
@@ -316,9 +323,10 @@ export default {
 
     // 初始化websocket
     this.initWebSocket();
-    this.getPayRecord(localStorage.getItem("uu"));
 
-   this.setInterval1();
+    //this.getPayRecord(localStorage.getItem("uu"));
+
+    this.setInterval1();
   },
   destroyed() {
     //销毁
@@ -337,7 +345,6 @@ export default {
     getPayRecordOrder(){
       this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       this.queryParams.orderstate=2
-      /*重写sql  关联计费规则计算金额*/
       listRecord(this.queryParams).then(res=>{
         this.tableData=res.rows
       })
@@ -477,7 +484,7 @@ export default {
     },
 
 
-getarkinglotinformations(id){
+    getarkinglotinformations(id){
       getarkinglotinformations(id).then(res=>{
         this.parkinglotinformations=res.data
       })
@@ -498,7 +505,7 @@ getarkinglotinformations(id){
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
-      this.getList();
+
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -517,18 +524,24 @@ getarkinglotinformations(id){
       this.open = true;
       this.title = "添加停车记录";
     },*/
-    /** 修改按钮操作 */
+    /**现金按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getRecord(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改停车记录";
-      });
+      console.log(row.id)
+      updateToRecord(row.id).then(res=>{
+
+        this.getPayRecordOrder();
+      })
+    },
+    /** 优惠卷按钮 */
+    updateToRecordFromCoupon(row) {
+      console.log(row.id)
+      updateToRecordFromCoupon(row.id).then(res=>{
+
+        this.getPayRecordOrder();
+      })
     },
     /** 提交按钮 */
-    submitForm() {
+  /*  submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
@@ -546,17 +559,8 @@ getarkinglotinformations(id){
           }
         }
       });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除停车记录编号为"' + ids + '"的数据项？').then(function() {
-        return delRecord(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
-    },
+    },*/
+
     /** 导出按钮操作 */
    /* handleExport() {
       this.download('parking/record/export', {

@@ -104,11 +104,12 @@ public class ParkingRecordController extends BaseController
         return toAjax(parkingRecordService.deleteParkingRecordByIds(ids));
     }
 
+    // TODO: 2022/12/13 场内门口支付调用接口 计算产生费用  实付金额  优惠金额  应付金额
 
     @Anonymous
     @Log(title = "//通过车牌号，未支付状态查询出来修改状态", businessType = BusinessType.UPDATE)
     @PutMapping("/editPayState")
-    //公共接口  支付服务那边调用 实付金额  优惠金额  应付金额  支付方式 ************************************
+    //公共接口  支付服务那边调用   支付方式 支付状态************************************
     public void editPayState(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
                             ,@RequestParam(value ="license") String license
                             ,@RequestParam(value ="money") Long money)
@@ -117,11 +118,25 @@ public class ParkingRecordController extends BaseController
     }
 
 
+
     //查询指定停车场最近离场记录
     @GetMapping("/getPayRecord/{id}")
     public AjaxResult getPayRecord(@PathVariable Long id)
     {
         List<ParkingRecord> list = parkingRecordService.getPayRecord(id);
       return AjaxResult.success(list);
+    }
+
+    //查询指定停车场最近离场记录
+    @GetMapping("/updateToRecord/{id}")
+    public AjaxResult updateToRecord(@PathVariable Long id)
+    {
+       return parkingRecordService.updateToRecord(id);
+    }
+    //查询指定停车场最近离场记录
+    @GetMapping("/updateToRecordFromCoupon/{id}")
+    public AjaxResult updateToRecordFromCoupon(@PathVariable Long id)
+    {
+        return parkingRecordService.updateToRecordFromCoupon(id);
     }
 }

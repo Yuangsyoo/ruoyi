@@ -13,17 +13,15 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.TokenService;
 
 import com.ruoyi.framework.websocket.WebSocketService;
-import com.ruoyi.parking.domain.ParkingBlackList;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.parking.domain.*;
 
-import com.ruoyi.parking.domain.ParkingRecord;
-import com.ruoyi.parking.domain.ParkingWhiteList;
 import com.ruoyi.parking.dto.AlarmInfoPlate;
 import com.ruoyi.parking.dto.Timeval;
 import com.ruoyi.parking.dto.Total;
 import com.ruoyi.parking.mapper.ParkingBlackListMapper;
 import com.ruoyi.parking.mapper.ParkingRecordMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
+import com.ruoyi.parking.service.IParkingCouponrecordService;
 import com.ruoyi.parking.service.IParkingLotEquipmentService;
 import com.ruoyi.parking.service.IParkingLotInformationService;
 import com.ruoyi.parking.service.IParkingRecordService;
@@ -82,10 +80,13 @@ public class ParkingController extends Thread {
     private SysUserMapper sysUserMapper;
     @Autowired
     private WebSocketService webSocketService;
+    @Autowired
+    private IParkingCouponrecordService parkingCouponrecordService;
+
 
     @PostMapping("/operation")
     @Transactional
-    public Object test1(@RequestBody Total total){
+    public String test1(@RequestBody Total total){
         System.out.println(total);
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
@@ -203,25 +204,43 @@ public class ParkingController extends Thread {
                 }
             }
 
+            //   判断有无优惠卷次卷 停车场id 车牌号  次卷  状态
+           ParkingCouponrecord parkingCouponrecord=parkingCouponrecordService.findByParkingLotInformationIdAndLicense( parkingLotInformation.getId(),license);
+            if (parkingCouponrecord!=null){
+                //设备开闸
+                SwitchOn(total.getAlarmInfoPlate().getIpaddr());
+                //出场后修改停车场记录
+                String s = update(parkingLotEquipment, parkingLotInformation, date, license, imagePath);
+                //停车场车位数加一
+                updateRemainingParkingSpace(parkingLotInformation);
+                parkingCouponrecord.setState("1");
+                parkingCouponrecord.setOrdernumber(s);
+                parkingCouponrecordService.updateParkingCouponrecord(parkingCouponrecord);
+                String b="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
+                return b;
+            }
+
+            // TODO: 2022/12/13 判断是否是固定停车位
+
+
             //停车场内支付业务逻辑
             //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单，没有放行
             if (parkingRecord==null){
                //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
                ParkingRecord parkingRecord1=parkingRecordService.findByParkingLotInformationLicense(parkingLotInformation.getId(),license);
-               //判断支付时间和当前开闸时间是否超过15分钟  超过时间具体业务待想
+               //判断支付时间和当前开闸时间是否超过5分钟  超过时间具体业务待想
                if (date.getTime()-parkingRecord1.getPayTime().getTime()>1000*60*5){
                    log.info("支付到离场时间超过15分钟，不允开闸，待处理");
                    String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超过出场时间\",\"is_pay\":\"true\"}}\n";
                    return a;
                }
-
                //设备开闸
                SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                //出场后修改停车场记录
                updateParkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
               //停车场车位数加一
                updateRemainingParkingSpace(parkingLotInformation);
-               redisTemplate.delete(license);
+               redisTemplate.delete(parkingLotInformation.getId()+license);
            }
            //门闸口支付业务逻辑  
             else {
@@ -286,7 +305,7 @@ public class ParkingController extends Thread {
                while(a) {
                    try {
                        //从redis中取值  判断支付服务回调接口是否修改数据
-                       if(redisTemplate.opsForValue().get(license)!=null){
+                       if(redisTemplate.opsForValue().get(parkingRecord.getParkinglotinformationid()+license)!=null){
                             //开闸操作
                             SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                             //出场后修改停车场记录
@@ -294,7 +313,7 @@ public class ParkingController extends Thread {
                             //停车场车位数加一
                             updateRemainingParkingSpace(parkingLotInformation);
                            System.out.println("已支付");
-                            redisTemplate.delete(license);
+                            redisTemplate.delete(parkingRecord.getParkinglotinformationid()+license);
                             a=false;
                            String b="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
                            return b;
@@ -312,13 +331,11 @@ public class ParkingController extends Thread {
 
 
            }
-
         }
-
         return null;
     }
     //出场后修改停车场记录
-    private void updateParkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath ) {
+    private void updateParkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {
         //获取出闸口设备名称
         String name = parkingLotEquipment.getName();
         //获取停车场id
@@ -346,7 +363,42 @@ public class ParkingController extends Thread {
 
 
     }
+    //出场后修改停车场记录
+    private String update(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {
+        //获取出闸口设备名称
+        String name = parkingLotEquipment.getName();
+        //获取停车场id
+        Long id = parkingLotInformation.getId();
+        //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
+        ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
+        parkingRecord.setExittime(date);
+        //保存出场照片
+        parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+        //有bug 要改进
+        parkingRecord.setPaystate("1");
+        parkingRecord.setOrderstate("1");
+        parkingRecord.setPaymentmethod("优惠卷（次卷）");
+        parkingRecord.setPayTime(date);
+        //实际支金额
+        parkingRecord.setMoney(0L);
+        //优惠金额
+        parkingRecord.setDiscountamount(0L);
+        //应收金额
+        parkingRecord.setAmountpayable(0L);
+        parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+        //出场后修改停车场记录
+        parkingRecordService.updateParkingRecord(parkingRecord);
+        List<ParkingRecord> list = new ArrayList<>();
+        list.add(parkingRecord);
+        String s = JSON.toJSONString(list);
+        //WebSocketService发送给前端消息
+        List<SysUser> list1 = sysUserMapper.findUserList(parkingLotInformation.getId());
+        for (SysUser user : list1) {
+            webSocketService.sendMessage(user.getUserName(),s);
+        }
+        return parkingRecord.getOrdernumber();
 
+    }
     //停车场车位数加一
     private void updateRemainingParkingSpace(ParkingLotInformation parkingLotInformation) {
         Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();

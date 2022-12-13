@@ -49,3 +49,17 @@ export function getPayRecord(id) {
     method: 'get'
   })
 }
+//修改停车记录（现金）
+export function updateToRecord(id) {
+  return request({
+    url: '/parking/record/updateToRecord/'+id,
+    method: 'get',
+  })
+}
+//修改停车记录(优惠卷)
+export function updateToRecordFromCoupon(id) {
+  return request({
+    url: '/parking/record/updateToRecordFromCoupon/'+id,
+    method: 'get',
+  })
+}

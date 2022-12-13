@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -113,7 +114,8 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
             parkingRecord.setMoney(money);
             parkingRecord.setPayTime(new Date());
             updateParkingRecord(parkingRecord);
-            redisTemplate.opsForValue().set(license,license,5, TimeUnit.MICROSECONDS);
+            // key值停车场id加车牌value值车牌
+            redisTemplate.opsForValue().set(parkingRecord.getParkinglotinformationid()+license,license,5, TimeUnit.MICROSECONDS);
         }
     }
 
@@ -126,7 +128,6 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     public ParkingRecord findByParkingLotInformationLicense(Long id, String license) {
       List<ParkingRecord>list = parkingRecordMapper.findByParkingLotInformationLicense(id, license);
         ParkingRecord parkingRecord = list.get(0);
-
         return parkingRecord;
     }
 
@@ -147,6 +148,32 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         }
         //等于o代表是超级管理员 不要求查看
       return null;
+    }
+
+    @Override
+    public AjaxResult updateToRecord(Long id) {
+        ParkingRecord parkingRecord = parkingRecordMapper.selectParkingRecordById(id);
+        parkingRecord.setPaymentmethod("现金支付");
+        parkingRecord.setOrderstate("1");
+        parkingRecord.setPaystate("1");
+        parkingRecord.setPayTime(new Date());
+        parkingRecordMapper.updateParkingRecord(parkingRecord);
+        //停车场id加车牌
+        redisTemplate.opsForValue().set(parkingRecord.getParkinglotinformationid()+parkingRecord.getLicense(),parkingRecord.getLicense(),5, TimeUnit.MICROSECONDS);
+        return AjaxResult.success();
+    }
+
+    @Override
+    public AjaxResult updateToRecordFromCoupon(Long id) {
+        ParkingRecord parkingRecord = parkingRecordMapper.selectParkingRecordById(id);
+        parkingRecord.setPaymentmethod("优惠卷代扣");
+        parkingRecord.setOrderstate("1");
+        parkingRecord.setPaystate("1");
+        parkingRecord.setPayTime(new Date());
+        parkingRecordMapper.updateParkingRecord(parkingRecord);
+        //停车场id加车牌
+        redisTemplate.opsForValue().set(parkingRecord.getParkinglotinformationid()+parkingRecord.getLicense(),parkingRecord.getLicense(),5, TimeUnit.MICROSECONDS);
+        return AjaxResult.success();
     }
 
 

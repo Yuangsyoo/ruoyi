@@ -1,6 +1,8 @@
 package com.ruoyi.parking.service;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.parking.domain.ParkingRecord;
 
 /**
@@ -72,4 +74,8 @@ public interface IParkingRecordService
 
     //查询指定停车场最近离场记录
     List<ParkingRecord> getPayRecord(Long id);
+
+    AjaxResult updateToRecord(Long id);
+
+    AjaxResult updateToRecordFromCoupon(Long id);
 }
