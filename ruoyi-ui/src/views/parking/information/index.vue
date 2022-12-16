@@ -173,27 +173,41 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id
 " align="center" prop="id" />
-      <el-table-column label="停车场名称" align="center" prop="name" />
+      <el-table-column label="名称" align="center" prop="name" />
 <!--      <el-table-column label="门面照" align="center" prop="picture" />-->
       <el-table-column label="联系人" align="center" prop="contacts" />
       <el-table-column label="联系电话" align="center" prop="phone" />
       <el-table-column label="QQ号" align="center" prop="qq" />
       <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="停车场状态" align="center" prop="state">
+      <el-table-column label="状态" align="center" prop="state" width="50">
         <template scope="scope">
           <span style="color: green" v-if="scope.row.state==0">正常</span>
           <span style="color: red" v-else-if="scope.row.state==1">禁用</span>
         </template>
       </el-table-column>
-      <el-table-column label="免费时常" align="center" prop="freetime" width="180"/>
+      <el-table-column label="免费时常" align="center" prop="freetime" width="75">
+        <template scope="scope">
+          <span style="color: green" >{{scope.row.freetime}}分钟</span>
+        </template>
+      </el-table-column>
+
       <el-table-column label="车位个数" align="center" prop="number" />
       <el-table-column label="剩余车位" align="center" prop="remainingParkingSpace" />
-      <el-table-column label="支付离场时间" align="center" prop="payleavingtime" />
+      <el-table-column label="支付离场时间" align="center" prop="payleavingtime" width="100">
+        <template scope="scope">
+          <span style="color: green" >{{scope.row.payleavingtime}}分钟</span>
+        </template>
+      </el-table-column>
       <el-table-column label="默认月费" align="center" prop="monthlyfee" />
-      <el-table-column label="收费说明不参与计算" align="center" prop="chargedescription" />
-      <el-table-column label="营业起使时间" align="center" prop="starttime" width="180"/>
+      <el-table-column label="收费说明" align="center" prop="chargedescription">
+        <template scope="scope">
+          <span style="color: green" >{{scope.row.chargedescription}}(不参与计算)</span>
+        </template>
+      </el-table-column>
 
-      <el-table-column label="营业结束时间" align="center" prop="endtime" width="180"/>
+      <el-table-column label="营业起使时间" align="center" prop="starttime" width="120"/>
+
+      <el-table-column label="营业结束时间" align="center" prop="endtime" width="120"/>
 
 
       <el-table-column label="月卡购买最小月数" align="center" prop="minmonths" />
@@ -210,7 +224,7 @@
           <span style="color: red" v-else-if="scope.row.temporaryvehiclerestrictions==1">关闭</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台支付" align="center" prop="platformpaymentState" >
+<!--      <el-table-column label="平台支付" align="center" prop="platformpaymentState" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.platformpaymentState==0">开启</span>
           <span style="color: red" v-else-if="scope.row.platformpaymentState==1">关闭</span>
@@ -257,7 +271,7 @@
           <span style="color: green" v-if="scope.row.ruralcreditpaymentState==0">开启</span>
           <span style="color: red" v-else-if="scope.row.ruralcreditpaymentState==1">关闭</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -310,6 +324,7 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
+<!--考虑在计费规则时添加        -->
         <el-form-item label="免费时常" prop="address">
           <el-input v-model="form.freetime" placeholder="请输入免费时常单位默认分钟" />
         </el-form-item>
@@ -405,7 +420,7 @@
             <el-radio v-model="form.ruralcreditpaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="平台支付关联id" prop="platformpaymentId">
+<!--        <el-form-item label="平台支付关联id" prop="platformpaymentId">
           <el-input v-model="form.platformpaymentId" placeholder="请输入平台支付关联id" />
         </el-form-item>
         <el-form-item label="支付宝支付关联id" prop="alipaypaymentId">
@@ -426,7 +441,7 @@
 
         <el-form-item label="备用字段4" prop="numberfour">
           <el-input v-model="form.numberfour" placeholder="请输入备用字段4" />
-        </el-form-item>
+        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -526,6 +541,9 @@ export default {
         freetime:[
           { required: true, message: "免费时常不能为空", trigger: "blur" }
         ],
+        temporaryvehiclerestrictions:[
+          { required: true, message: "临时车限制不能为空", trigger: "blur" }
+        ]
       }
     };
   },

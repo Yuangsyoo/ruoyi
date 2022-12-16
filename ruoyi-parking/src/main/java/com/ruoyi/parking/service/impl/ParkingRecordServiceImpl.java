@@ -180,6 +180,9 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         Date date = new Date();
         ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
         ParkingRecord parkingRecord = parkingRecordMapper.findByLicense(license, parkingLotEquipment.getParkinglotinformationid());
+        if (parkingRecord==null){
+            return AjaxResult.error("无停车记录");
+        }
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());
         parkingRecord.setOrderstate("2");
         parkingRecord.setExittime(date);

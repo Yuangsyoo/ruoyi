@@ -284,10 +284,11 @@ public class ParkingController extends Thread {
             if (parkingRecord==null){
                //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
                ParkingRecord parkingRecord1=parkingRecordService.findByParkingLotInformationLicense(parkingLotInformation.getId(),license);
-               //判断支付时间和当前开闸时间是否超过5分钟  超过时间具体业务待想
-               if (date.getTime()-parkingRecord1.getPayTime().getTime()>1000*60*5){
-                   log.info("支付到离场时间超过15分钟，不允开闸，待处理");
-                   String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超过出场时间\",\"is_pay\":\"true\"}}\n";
+               //判断支付时间和当前开闸时间是否超过停车场设置离场时间
+                long l = DateTime.dateDiff(parkingRecord1.getPayTime(),date);
+                if (l>parkingLotInformation.getPayleavingtime()){
+                   log.info("支付到离场时间超过"+parkingLotInformation.getPayleavingtime()+"分钟，不允开闸，待处理");
+                   String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超出出场时间\",\"is_pay\":\"true\"}}\n";
                    return a;
                }
                //设备开闸
@@ -366,34 +367,7 @@ public class ParkingController extends Thread {
                 parkingRecordVo.setParkingLotEquipmentName(parkingLotEquipment.getName());
                 parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
                 redisTemplate.opsForValue().set(String.valueOf(parkingLotEquipment.getId()),parkingRecordVo,5, TimeUnit.MINUTES);
-             /*  Date date1 = new Date();
-               Boolean a=true;
-               while(a) {
-                   try {
-                       System.out.println(1);
-                       //从redis中取值  判断支付服务回调接口是否修改数据
-                       if(redisTemplate.opsForValue().get(parkingRecord.getParkinglotinformationid()+license)!=null){
-                            //开闸操作
-                            SwitchOn(total.getAlarmInfoPlate().getIpaddr());
-                            //出场后修改停车场记录
-                           updateParkingRecord(parkingLotEquipment, parkingLotInformation,date1,license,imagePath);
-                            //停车场车位数加一
-                            updateRemainingParkingSpace(parkingLotInformation);
-                           System.out.println("已支付");
-                            redisTemplate.delete(parkingRecord.getParkinglotinformationid()+license);
-                            a=false;
-                           String b="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
-                           return b;
-                       }
-                     if (date1.getTime()-date.getTime()>1*1000*60*5){
-                           //结束循环
-                           a=false;
-                           log.info("超过5分钟未支付，不允开闸");
-                       }
-                   } catch (Exception e) {
-                       e.printStackTrace();
-                   }
-               }*/
+
 
 
            }
