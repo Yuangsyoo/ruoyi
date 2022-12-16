@@ -160,7 +160,7 @@ public class ParkingRecordController extends BaseController
     @Anonymous
     @GetMapping("/noLicensePlate")
     public AjaxResult noLicensePlate(
-            @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
+             @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
             ,@RequestParam(value ="license") String license) {
         return parkingRecordService.noLicensePlate(parkinglotequipmentid,license);
 

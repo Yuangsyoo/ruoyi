@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingFixedparkingspaceMapper">
+    
+    <resultMap type="ParkingFixedparkingspace" id="ParkingFixedparkingspaceResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="region"    column="region"    />
+        <result property="parkingspacenumber"    column="parkingSpaceNumber"    />
+        <result property="nameofemployer"    column="nameOfEmployer"    />
+        <result property="phone"    column="phone"    />
+        <result property="license"    column="license"    />
+        <result property="starttime"    column="startTime"    />
+        <result property="endtime"    column="endTime"    />
+        <result property="state"    column="state"    />
+        <result property="occupationoflicenseplate"    column="occupationOfLicensePlate"    />
+    </resultMap>
+
+    <sql id="selectParkingFixedparkingspaceVo">
+        select id, parkingLotInformationId, region, parkingSpaceNumber, nameOfEmployer, phone, license, startTime, endTime, state, occupationOfLicensePlate from parking_fixedparkingspace
+    </sql>
+
+    <select id="selectParkingFixedparkingspaceList" parameterType="ParkingFixedparkingspace" resultMap="ParkingFixedparkingspaceResult">
+        <include refid="selectParkingFixedparkingspaceVo"/>
+        <where>  
+            <if test="parkinglotinformationid != null "> and parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="parkingspacenumber != null  and parkingspacenumber != ''"> and parkingSpaceNumber = #{parkingspacenumber}</if>
+            <if test="nameofemployer != null  and nameofemployer != ''"> and nameOfEmployer = #{nameofemployer}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="license != null  and license != ''"> and license = #{license}</if>
+            <if test="starttime != null "> and startTime = #{starttime}</if>
+            <if test="endtime != null "> and endTime = #{endtime}</if>
+            <if test="state != null "> and state = #{state}</if>
+            <if test="occupationoflicenseplate != null  and occupationoflicenseplate != ''"> and occupationOfLicensePlate = #{occupationoflicenseplate}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingFixedparkingspaceById" parameterType="Long" resultMap="ParkingFixedparkingspaceResult">
+        <include refid="selectParkingFixedparkingspaceVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingFixedparkingspace" parameterType="ParkingFixedparkingspace">
+        insert into parking_fixedparkingspace
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="region != null and region != ''">region,</if>
+            <if test="parkingspacenumber != null and parkingspacenumber != ''">parkingSpaceNumber,</if>
+            <if test="nameofemployer != null">nameOfEmployer,</if>
+            <if test="phone != null">phone,</if>
+            <if test="license != null and license != ''">license,</if>
+            <if test="starttime != null">startTime,</if>
+            <if test="endtime != null">endTime,</if>
+            <if test="state != null">state,</if>
+            <if test="occupationoflicenseplate != null">occupationOfLicensePlate,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="region != null and region != ''">#{region},</if>
+            <if test="parkingspacenumber != null and parkingspacenumber != ''">#{parkingspacenumber},</if>
+            <if test="nameofemployer != null">#{nameofemployer},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="license != null and license != ''">#{license},</if>
+            <if test="starttime != null">#{starttime},</if>
+            <if test="endtime != null">#{endtime},</if>
+            <if test="state != null">#{state},</if>
+            <if test="occupationoflicenseplate != null">#{occupationoflicenseplate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingFixedparkingspace" parameterType="ParkingFixedparkingspace">
+        update parking_fixedparkingspace
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="region != null and region != ''">region = #{region},</if>
+            <if test="parkingspacenumber != null and parkingspacenumber != ''">parkingSpaceNumber = #{parkingspacenumber},</if>
+            <if test="nameofemployer != null">nameOfEmployer = #{nameofemployer},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="license != null and license != ''">license = #{license},</if>
+            <if test="starttime != null">startTime = #{starttime},</if>
+            <if test="endtime != null">endTime = #{endtime},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="occupationoflicenseplate != null">occupationOfLicensePlate = #{occupationoflicenseplate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingFixedparkingspaceById" parameterType="Long">
+        delete from parking_fixedparkingspace where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingFixedparkingspaceByIds" parameterType="String">
+        delete from parking_fixedparkingspace where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--ParkingFixedparkingspace findByParkingLotInformationIdAndLicense(@Param("parkingLotInformationId") Long id, @Param("license") String license);-->
+    <select id="findByParkingLotInformationIdAndLicense" resultMap="ParkingFixedparkingspaceResult">
+        select id,endTime from parking_fixedparkingspace where parkingLotInformationId=#{parkingLotInformationId} and license=#{license}
+    </select>
+</mapper>
