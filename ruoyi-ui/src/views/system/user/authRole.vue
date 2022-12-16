@@ -33,7 +33,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />
 
     <el-form label-width="100px">
@@ -104,12 +104,13 @@ export default {
       const roleIds = this.roleIds.join(",");
       updateAuthRole({ userId: userId, roleIds: roleIds }).then((response) => {
         this.$modal.msgSuccess("授权成功");
-        this.close();
+       /*this.close();*/this.$tab.closeOpenPage(obj);
+
       });
     },
     /** 关闭按钮 */
     close() {
-      const obj = { path: "/system/user" };
+      const obj = { path: "/system/user/index" };
       this.$tab.closeOpenPage(obj);
     },
   },

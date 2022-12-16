@@ -104,4 +104,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where p.parkingLotInformationId=#{parkingLotInformationId} and  p.license = #{license} and  p.state='0' and c.type=0
     </select>
 
+    <select id="findByParkingLotInformationIdAndLicenseTo" resultMap="ParkingCouponrecordResult">
+        select p.* from parking_couponrecord p left join parking_coupon c on p.parkingCouponId=c.id
+        where p.parkingLotInformationId=#{parkingLotInformationId} and  p.license = #{license} and  p.state='0' and c.type!=0
+    </select>
+
+
+    <select id="findByParkingLotInformationIdAndLicenseAndState" resultMap="ParkingCouponrecordRes">
+        select p.*,c.name cname,c.preferentialFaceValue cpreferentialFaceValue from parking_couponrecord p left join parking_coupon c on p.parkingCouponId=c.id
+        where p.parkingLotInformationId=#{parkingLotInformationId} and  p.license = #{license} and  p.state='0'
+    </select>
+    <resultMap type="ParkingCouponrecord" id="ParkingCouponrecordRes">
+        <result property="id"    column="id"    />
+        <result property="parkingcouponid"    column="parkingCouponId"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="license"    column="license"    />
+        <result property="ordernumber"    column="orderNumber"    />
+        <result property="time"    column="time"    />
+        <result property="state"    column="state"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
+        <association property="parkingCoupon" javaType="com.ruoyi.parking.domain.ParkingCoupon">
+            <result property="name" column="cname"></result>
+            <result property="preferentialFaceValue" column="cpreferentialFaceValue"></result>
+        </association>
+    </resultMap>
 </mapper>

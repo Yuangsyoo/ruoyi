@@ -168,12 +168,12 @@
                 @click="handleDelete(scope.row)"
                 v-hasPermi="['system:user:remove']"
               >删除</el-button>
-              <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
-                <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+              <el-dropdown  size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
+                <el-button  size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
                     v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
-                  <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
+                  <el-dropdown-item  command="handleAuthRole" icon="el-icon-circle-check"
                     v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -569,7 +569,7 @@ export default {
 
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
-      
+
         this.form = response.data;
         this.roleOptions = response.roles;
         this.$set(this.form, "postIds", response.postIds);

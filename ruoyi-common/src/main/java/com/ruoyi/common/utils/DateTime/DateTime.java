@@ -35,12 +35,13 @@ public class DateTime {
         long diff;
         //获得两个时间的毫秒时间差异
         diff = endTime.getTime() -startTime.getTime();
-        long day = diff/nd;//计算差多少天
+        long l = diff / nm;
+       /* long day = diff/nd;//计算差多少天
         long hour = diff%nd/nh;//计算差多少小时
         long min = diff%nd%nh/nm;//计算差多少分钟
-        long sec = diff%nd%nh%nm/ns;//计算差多少秒//输出结果
-        System.out.println("时间相差："+day+"天"+hour+"小时"+min+"分钟"+sec+"秒。");
-        return min ;
+        long sec = diff%nd%nh%nm/ns;//计算差多少秒//输出结果*/
+
+        return l ;
     }
 
 }

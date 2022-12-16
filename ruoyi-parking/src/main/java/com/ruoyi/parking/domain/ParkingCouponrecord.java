@@ -46,9 +46,10 @@ public class ParkingCouponrecord extends BaseEntity
     @Excel(name = "使用状态0代表未使用1代表已使用")
     private String state;
 
+    private ParkingCoupon parkingCoupon;
+
     private ParkingLotInformation parkingLotInformation;
 
-    private ParkingCoupon parkingCoupon;
 
     public ParkingCoupon getParkingCoupon() {
         return parkingCoupon;

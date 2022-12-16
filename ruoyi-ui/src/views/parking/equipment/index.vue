@@ -94,7 +94,7 @@
       <el-table-column label="设备名称" align="center" prop="name" />
       <el-table-column label="摄象机序列号" align="center" prop="cameraserialnumber" />
       <el-table-column label="主板序列号" align="center" prop="motherboardserialnumber" />
-      <el-table-column label="0代表进口闸门1代表出口闸门" align="center" prop="direction" >
+      <el-table-column label="进出闸门" align="center" prop="direction" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.direction==1">出口闸</span>
           <span style="color: green" v-else-if="scope.row.direction==0">进口闸</span>
@@ -112,42 +112,49 @@
       <el-table-column label="二行显示" align="center" prop="twodisplay" />
       <el-table-column label="三行显示" align="center" prop="threedisplay" />
       <el-table-column label="四行显示" align="center" prop="fourdisplay" />
-      <el-table-column label="二维码" align="center" prop="qrcode" />
-      <el-table-column label="0代表正常1代表异常" align="center" prop="state">
+      <el-table-column label="二维码" align="center" prop="qrcode" width="150px" >
+        <template slot-scope="scope">
+          <el-image
+            style="width: 150px; height: 150px"
+            :src="scope.row.qrcode">
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" prop="state">
         <template scope="scope">
           <span style="color: red" v-if="scope.row.state==1">异常</span>
           <span style="color: green" v-else-if="scope.row.state==0">正常</span>
         </template>
       </el-table-column>
       <el-table-column label="ip地址" align="center" prop="ipadress" />
-      <el-table-column label="无记录离场0开启1关闭" align="center" prop="departurewithoutrecords" >
+      <el-table-column label="无记录离场" align="center" prop="departurewithoutrecords" >
         <template scope="scope">
           <span style="color: red" v-if="scope.row.departurewithoutrecords==1">关闭</span>
           <span style="color: green" v-else-if="scope.row.departurewithoutrecords==0">开启</span>
         </template>
       </el-table-column>
-      <el-table-column label="车牌防伪0开启1关闭" align="center" prop="licenseplatanticounterfeiting">
+      <el-table-column label="车牌防伪" align="center" prop="licenseplatanticounterfeiting">
         <template scope="scope">
           <span style="color: red" v-if="scope.row.licenseplatanticounterfeiting==1">关闭</span>
           <span style="color: green" v-else-if="scope.row.licenseplatanticounterfeiting==0">开启</span>
         </template>
       </el-table-column>
-      <el-table-column label="特定车辆出0开启1关闭" align="center" prop="specificvehicleexit">
+      <el-table-column label="特定车辆出" align="center" prop="specificvehicleexit">
         <template scope="scope">
           <span style="color: red" v-if="scope.row.specificvehicleexit==1">关闭</span>
           <span style="color: green" v-else-if="scope.row.specificvehicleexit==0">开启</span>
         </template>
       </el-table-column>
-      <el-table-column label="余位屏0开启1关闭" align="center" prop="residualscreen">
+      <el-table-column label="余位屏" align="center" prop="residualscreen">
         <template scope="scope">
           <span style="color: red" v-if="scope.row.residualscreen==1">关闭</span>
           <span style="color: green" v-else-if="scope.row.residualscreen==0">开启</span>
         </template>
       </el-table-column>
       <el-table-column label="音量范围0-10" align="center" prop="volume" />
-      <el-table-column label="预留字段" align="center" prop="numberone" />
+<!--      <el-table-column label="预留字段" align="center" prop="numberone" />
       <el-table-column label="预留字段2" align="center" prop="numbertwo" />
-      <el-table-column label="预留字段3" align="center" prop="numberthree" />
+      <el-table-column label="预留字段3" align="center" prop="numberthree" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -259,7 +266,7 @@
         <el-form-item label="音量范围0-10" prop="volume">
           <el-input v-model="form.volume" placeholder="请输入音量范围0-10" />
         </el-form-item>
-        <el-form-item label="预留字段" prop="numberone">
+<!--        <el-form-item label="预留字段" prop="numberone">
           <el-input v-model="form.numberone" placeholder="请输入预留字段" />
         </el-form-item>
         <el-form-item label="预留字段2" prop="numbertwo">
@@ -267,7 +274,7 @@
         </el-form-item>
         <el-form-item label="预留字段3" prop="numberthree">
           <el-input v-model="form.numberthree" placeholder="请输入预留字段3" />
-        </el-form-item>
+        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -342,9 +349,6 @@ export default {
         ],
         direction: [
           { required: true, message: "0代表进口闸门1代表出口闸门不能为空", trigger: "blur" }
-        ],
-        qrcode: [
-          { required: true, message: "二维码不能为空", trigger: "blur" }
         ],
         ipadress: [
           { required: true, message: "ip地址不能为空", trigger: "blur" }

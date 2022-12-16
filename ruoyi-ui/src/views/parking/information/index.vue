@@ -174,7 +174,7 @@
       <el-table-column label="id
 " align="center" prop="id" />
       <el-table-column label="停车场名称" align="center" prop="name" />
-      <el-table-column label="门面照" align="center" prop="picture" />
+<!--      <el-table-column label="门面照" align="center" prop="picture" />-->
       <el-table-column label="联系人" align="center" prop="contacts" />
       <el-table-column label="联系电话" align="center" prop="phone" />
       <el-table-column label="QQ号" align="center" prop="qq" />
@@ -187,6 +187,7 @@
       </el-table-column>
       <el-table-column label="免费时常" align="center" prop="freetime" width="180"/>
       <el-table-column label="车位个数" align="center" prop="number" />
+      <el-table-column label="剩余车位" align="center" prop="remainingParkingSpace" />
       <el-table-column label="支付离场时间" align="center" prop="payleavingtime" />
       <el-table-column label="默认月费" align="center" prop="monthlyfee" />
       <el-table-column label="收费说明不参与计算" align="center" prop="chargedescription" />
@@ -294,9 +295,9 @@
         <el-form-item label="停车场登录密码" prop="name">
           <el-input v-model="form.loginPassword" placeholder="请输入停车场登录密码" />
         </el-form-item>
-        <el-form-item label="门面照" prop="picture">
+<!--        <el-form-item label="门面照" prop="picture">
           <el-input v-model="form.picture" placeholder="请输入门面照" />
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="联系人" prop="contacts">
           <el-input v-model="form.contacts" placeholder="请输入联系人" />
         </el-form-item>
@@ -521,6 +522,9 @@ export default {
         ],
         monthlycardpurchase: [
           { required: true, message: "是否开启月卡购买0开启1关闭不能为空", trigger: "blur" }
+        ],
+        freetime:[
+          { required: true, message: "免费时常不能为空", trigger: "blur" }
         ],
       }
     };

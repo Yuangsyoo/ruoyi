@@ -136,4 +136,8 @@ public class ParkingCouponrecordServiceImpl implements IParkingCouponrecordServi
     public ParkingCouponrecord findByParkingLotInformationIdAndLicense(Long id, String license) {
         return parkingCouponrecordMapper.findByParkingLotInformationIdAndLicense(id,license);
     }
+    @Override
+    public List<ParkingCouponrecord> findByParkingLotInformationIdAndLicenseAndState(Long id, String license) {
+        return parkingCouponrecordMapper.findByParkingLotInformationIdAndLicenseAndState(id,license);
+    }
 }

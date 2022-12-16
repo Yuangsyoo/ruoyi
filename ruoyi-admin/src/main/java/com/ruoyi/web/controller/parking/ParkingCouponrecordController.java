@@ -83,7 +83,15 @@ public class ParkingCouponrecordController extends BaseController
                           @RequestParam Long parkingCouponId,
                           @RequestParam String license)
     {
-      return   parkingCouponrecordService.add(parkingLotInformationId,parkingCouponId,license);
+        ParkingCouponrecord parkingCouponrecord = new ParkingCouponrecord();
+        parkingCouponrecord.setParkinglotinformationid(parkingLotInformationId);
+        parkingCouponrecord.setLicense(license);
+        parkingCouponrecord.setState("0");
+        List<ParkingCouponrecord> list = parkingCouponrecordService.selectParkingCouponrecordList(parkingCouponrecord);
+        if (list.size()!=0){
+            return AjaxResult.error("请勿多次领取优惠");
+        }
+        return   parkingCouponrecordService.add(parkingLotInformationId,parkingCouponId,license);
 
     }
 

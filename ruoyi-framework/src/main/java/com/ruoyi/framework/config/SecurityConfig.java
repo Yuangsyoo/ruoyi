@@ -118,6 +118,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                         ,"/websocket/**"
                         ,"/parking/getPayRecord/**"
                         ,"/parking/coupon/add"
+                        ,"/parking/record/editPayState/**"
+                        ,"/parking/record/noLicensePlate/**"
+                        ,"/parking/record/echoInformation/**"
+                        ,"/parking/record/echoInformationToLicense/**"
+                        ,"/parking/record/indoor/**"
+                        ,"/parking/record/indoorCallback"
+                       
                 ).permitAll()
                 // 静态资源，可匿名访问
                 .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()

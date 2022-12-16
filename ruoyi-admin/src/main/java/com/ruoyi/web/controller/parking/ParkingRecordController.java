@@ -1,10 +1,22 @@
 package com.ruoyi.web.controller.parking;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.Anonymous;
+import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+import com.ruoyi.common.sdk.LPRDemo;
+import com.ruoyi.common.utils.CodeGenerateUtils;
+import com.ruoyi.parking.domain.ParkingBlackList;
+import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.parking.domain.ParkingWhiteList;
+import com.ruoyi.parking.mapper.ParkingBlackListMapper;
+import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
+import com.ruoyi.parking.service.IParkingLotEquipmentService;
+import com.ruoyi.parking.service.IParkingLotInformationService;
+import com.ruoyi.parking.vo.ParkingRecordVo;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +44,10 @@ public class ParkingRecordController extends BaseController
     private IParkingRecordService parkingRecordService;
     @Autowired
     private RedisTemplate<Object,Object>redisTemplate;
+
+
+
+
 
     /**
      * 查询停车记录列表
@@ -104,18 +120,7 @@ public class ParkingRecordController extends BaseController
         return toAjax(parkingRecordService.deleteParkingRecordByIds(ids));
     }
 
-    // TODO: 2022/12/13 场内门口支付调用接口 计算产生费用  实付金额  优惠金额  应付金额
 
-    @Anonymous
-    @Log(title = "//通过车牌号，未支付状态查询出来修改状态", businessType = BusinessType.UPDATE)
-    @PutMapping("/editPayState")
-    //公共接口  支付服务那边调用   支付方式 支付状态************************************
-    public void editPayState(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
-                            ,@RequestParam(value ="license") String license
-                            ,@RequestParam(value ="money") Long money)
-    {
-        parkingRecordService.editPayState(parkingLotInformationId,license,money);
-    }
 
 
 
@@ -139,4 +144,73 @@ public class ParkingRecordController extends BaseController
     {
         return parkingRecordService.updateToRecordFromCoupon(id);
     }
+
+    //  2022/12/13 门口支付后调用接口 有牌无牌车公用开闸接口
+    @Anonymous
+    @Log(title = "//有牌车出口通过车牌号，未支付状态查询出来修改状态", businessType = BusinessType.UPDATE)
+    @PutMapping("/editPayState")
+    public void editPayState(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
+                            ,@RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
+                            ,@RequestParam(value ="license") String license
+                            ,@RequestParam(value ="paymentMethod") String paymentMethod)
+    {
+        parkingRecordService.editPayState(parkingLotInformationId,license,parkinglotequipmentid,paymentMethod);
+    }
+    //进口无牌车进场接口
+    @Anonymous
+    @GetMapping("/noLicensePlate")
+    public AjaxResult noLicensePlate(
+            @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
+            ,@RequestParam(value ="license") String license) {
+        return parkingRecordService.noLicensePlate(parkinglotequipmentid,license);
+
+    }
+
+
+
+    //有牌车从redis中获取要出口闸出场车信息等待扫码页面调用
+    @GetMapping("/echoInformation/{parkinglotequipmentid}")
+    @Anonymous
+    public AjaxResult echoInformation(@PathVariable Long parkinglotequipmentid){
+
+        ParkingRecordVo parkingRecordVo = (ParkingRecordVo) redisTemplate.opsForValue().get(String.valueOf(parkinglotequipmentid));
+        if (parkingRecordVo!=null){
+            redisTemplate.delete(String.valueOf(parkinglotequipmentid));
+            return AjaxResult.success(parkingRecordVo);
+        }else {
+            //没有值说明时无牌车  页面跳转无牌车页面输入车牌支付
+            return AjaxResult.error();
+        }
+
+    }
+
+    //无牌车出闸口返会支付页面信息
+    @Anonymous
+    @GetMapping("/echoInformationToLicense")
+    public AjaxResult echoInformationToLicense( @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
+            ,@RequestParam(value ="license") String license){
+        return parkingRecordService.echoInformationToLicense(parkinglotequipmentid,license);
+
+    }
+
+    //室内返会支付页面信息
+    @Anonymous
+    @GetMapping("/indoor")
+    public AjaxResult indoor(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
+            ,@RequestParam(value ="license") String license){
+
+
+
+        return parkingRecordService.indoor(parkingLotInformationId,license);
+
+    }
+    //室内支付回调
+    @Anonymous
+    @PostMapping("/indoorCallback")
+    public AjaxResult indoorCallback(@RequestBody ParkingRecordVo parkingRecordVo){
+        return parkingRecordService.indoorCallback(parkingRecordVo);
+
+    }
+
+
 }

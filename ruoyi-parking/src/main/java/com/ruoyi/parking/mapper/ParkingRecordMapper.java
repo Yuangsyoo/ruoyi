@@ -75,4 +75,5 @@ public interface ParkingRecordMapper {
 
     //查询指定停车场最近离场记录
     List<ParkingRecord> getPayRecord(Long id);
+
 }

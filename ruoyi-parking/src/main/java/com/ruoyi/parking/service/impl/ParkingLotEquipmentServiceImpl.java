@@ -4,11 +4,14 @@ import java.util.List;
 
 
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+import com.ruoyi.common.exception.GlobalException;
+import com.ruoyi.common.utils.QRCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
 import com.ruoyi.parking.service.IParkingLotEquipmentService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 停车场设备管理Service业务层处理
@@ -53,9 +56,31 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertParkingLotEquipment(ParkingLotEquipment parkingLotEquipment)
     {
-        return parkingLotEquipmentMapper.insertParkingLotEquipment(parkingLotEquipment);
+        parkingLotEquipmentMapper.insertParkingLotEquipment(parkingLotEquipment);
+        try {
+            // TODO: 2022/12/14 待修改 还需添加接口 无牌车扫码进场
+            //设备id
+            Long parkinglotequipmentid = parkingLotEquipment.getId();
+            if (parkingLotEquipment.getDirection().equals("0")){
+                String text="https://www.baidu.com";//待修改进场口二维码页面
+                //http://192.168.63.125/ui/institution/pageQueryForAssign?name='xxx'&sex='男'
+                String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
+                parkingLotEquipment.setQrcode(s);
+            }else {
+                String text="https://www.baidu.com";//待修改出场口二维码页面
+                //http://192.168.63.125/ui/institution/pageQueryForAssign?name='xxx'&sex='男'
+                String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
+                parkingLotEquipment.setQrcode(s);
+            }
+            return parkingLotEquipmentMapper.updateParkingLotEquipment(parkingLotEquipment);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GlobalException("添加失败");
+        }
+
     }
 
     /**

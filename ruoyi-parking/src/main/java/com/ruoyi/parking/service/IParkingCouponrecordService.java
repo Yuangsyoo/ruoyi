@@ -64,4 +64,6 @@ public interface IParkingCouponrecordService
     AjaxResult add(Long parkingLotInformationId, Long parkingCouponId, String license);
     // TODO: 2022/12/13  判断有无优惠卷次卷 停车场id 车牌号  次卷  状态
     ParkingCouponrecord findByParkingLotInformationIdAndLicense(Long id, String license);
+
+    List<ParkingCouponrecord> findByParkingLotInformationIdAndLicenseAndState(Long id, String license);
 }

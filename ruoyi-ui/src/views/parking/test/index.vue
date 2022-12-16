@@ -32,6 +32,7 @@
 <!--      <el-table-column label="订单编号" align="center" prop="ordernumber" />-->
       <el-table-column label="订单状态" align="center" prop="orderstate">
         <template scope="scope">
+          <span style="color: green" v-if="scope.row.orderstate==2">订单进行中</span>
           <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
           <span style="color: red" v-else-if="scope.row.orderstate==0">未支付</span>
         </template>
@@ -66,14 +67,14 @@
       </el-table-column>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-show="scope.row.orderstate===2"
+          <el-button v-show="scope.row.orderstate==2"
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['parking:record:edit']"
           >现金</el-button>
-          <el-button v-show="scope.row.orderstate===2"
+          <el-button v-show="scope.row.orderstate==2"
             size="mini"
             type="text"
             icon="el-icon-delete"
@@ -101,7 +102,7 @@
           <span>{{ parseTime(scope.row.exittime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
-<!--      <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor">
+      <!--      <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor">
         <template slot-scope="scope">
           <span style="color: red" v-if="scope.row.licensepllatecolor==0">未知</span>
           <span style="color: blue" v-if="scope.row.licensepllatecolor==1">蓝色</span>
@@ -111,7 +112,7 @@
           <span style="color: green"  v-else-if="scope.row.licensepllatecolor===5">绿色</span>
         </template>
       </el-table-column>-->
-      <!--      <el-table-column label="订单编号" align="center" prop="ordernumber" />-->
+      <!--<el-table-column label="订单编号" align="center" prop="ordernumber" />-->
       <el-table-column label="订单状态" align="center" prop="orderstate">
         <template scope="scope">
           <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
@@ -119,13 +120,13 @@
           <span style="color: red" v-else-if="scope.row.orderstate==2">订单进行中</span>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="支付状态" v-if="false" align="center" prop="paystate" />-->
+      <!--<el-table-column label="支付状态" v-if="false" align="center" prop="paystate" />-->
       <el-table-column label="应付金额" align="center" prop="amountpayable" />
       <el-table-column label="优惠金额" align="center" prop="discountamount" />
       <el-table-column label="实付金额" align="center" prop="money" />
-<!--      <el-table-column label="支付方式" align="center" prop="paymentmethod" />-->
-<!--      <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />-->
-<!--      <el-table-column label="进口照片" align="center" prop="numbertwo">
+      <!--<el-table-column label="支付方式" align="center" prop="paymentmethod" />-->
+      <!--<el-table-column label="出入口名称" align="center" prop="entranceandexitname" />-->
+      <!--      <el-table-column label="进口照片" align="center" prop="numbertwo">
         <template slot-scope="scope">
           <el-image
             style="width: 100px; height: 100px"
@@ -165,16 +166,15 @@
         </template>
       </el-table-column>
     </el-table>
-<!--    <pagination
+    <!--    <pagination
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />-->
-
     <!-- 添加或修改停车记录对话框 -->
-<!--   <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <!--   <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="车牌号" prop="license">
           <el-input v-model="form.license" placeholder="请输入车牌号" />

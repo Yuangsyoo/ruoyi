@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.parking.domain.ParkingRecord;
+import com.ruoyi.parking.vo.ParkingRecordVo;
 
 /**
  * 停车记录Service接口
@@ -64,7 +65,7 @@ public interface IParkingRecordService
     ParkingRecord findByLicense(String license,Long parkingLotInformationId);
 
     //通过停车场id,车牌号，未支付状态查询出来修改状态
-    void editPayState(Long parkingLotInformationId,String license,Long money);
+
 
     ParkingRecord findByLicense1(String license, Long id);
 
@@ -78,4 +79,15 @@ public interface IParkingRecordService
     AjaxResult updateToRecord(Long id);
 
     AjaxResult updateToRecordFromCoupon(Long id);
+
+    AjaxResult noLicensePlate(Long parkinglotequipmentid, String license);
+
+    void editPayState(Long parkingLotInformationId, String license, Long parkinglotequipmentid,String paymentMethod);
+
+    AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String license);
+
+    AjaxResult indoor(Long parkingLotInformationId, String license);
+
+
+    AjaxResult indoorCallback(ParkingRecordVo parkingRecordVo);
 }
