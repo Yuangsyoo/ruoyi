@@ -214,6 +214,9 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
             return AjaxResult.error("拥有次数优惠卷，请直接离场");
         }
         ParkingRecord parkingRecord = parkingRecordMapper.findByLicense(license, parkingLotInformationId);
+        if (parkingRecord==null){
+            return AjaxResult.error("无停车记录");
+        }
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotInformationId);
         ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
         BeanUtils.copyProperties(parkingRecord,parkingRecordVo);
