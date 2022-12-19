@@ -111,7 +111,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <select id="findByParkingLotInformationIdAndLicenseAndState" resultMap="ParkingCouponrecordRes">
-        select p.*,c.name cname,c.preferentialFaceValue cpreferentialFaceValue from parking_couponrecord p left join parking_coupon c on p.parkingCouponId=c.id
+        select p.*,c.name cname,c.preferentialFaceValue cpreferentialFaceValue,c.type ctype from parking_couponrecord p left join parking_coupon c on p.parkingCouponId=c.id
         where p.parkingLotInformationId=#{parkingLotInformationId} and  p.license = #{license} and  p.state='0'
     </select>
     <resultMap type="ParkingCouponrecord" id="ParkingCouponrecordRes">
@@ -129,6 +129,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <association property="parkingCoupon" javaType="com.ruoyi.parking.domain.ParkingCoupon">
             <result property="name" column="cname"></result>
             <result property="preferentialFaceValue" column="cpreferentialFaceValue"></result>
+            <result property="type" column="ctype"></result>
+
         </association>
     </resultMap>
 </mapper>

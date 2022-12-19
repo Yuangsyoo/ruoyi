@@ -324,7 +324,7 @@ export default {
     // 初始化websocket
     this.initWebSocket();
 
-    //this.getPayRecord(localStorage.getItem("uu"));
+    this.getPayRecord(localStorage.getItem("uu"));
 
     this.setInterval1();
   },

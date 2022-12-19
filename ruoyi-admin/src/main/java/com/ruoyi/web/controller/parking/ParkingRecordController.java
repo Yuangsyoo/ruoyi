@@ -198,9 +198,6 @@ public class ParkingRecordController extends BaseController
     @GetMapping("/indoor")
     public AjaxResult indoor(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
             ,@RequestParam(value ="license") String license){
-
-
-
         return parkingRecordService.indoor(parkingLotInformationId,license);
 
     }

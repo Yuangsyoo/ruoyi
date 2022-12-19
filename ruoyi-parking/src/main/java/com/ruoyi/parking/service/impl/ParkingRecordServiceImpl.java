@@ -174,7 +174,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
             updateRemainingParkingSpace(parkingLotInformation);
         }
     }
-
+    //无牌车
     @Override
     public AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String license) {
         Date date = new Date();
@@ -221,7 +221,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
         BeanUtils.copyProperties(parkingRecord,parkingRecordVo);
         parkingRecordVo.setParkingLotInformationName(parkingLotInformation.getName());
-        // TODO: 2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式  计算方式时当前时间计算  回调接口传过来所有信息 保存
+        // TODO: 2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式(支付方式后面加优惠卷)  计算方式时当前时间计算  回调接口传过来所有信息 保存
         return AjaxResult.success(parkingRecordVo);
     }
     //室内扫码回调
