@@ -17,9 +17,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * @author ruoyi
  * @date 2022-12-12
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class ParkingCoupon extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -77,8 +75,137 @@ public class ParkingCoupon extends BaseEntity
     @Excel(name = "优惠金额 优惠卷必须是金额卷")
     private String discountamount;
 
+    public ParkingCoupon() {
+    }
+
+    public ParkingCoupon(Long id, Long parkinglotinformationid, Integer type, String name, Long count, Integer usetype, Date qrcodestarttime, Date qrcodeendtime, Long receiveccount, Integer state, String qrcode, Integer preferentialfacevalue, String discountamount, ParkingLotInformation parkingLotInformation) {
+        this.id = id;
+        this.parkinglotinformationid = parkinglotinformationid;
+        this.type = type;
+        this.name = name;
+        this.count = count;
+        this.usetype = usetype;
+        this.qrcodestarttime = qrcodestarttime;
+        this.qrcodeendtime = qrcodeendtime;
+        this.receiveccount = receiveccount;
+        this.state = state;
+        this.qrcode = qrcode;
+        this.preferentialfacevalue = preferentialfacevalue;
+        this.discountamount = discountamount;
+        this.parkingLotInformation = parkingLotInformation;
+    }
+
     private ParkingLotInformation parkingLotInformation;
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public Long getParkinglotinformationid() {
+        return parkinglotinformationid;
+    }
+
+    public void setParkinglotinformationid(Long parkinglotinformationid) {
+        this.parkinglotinformationid = parkinglotinformationid;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getCount() {
+        return count;
+    }
+
+    public void setCount(Long count) {
+        this.count = count;
+    }
+
+    public Integer getUsetype() {
+        return usetype;
+    }
+
+    public void setUsetype(Integer usetype) {
+        this.usetype = usetype;
+    }
+
+    public Date getQrcodestarttime() {
+        return qrcodestarttime;
+    }
+
+    public void setQrcodestarttime(Date qrcodestarttime) {
+        this.qrcodestarttime = qrcodestarttime;
+    }
+
+    public Date getQrcodeendtime() {
+        return qrcodeendtime;
+    }
+
+    public void setQrcodeendtime(Date qrcodeendtime) {
+        this.qrcodeendtime = qrcodeendtime;
+    }
+
+    public Long getReceiveccount() {
+        return receiveccount;
+    }
+
+    public void setReceiveccount(Long receiveccount) {
+        this.receiveccount = receiveccount;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public String getQrcode() {
+        return qrcode;
+    }
+
+    public void setQrcode(String qrcode) {
+        this.qrcode = qrcode;
+    }
+
+    public Integer getPreferentialfacevalue() {
+        return preferentialfacevalue;
+    }
+
+    public void setPreferentialfacevalue(Integer preferentialfacevalue) {
+        this.preferentialfacevalue = preferentialfacevalue;
+    }
+
+    public String getDiscountamount() {
+        return discountamount;
+    }
+
+    public void setDiscountamount(String discountamount) {
+        this.discountamount = discountamount;
+    }
+
+    public ParkingLotInformation getParkingLotInformation() {
+        return parkingLotInformation;
+    }
+
+    public void setParkingLotInformation(ParkingLotInformation parkingLotInformation) {
+        this.parkingLotInformation = parkingLotInformation;
+    }
 }

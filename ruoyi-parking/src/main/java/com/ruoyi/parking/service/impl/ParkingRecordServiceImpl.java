@@ -17,6 +17,8 @@ import com.ruoyi.parking.mapper.ParkingBlackListMapper;
 import com.ruoyi.parking.mapper.ParkingCouponrecordMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
+import com.ruoyi.parking.vo.MoneyVo;
+import com.ruoyi.parking.vo.ParkingChargingDto;
 import com.ruoyi.parking.vo.ParkingRecordVo;
 import com.ruoyi.system.mapper.SysUserMapper;
 import org.springframework.beans.BeanUtils;
@@ -57,6 +59,8 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     private ParkingWhiteListMapper parkingWhiteListMapper;
     @Autowired
     private IParkingFixedparkingspaceService parkingFixedparkingspaceService;
+    @Autowired
+    private ParkingChargingServiceImpl parkingChargingService;
     /**
      * 查询停车记录
      * 
@@ -186,11 +190,18 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());
         parkingRecord.setOrderstate("2");
         parkingRecord.setExittime(date);
-            // TODO: 2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式
+
+        ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord.getAdmissiontime(),new Date(),license);
+        //金额
+        MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
         parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+parkingLotEquipment.getName());
+        //修改停车记录
+        BeanUtils.copyProperties(moneyVo,parkingRecord);
         parkingRecordMapper.updateParkingRecord(parkingRecord);
+
         ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
         BeanUtils.copyProperties(parkingRecord,parkingRecordVo);
+
         parkingRecordVo.setParkingLotInformationName(parkingLotInformation.getName());
         parkingRecordVo.setParkingLotEquipmentName(parkingLotEquipment.getName());
         parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
@@ -222,6 +233,10 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         BeanUtils.copyProperties(parkingRecord,parkingRecordVo);
         parkingRecordVo.setParkingLotInformationName(parkingLotInformation.getName());
         // TODO: 2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式(支付方式后面加优惠卷)  计算方式时当前时间计算  回调接口传过来所有信息 保存
+        ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformationId,parkingRecord.getAdmissiontime(),new Date(),license);
+        //金额
+        MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
+        BeanUtils.copyProperties(moneyVo,parkingRecordVo);
         return AjaxResult.success(parkingRecordVo);
     }
     //室内扫码回调

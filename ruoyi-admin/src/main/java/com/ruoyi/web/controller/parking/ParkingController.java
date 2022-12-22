@@ -22,7 +22,10 @@ import com.ruoyi.parking.mapper.ParkingBlackListMapper;
 import com.ruoyi.parking.mapper.ParkingRecordMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
+import com.ruoyi.parking.service.impl.ParkingChargingServiceImpl;
 import com.ruoyi.parking.service.impl.ParkingLotInformationServiceImpl;
+import com.ruoyi.parking.vo.MoneyVo;
+import com.ruoyi.parking.vo.ParkingChargingDto;
 import com.ruoyi.parking.vo.ParkingRecordVo;
 import com.ruoyi.system.mapper.SysUserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +82,8 @@ public class ParkingController extends Thread {
     private IParkingCouponrecordService parkingCouponrecordService;
     @Autowired
     private IParkingFixedparkingspaceService parkingFixedparkingspaceService;
+    @Autowired
+    private ParkingChargingServiceImpl parkingChargingService;
 
 
     @PostMapping("/operation")
@@ -352,6 +357,10 @@ public class ParkingController extends Thread {
                 parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+parkingLotEquipment.getName());
                //修改订单状态为订单正在进行支付中
                // TODO: 2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式
+                ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord.getAdmissiontime(),date,license);
+                //金额
+                MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
+                BeanUtils.copyProperties(moneyVo,parkingRecord);
                parkingRecordService.updateParkingRecord(parkingRecord);
 
                list.add(parkingRecord);

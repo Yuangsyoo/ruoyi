@@ -70,5 +70,5 @@ public interface ParkingCouponrecordMapper
     //<!--   判断有无优惠卷次卷 停车场id 车牌号  次卷  状态
     ParkingCouponrecord findByParkingLotInformationIdAndLicenseTo(@Param("parkingLotInformationId")Long id, @Param("license")String license);
 
-    List<ParkingCouponrecord> findByParkingLotInformationIdAndLicenseAndState(@Param("parkingLotInformationId")Long id,@Param("license") String license);
+    ParkingCouponrecord findByParkingLotInformationIdAndLicenseAndState(@Param("parkingLotInformationId")Long id,@Param("license") String license);
 }

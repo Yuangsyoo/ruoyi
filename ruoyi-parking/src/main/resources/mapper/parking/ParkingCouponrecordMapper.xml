@@ -128,9 +128,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </association>
         <association property="parkingCoupon" javaType="com.ruoyi.parking.domain.ParkingCoupon">
             <result property="name" column="cname"></result>
-            <result property="preferentialFaceValue" column="cpreferentialFaceValue"></result>
             <result property="type" column="ctype"></result>
-
+            <result property="preferentialfacevalue" column="cpreferentialFaceValue"></result>
         </association>
     </resultMap>
 </mapper>
