@@ -61,7 +61,7 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     {
         parkingLotEquipmentMapper.insertParkingLotEquipment(parkingLotEquipment);
         try {
-            // TODO: 2022/12/14 待修改 还需添加接口 无牌车扫码进场
+            // TODO: 2022/12/14 无牌车扫码进场
             //设备id
             Long parkinglotequipmentid = parkingLotEquipment.getId();
             if (parkingLotEquipment.getDirection().equals("0")){

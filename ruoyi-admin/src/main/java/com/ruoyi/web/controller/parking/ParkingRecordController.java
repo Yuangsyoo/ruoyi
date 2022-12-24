@@ -156,7 +156,7 @@ public class ParkingRecordController extends BaseController
     {
         parkingRecordService.editPayState(parkingLotInformationId,license,parkinglotequipmentid,paymentMethod);
     }
-    //进口无牌车进场接口
+    //进口无牌车进场接口  不做有排车扫码书车牌计费
     @Anonymous
     @GetMapping("/noLicensePlate")
     public AjaxResult noLicensePlate(
@@ -178,8 +178,8 @@ public class ParkingRecordController extends BaseController
             redisTemplate.delete(String.valueOf(parkinglotequipmentid));
             return AjaxResult.success(parkingRecordVo);
         }else {
-            //没有值说明时无牌车  页面跳转无牌车页面输入车牌支付
-            return AjaxResult.error();
+
+            return AjaxResult.error("网络异常，稍后重试");
         }
 
     }
