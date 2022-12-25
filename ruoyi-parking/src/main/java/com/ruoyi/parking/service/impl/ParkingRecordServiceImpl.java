@@ -264,8 +264,11 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     @Override
     public ParkingRecord findByParkingLotInformationLicense(Long id, String license) {
       List<ParkingRecord>list = parkingRecordMapper.findByParkingLotInformationLicense(id, license);
-        ParkingRecord parkingRecord = list.get(0);
-        return parkingRecord;
+      if (list.size()!=0){
+          ParkingRecord parkingRecord = list.get(0);
+          return parkingRecord;
+      }
+        return null;
     }
 
     @Override
@@ -288,6 +291,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     }
 
     @Override
+    @Transactional
     public AjaxResult updateToRecord(Long id) {
         ParkingRecord parkingRecord = parkingRecordMapper.selectParkingRecordById(id);
         parkingRecord.setPaymentmethod("现金支付");
@@ -295,18 +299,36 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         parkingRecord.setPaystate("1");
         parkingRecord.setPayTime(new Date());
         parkingRecordMapper.updateParkingRecord(parkingRecord);
+        ParkingCouponrecord byParkingLotInformationIdAndLicense = parkingCouponrecordMapper.findByParkingLotInformationIdAndLicenseTo(parkingRecord.getParkinglotinformationid(), parkingRecord.getLicense());
+        if (byParkingLotInformationIdAndLicense!=null){
+            byParkingLotInformationIdAndLicense.setState("1");
+            parkingCouponrecordMapper.updateParkingCouponrecord(byParkingLotInformationIdAndLicense);
+        }
+       /* List<ParkingRecord> list = new ArrayList<>();
+        list.add(parkingRecord);
+        String s = JSON.toJSONString(list);
+        List<SysUser> list1 = sysUserMapper.findUserList(parkingRecord.getId());
+        for (SysUser user : list1) {
+            webSocketService.sendMessage(user.getUserName(),s);
+        }*/
         //停车场id加车牌
         redisTemplate.opsForValue().set(parkingRecord.getParkinglotinformationid()+parkingRecord.getLicense(),parkingRecord.getLicense(),5, TimeUnit.MICROSECONDS);
         return AjaxResult.success();
     }
 
     @Override
+    @Transactional
     public AjaxResult updateToRecordFromCoupon(Long id) {
         ParkingRecord parkingRecord = parkingRecordMapper.selectParkingRecordById(id);
         parkingRecord.setPaymentmethod("优惠卷代扣");
         parkingRecord.setOrderstate("1");
         parkingRecord.setPaystate("1");
         parkingRecord.setPayTime(new Date());
+        ParkingCouponrecord byParkingLotInformationIdAndLicense = parkingCouponrecordMapper.findByParkingLotInformationIdAndLicenseTo(parkingRecord.getParkinglotinformationid(), parkingRecord.getLicense());
+        if (byParkingLotInformationIdAndLicense!=null){
+            byParkingLotInformationIdAndLicense.setState("1");
+            parkingCouponrecordMapper.updateParkingCouponrecord(byParkingLotInformationIdAndLicense);
+        }
         parkingRecordMapper.updateParkingRecord(parkingRecord);
         //停车场id加车牌
         redisTemplate.opsForValue().set(parkingRecord.getParkinglotinformationid()+parkingRecord.getLicense(),parkingRecord.getLicense(),5, TimeUnit.MICROSECONDS);

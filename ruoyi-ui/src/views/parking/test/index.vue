@@ -528,16 +528,16 @@ export default {
     handleUpdate(row) {
       console.log(row.id)
       updateToRecord(row.id).then(res=>{
-
-        this.getPayRecordOrder();
+        this.recordList=this.getPayRecordOrder();
+        this.getPayRecord(localStorage.getItem("uu"));
       })
     },
     /** 优惠卷按钮 */
     updateToRecordFromCoupon(row) {
       console.log(row.id)
       updateToRecordFromCoupon(row.id).then(res=>{
-
-        this.getPayRecordOrder();
+        this.getPayRecord(localStorage.getItem("uu"));
+        this.recordList=this.getPayRecordOrder();
       })
     },
     /** 提交按钮 */
