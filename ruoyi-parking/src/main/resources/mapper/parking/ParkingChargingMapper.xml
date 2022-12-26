@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingChargingMapper">
+    
+    <resultMap type="ParkingCharging" id="ParkingChargingResult">
+        <result property="id"    column="id"    />
+        <result property="startingprice"    column="startingPrice"    />
+        <result property="startingpriceduration"    column="startingPriceDuration"    />
+        <result property="increaseincome"    column="increaseIncome"    />
+        <result property="superiorlimit"    column="superiorLimit"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="type"    column="type"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="ParkingChargingParkingBillingPeriodResult" type="ParkingCharging" extends="ParkingChargingResult">
+        <collection property="parkingBillingPeriodList" notNullColumn="sub_parkingChargingId" javaType="java.util.List" resultMap="ParkingBillingPeriodResult" />
+    </resultMap>
+
+    <resultMap type="ParkingBillingPeriod" id="ParkingBillingPeriodResult">
+        <result property="parkingchargingid"    column="sub_parkingChargingId"    />
+        <result property="startime"    column="sub_starTime"    />
+        <result property="endtime"    column="sub_endTime"    />
+        <result property="addmoney"    column="sub_addMoney"    />
+        <result property="startingprice"    column="sub_startingPrice"    />
+        <result property="startingtime"    column="sub_startingTime"    />
+        <result property="type"    column="sub_type"    />
+        <result property="repea"    column="sub_repea"    />
+        <result property="minutecharge"    column="sub_minuteCharge"    />
+        <result property="superiorlimit"    column="sub_superiorLimit"    />
+
+    </resultMap>
+
+    <sql id="selectParkingChargingVo">
+        select id, startingPrice, startingPriceDuration, increaseIncome, superiorLimit, parkingLotInformationId, type from parking_charging
+    </sql>
+
+    <select id="selectParkingChargingList" parameterType="ParkingCharging" resultMap="ParkingChargingResult">
+        select c.*,l.id lid,l.name lname from parking_charging c left join parking_lot_information l on c.parkinglotinformationid=l.id
+        <where>  
+            <if test="startingprice != null "> and c.startingPrice = #{startingprice}</if>
+            <if test="startingpriceduration != null "> and c.startingPriceDuration = #{startingpriceduration}</if>
+            <if test="increaseincome != null "> and c.increaseIncome = #{increaseincome}</if>
+            <if test="superiorlimit != null "> and c.superiorLimit = #{superiorlimit}</if>
+            <if test="parkinglotinformationid != null "> and c.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="type != null "> and c.type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingChargingById" parameterType="Long" resultMap="ParkingChargingParkingBillingPeriodResult">
+        select a.id, a.startingPrice, a.startingPriceDuration, a.increaseIncome, a.superiorLimit, a.parkingLotInformationId, a.type,
+               b.parkingChargingId as sub_parkingChargingId, b.minutecharge as sub_minuteCharge,b.superiorlimit as sub_superiorLimit,b.starTime as sub_starTime, b.endTime as sub_endTime, b.addMoney as sub_addMoney, b.startingPrice as sub_startingPrice, b.startingTime as sub_startingTime, b.type as sub_type, b.repea as sub_repea
+        from parking_charging a
+        left join parking_billing_period b on b.parkingChargingId = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertParkingCharging" parameterType="ParkingCharging" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_charging
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="startingprice != null">startingPrice,</if>
+            <if test="startingpriceduration != null">startingPriceDuration,</if>
+            <if test="increaseincome != null">increaseIncome,</if>
+            <if test="superiorlimit != null">superiorLimit,</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="type != null">type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="startingprice != null">#{startingprice},</if>
+            <if test="startingpriceduration != null">#{startingpriceduration},</if>
+            <if test="increaseincome != null">#{increaseincome},</if>
+            <if test="superiorlimit != null">#{superiorlimit},</if>
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="type != null">#{type},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingCharging" parameterType="ParkingCharging">
+        update parking_charging
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="startingprice != null">startingPrice = #{startingprice},</if>
+            <if test="startingpriceduration != null">startingPriceDuration = #{startingpriceduration},</if>
+            <if test="increaseincome != null">increaseIncome = #{increaseincome},</if>
+            <if test="superiorlimit != null">superiorLimit = #{superiorlimit},</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="type != null">type = #{type},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingChargingById" parameterType="Long">
+        delete from parking_charging where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingChargingByIds" parameterType="String">
+        delete from parking_charging where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteParkingBillingPeriodByParkingChargingIds" parameterType="String">
+        delete from parking_billing_period where parkingChargingId in 
+        <foreach item="parkingChargingId" collection="array" open="(" separator="," close=")">
+            #{parkingChargingId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteParkingBillingPeriodByParkingChargingId" parameterType="Long">
+        delete from parking_billing_period where parkingChargingId = #{parkingChargingId}
+    </delete>
+
+    <insert id="batchParkingBillingPeriod">
+        insert into parking_billing_period( parkingChargingId, starTime, endTime, addMoney, startingPrice, startingTime, type, repea,minuteCharge,superiorLimit) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.parkingchargingid}, #{item.startime}, #{item.endtime}, #{item.addmoney}, #{item.startingprice}, #{item.startingtime}, #{item.type}, #{item.repea}, #{item.minutecharge}, #{item.superiorlimit})
+        </foreach>
+    </insert>
+<!--        ParkingCharging findByParkinglotinformationid(Long parkinglotinformationid);-->
+    <select id="findByParkinglotinformationid" resultMap="ParkingChargingParkingBillingPeriodResult">
+        select a.id, a.startingPrice, a.startingPriceDuration, a.increaseIncome, a.superiorLimit, a.parkingLotInformationId, a.type,
+              b.parkingChargingId as sub_parkingChargingId, b.minutecharge as sub_minuteCharge,b.superiorlimit as sub_superiorLimit,b.starTime as sub_starTime, b.endTime as sub_endTime, b.addMoney as sub_addMoney, b.startingPrice as sub_startingPrice, b.startingTime as sub_startingTime, b.type as sub_type, b.repea as sub_repea
+        from parking_charging a
+                 left join parking_billing_period b on b.parkingChargingId = a.id
+        where a.parkingLotInformationId = #{parkinglotinformationid}
+    </select>
+</mapper>
