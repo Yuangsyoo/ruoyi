@@ -133,9 +133,9 @@
     />
 
     <!-- 添加或修改计费规则对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="1900px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="停车场id" prop="parkinglotinformationid">
+    <el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="130px">
+        <el-form-item label="停车场" prop="parkinglotinformationid">
           <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择">
             <el-option
               v-for="item in parkinglotinformations"
@@ -157,7 +157,7 @@
         <el-form-item label="起步价" prop="startingprice">
           <el-input v-model="form.startingprice"  placeholder=""/>元
         </el-form-item>
-        <el-form-item label="起步价时长" prop="startingpriceduration">
+        <el-form-item  label="起步价时长" prop="startingpriceduration">
           <el-input v-model="form.startingpriceduration" placeholder="请输入起步价时长" />分钟
           <div style="color:#F00">注意: 必须是60的倍数，最大不超过1440分钟</div>
         </el-form-item>

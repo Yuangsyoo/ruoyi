@@ -162,7 +162,7 @@
       @pagination="getList"
     />
     <!-- 添加或修改停车场白名单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="停车场" prop="parkinglotinformationid">
           <el-select v-model="form.parkinglotinformationid" clearable  placeholder="请选择">

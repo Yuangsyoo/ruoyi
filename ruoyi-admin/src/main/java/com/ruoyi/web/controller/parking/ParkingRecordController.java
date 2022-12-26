@@ -148,7 +148,7 @@ public class ParkingRecordController extends BaseController
     //  2022/12/13 门口支付后调用接口 有牌无牌车公用开闸接口
     @Anonymous
     @Log(title = "//有牌车出口通过车牌号，未支付状态查询出来修改状态", businessType = BusinessType.UPDATE)
-    @PutMapping("/editPayState")
+    @GetMapping("/editPayState")
     public void editPayState(@RequestParam(value ="parkingLotInformationId") Long parkingLotInformationId
                             ,@RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
                             ,@RequestParam(value ="license") String license

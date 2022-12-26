@@ -354,13 +354,22 @@ public class ParkingController extends Thread {
                 //保存出场照片
                 parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
                 parkingRecord.setExittime(date);
+                // TODO: 2022/12/26
+
+                if (){
+
+                }
+
                 parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+parkingLotEquipment.getName());
                //修改订单状态为订单正在进行支付中
-               // TODO: 2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式
+               //  2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式
                 ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord.getAdmissiontime(),date,license);
                 //金额
                 MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
                 BeanUtils.copyProperties(moneyVo,parkingRecord);
+
+
+
                parkingRecordService.updateParkingRecord(parkingRecord);
 
                list.add(parkingRecord);

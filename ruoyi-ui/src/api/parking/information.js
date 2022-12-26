@@ -42,3 +42,10 @@ export function delInformation(id) {
     method: 'delete'
   })
 }
+// 查询停车场管理详细
+export function getParkingLots(id) {
+  return request({
+    url: '/parking/information/getParkingLots/' + id,
+    method: 'get'
+  })
+}

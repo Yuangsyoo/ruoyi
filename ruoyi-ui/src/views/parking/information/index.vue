@@ -301,7 +301,7 @@
     />
 
     <!-- 添加或修改停车场管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="停车场名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入停车场名称" />

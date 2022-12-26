@@ -56,7 +56,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2022 ruoyi.vip All Rights Reserved.</span>
+      <span></span>
     </div>
   </div>
 </template>
@@ -72,8 +72,10 @@ export default {
     return {
       codeUrl: "",
       loginForm: {
-        username: "admin",
-        password: "admin123",
+        /* username: "admin",
+        password: "'admin123'",*/
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: ""

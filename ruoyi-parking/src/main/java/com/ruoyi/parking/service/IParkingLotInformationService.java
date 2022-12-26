@@ -2,6 +2,7 @@ package com.ruoyi.parking.service;
 
 import java.util.List;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.parking.dto.ParkingLotEquipmentDto;
 
@@ -63,5 +64,7 @@ public interface IParkingLotInformationService
     public int deleteParkingLotInformationById(Long id);
 
     List<ParkingLotInformation> findParkingLotInformationList(Long id);
+
+    AjaxResult getParkingLots(Long id);
 
 }

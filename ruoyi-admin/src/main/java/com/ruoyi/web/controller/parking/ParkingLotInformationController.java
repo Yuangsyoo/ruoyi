@@ -111,4 +111,15 @@ public class ParkingLotInformationController extends BaseController
     {
         return toAjax(parkingLotInformationService.deleteParkingLotInformationByIds(ids));
     }
+
+    /**
+     * 获取停车场管理详细信息
+     */
+
+    @GetMapping(value = "/getParkingLots/{id}")
+    public AjaxResult getParkingLots(@PathVariable("id") Long id)
+    {
+        return parkingLotInformationService.getParkingLots(id);
+    }
+
 }

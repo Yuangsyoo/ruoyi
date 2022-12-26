@@ -127,29 +127,13 @@ export default {
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
           localStorage.removeItem("name")
+          localStorage.removeItem("uu")
           location.href = '/index';
         })
       }).catch(() => {});
     }
   },created() {
-
-   var a=sessionStorage.getItem("sessionObj")
-   if (localStorage.getItem("name")===null){
-     localStorage.setItem("name",a);
-     var w=localStorage.getItem("name")
-     var q=JSON.parse(w).data;
-     this.name=JSON.parse(q).username
-
-     this.getuser(JSON.parse(q).username)
-
-   }else {
-     var w=localStorage.getItem("name")
-     var q=JSON.parse(w).data;
-     this.name=JSON.parse(q).username
-   }
-
-
-
+     this.name=localStorage.getItem("name")
   }
 }
 </script>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.entity.SysUserRole;
@@ -11,6 +12,8 @@ import com.ruoyi.common.core.mapper.SysUserRoleMapper;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.parking.dto.ParkingLotEquipmentDto;
 import com.ruoyi.common.core.service.ISysUserService;
+import com.ruoyi.parking.vo.ParkingLots;
+import com.ruoyi.parking.vo.ParkingLotsVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -168,5 +171,25 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
             return list;
         }
 
+    }
+
+    @Override
+    public AjaxResult getParkingLots(Long id) {
+        if (id==0){
+            return AjaxResult.success();
+        }
+        ParkingLotInformation parkingLotInformation = parkingLotInformationMapper.selectParkingLotInformationById(id);
+        //车位总数
+        Long number = parkingLotInformation.getNumber();
+        //剩余车位
+        Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+        ParkingLotsVo parkingLotsVo = new ParkingLotsVo();
+        parkingLotsVo.getName().add("剩余车位数");
+        parkingLotsVo.getName().add("已停车位数");
+        List<ParkingLots> list = parkingLotsVo.getParkingLots();
+        list.add(new ParkingLots(remainingParkingSpace,"剩余车位数"));
+        list.add(new ParkingLots(number-remainingParkingSpace,"已停车位数"));
+
+        return AjaxResult.success(parkingLotsVo);
     }
 }

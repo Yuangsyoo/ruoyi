@@ -22,7 +22,7 @@
 
 <script>
 import echarts from 'echarts'
-
+import { listInformation, getParkingLots,getInformation, delInformation, addInformation, updateInformation } from "@/api/parking/information";
 export default {
   data() {
     return {
@@ -163,46 +163,47 @@ export default {
       });
     },
     drawPieChart() {
-      this.chartPie = echarts.init(document.getElementById('chartPie'));
-      this.chartPie.setOption({
-        title: {
-          text: 'Pie Chart',
-          subtext: '纯属虚构',
-          x: 'center'
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: "{a} <br/>{b} : {c} ({d}%)"
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'left',
-          data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
-        },
-        series: [
-          {
-            name: '访问来源',
-            type: 'pie',
-            radius: '55%',
-            center: ['50%', '60%'],
-            data: [
-              { value: 335, name: '直接访问' },
-              { value: 310, name: '邮件营销' },
-              { value: 234, name: '联盟广告' },
-              { value: 135, name: '视频广告' },
-              { value: 1548, name: '搜索引擎' }
-            ],
-            itemStyle: {
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
+      getParkingLots(localStorage.getItem("uu")).then(res=>{
+        let data = res.data;
+        var names=data.name
+        var ParkingLotsVos=data.parkingLots
+        this.chartPie = echarts.init(document.getElementById('chartPie'));
+        this.chartPie.setOption({
+          title: {
+            text: '车位信息',
+            subtext: '',
+            x: 'center'
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+          },
+          legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: names
+          },
+          series: [
+            {
+              name: '访问来源',
+              type: 'pie',
+              radius: '55%',
+              center: ['50%', '60%'],
+              data: ParkingLotsVos,
+              itemStyle: {
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
               }
             }
-          }
-        ]
-      });
+          ]
+        });
+      })
+
     },
+
     drawCharts() {
       this.drawColumnChart()
       this.drawBarChart()
@@ -210,8 +211,10 @@ export default {
       this.drawPieChart()
     },
   },
-
-  mounted: function () {
+/*created() {
+  this.drawCharts()
+},*/
+  mounted(){
     this.drawCharts()
   },
   updated: function () {

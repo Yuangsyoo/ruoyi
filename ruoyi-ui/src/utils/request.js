@@ -22,6 +22,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+
   // 是否需要设置 token
   const isToken = (config.headers || {}).isToken === false
   // 是否需要防止数据重复提交
@@ -37,6 +38,7 @@ service.interceptors.request.use(config => {
     config.url = url;
   }
   if (!isRepeatSubmit && (config.method === 'post' || config.method === 'put')) {
+
     const requestObj = {
       url: config.url,
       data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
@@ -44,6 +46,7 @@ service.interceptors.request.use(config => {
     }
     const sessionObj = cache.session.getJSON('sessionObj')
     if (sessionObj === undefined || sessionObj === null || sessionObj === '') {
+
       cache.session.setJSON('sessionObj', requestObj)
     } else {
       const s_url = sessionObj.url;                  // 请求地址
@@ -55,6 +58,7 @@ service.interceptors.request.use(config => {
         console.warn(`[${s_url}]: ` + message)
         return Promise.reject(new Error(message))
       } else {
+
         cache.session.setJSON('sessionObj', requestObj)
       }
     }
