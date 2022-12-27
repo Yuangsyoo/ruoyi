@@ -190,8 +190,8 @@ public class ParkingRecordController extends BaseController
     @Anonymous
     @GetMapping("/echoInformationToLicense")
     public AjaxResult echoInformationToLicense( @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
-            ,@RequestParam(value ="license") String license){
-        return parkingRecordService.echoInformationToLicense(parkinglotequipmentid,license);
+            ,@RequestParam(value ="license") String license,String openid){
+        return parkingRecordService.echoInformationToLicense(parkinglotequipmentid,license,openid);
 
     }
 
