@@ -2,6 +2,7 @@
   <section class="chart-container">
     <el-row>
       <el-col :span="12">
+        <div  id="chartBarid" style="width:100%; height:400px;"></div>
         <div id="chartLine" style="width:100%; height:400px;"></div>
       </el-col>
       <el-col :span="12">
@@ -13,9 +14,7 @@
       <el-col :span="12"  >
         <div  id="chartBar" style="width:100%; height:400px;"></div>
       </el-col>
-      <el-col :span="12"  >
-        <div  id="chartBarid" style="width:100%; height:400px;"></div>
-      </el-col>
+
       <el-col :span="24">
         <a href="http://echarts.baidu.com/examples.html" target="_blank" style="float: right;">more>></a>
       </el-col>
