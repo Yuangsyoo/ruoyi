@@ -97,6 +97,6 @@ public class ParkingRecord extends BaseEntity
     @Excel(name = "支付方式")
     private  String paymentmethod;
     private ParkingLotInformation parkingLotInformation;
-
+    private String openid;
 
 }

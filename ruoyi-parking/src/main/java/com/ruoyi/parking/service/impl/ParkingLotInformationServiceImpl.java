@@ -183,6 +183,7 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
         Long number = parkingLotInformation.getNumber();
         //剩余车位
         Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+
         ParkingLotsVo parkingLotsVo = new ParkingLotsVo();
         parkingLotsVo.getName().add("剩余车位数");
         parkingLotsVo.getName().add("已停车位数");

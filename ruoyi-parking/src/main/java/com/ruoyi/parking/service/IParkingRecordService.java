@@ -90,4 +90,6 @@ public interface IParkingRecordService
 
 
     AjaxResult indoorCallback(ParkingRecordVo parkingRecordVo);
+
+    AjaxResult getMoney(Long id);
 }

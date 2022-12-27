@@ -156,12 +156,14 @@ public class ParkingRecordController extends BaseController
     {
         parkingRecordService.editPayState(parkingLotInformationId,license,parkinglotequipmentid,paymentMethod);
     }
-    //进口无牌车进场接口  不做有排车扫码书车牌计费
+    //无牌车进场接口  不做有排车扫码书车牌计费
+    // TODO: 2022/12/26 待修改
     @Anonymous
     @GetMapping("/noLicensePlate")
     public AjaxResult noLicensePlate(
              @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
-            ,@RequestParam(value ="license") String license) {
+            ,@RequestParam(value ="license") String license
+            ,@RequestParam(value ="openid") String openid) {
         return parkingRecordService.noLicensePlate(parkinglotequipmentid,license);
 
     }
@@ -210,4 +212,9 @@ public class ParkingRecordController extends BaseController
     }
 
 
+    @GetMapping("/getMoney/{id}")
+    public AjaxResult getMoney(@PathVariable Long id){
+        return parkingRecordService.getMoney(id);
+
+    }
 }

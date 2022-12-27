@@ -13,6 +13,7 @@
       <el-col :span="12">
         <div id="chartPie" style="width:100%; height:400px;"></div>
       </el-col>
+
       <el-col :span="24">
         <a href="http://echarts.baidu.com/examples.html" target="_blank" style="float: right;">more>></a>
       </el-col>
@@ -22,7 +23,7 @@
 
 <script>
 import echarts from 'echarts'
-import { listInformation, getParkingLots,getInformation, delInformation, addInformation, updateInformation } from "@/api/parking/information";
+import { listInformation,getMoney, getParkingLots,getInformation, delInformation, addInformation, updateInformation } from "@/api/parking/information";
 export default {
   data() {
     return {
@@ -35,40 +36,24 @@ export default {
 
   methods: {
     drawColumnChart() {
-   /*   this.$http.get("/shop/getEcharts").then(res=>{
-        var mode = res.data.map(item => item.mode);
-        var count1 = res.data.map(item => item.count1);
+      getMoney(localStorage.getItem("uu")).then(res=> {
+        var months=res.data.month
+        var moneys=res.data.money
         this.chartColumn = echarts.init(document.getElementById('chartColumn'));
         this.chartColumn.setOption({
-          title: { text: 'Column Chart' },
+          title: {text: '每月收入'},
           tooltip: {},
           xAxis: {
-            data:mode
+            data: months
           },
           yAxis: {},
           series: [{
-            name: '销量',
+            name: '今年每月收入',
             type: 'bar',
-            data: count1
+            data: moneys
           }]
         });
-      }).catch(res=>{
-
-      })*/
-        this.chartColumn = echarts.init(document.getElementById('chartColumn'));
-        this.chartColumn.setOption({
-          title: { text: 'Column Chart' },
-          tooltip: {},
-          xAxis: {
-              data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
-          },
-          yAxis: {},
-          series: [{
-              name: '销量',
-              type: 'bar',
-              data: [5, 20, 36, 10, 10, 20]
-            }]
-        });
+      })
     },
     drawBarChart() {
       this.chartBar = echarts.init(document.getElementById('chartBar'));
@@ -205,10 +190,16 @@ export default {
     },
 
     drawCharts() {
-      this.drawColumnChart()
-      this.drawBarChart()
-      this.drawLineChart()
-      this.drawPieChart()
+
+        this.drawBarChart()
+        this.drawLineChart()
+
+        this.drawColumnChart()
+
+        this.drawPieChart()
+
+
+
     },
   },
 /*created() {

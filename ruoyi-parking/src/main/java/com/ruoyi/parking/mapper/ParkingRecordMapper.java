@@ -2,6 +2,7 @@ package com.ruoyi.parking.mapper;
 
 import java.util.List;
 import com.ruoyi.parking.domain.ParkingRecord;
+import com.ruoyi.parking.dto.MoneyDto;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -76,4 +77,5 @@ public interface ParkingRecordMapper {
     //查询指定停车场最近离场记录
     List<ParkingRecord> getPayRecord(Long id);
 
+    List<MoneyDto> getMoney(@Param("parkingLotInformationId")Long id, @Param("year")String year);
 }

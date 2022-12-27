@@ -57,6 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @RequestMapping("/parking")
 @Anonymous
 @Slf4j
+
 public class ParkingController extends Thread {
     //停车记录
     @Autowired
@@ -354,13 +355,25 @@ public class ParkingController extends Thread {
                 //保存出场照片
                 parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
                 parkingRecord.setExittime(date);
-                // TODO: 2022/12/26
 
-                if (){
-
+                // 获取全部的进出口名称
+                String allName = parkingRecord.getEntranceandexitname();
+                // 用逗号分隔符分割开
+                String [] a = allName.split(",");
+                // 判断分割的长度是否小于2
+                if (a.length<2){
+                    // 如果小于2直接赋值进数据库
+                    parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+parkingLotEquipment.getName());
+                }else {
+                    // 如果大于2就提取最后一次出口的名字
+                    String name = parkingLotEquipment.getName();
+                    // 获取入口的长度值
+                    int aa = a[0].length();
+                    // 提取入口名字
+                    String b = allName.substring(0,aa);
+                    // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
+                    parkingRecord.setEntranceandexitname(b+","+name);
                 }
-
-                parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+parkingLotEquipment.getName());
                //修改订单状态为订单正在进行支付中
                //  2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式
                 ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord.getAdmissiontime(),date,license);

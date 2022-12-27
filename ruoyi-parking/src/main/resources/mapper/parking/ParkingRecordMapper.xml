@@ -22,6 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="discountamount"    column="discountAmount"    />
         <result property="amountpayable"    column="amountPayable"    />
         <result property="paymentmethod"    column="paymentMethod"    />
+        <result property="openid"    column="openid"    />
         <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
             <id property="id" column="lid"></id>
             <result property="name" column="lname"></result>
@@ -48,6 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="payTime != null  and payTime != ''"> and p.payTime = #{payTime}</if>
             <if test="numbertwo != null  and numbertwo != ''"> and p.numberTwo = #{numbertwo}</if>
             <if test="numberthree != null  and numberthree != ''"> and p.numberThree = #{numberthree}</if>
+            <if test="openid != null "> and p.openid = #{openid}</if>
         </where>
     </select>
     
@@ -76,7 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="discountamount != null">discountAmount,</if>
             <if test="amountpayable != null">amountPayable,</if>
             <if test="paymentmethod != null">paymentMethod ,</if>
-
+            <if test="openid != null">openid ,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -96,6 +98,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="discountamount != null"> #{discountamount},</if>
             <if test="amountpayable != null"> #{amountpayable},</if>
             <if test="paymentmethod != null"> #{paymentmethod},</if>
+            <if test="openid != null">#{openid},</if>
          </trim>
     </insert>
 
@@ -118,6 +121,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="discountamount != null">discountAmount = #{discountamount},</if>
             <if test="amountpayable != null">amountPayable = #{amountpayable},</if>
             <if test="paymentmethod != null">paymentMethod = #{paymentmethod},</if>
+            <if test="openid != null">openid = #{openid},</if>
         </trim>
         where id = #{id}
     </update>
@@ -168,5 +172,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     List<ParkingRecord> getPayRecord(Long id);-->
     <select id="getPayRecord" resultMap="ParkingRecordResult">
         select p.*,l.id lid,l.name lname from parking_record p left join parking_lot_information l on p.parkinglotinformationid=l.id where p.parkingLotInformationId=#{id} and  p.payState=1 order by  p.payTime desc
+    </select>
+
+    <!--List<MoneyDto> getMoney(@Param("parkingLotInformationId")Long id, @Param("year")String year);-->
+
+    <select id="getMoney" resultType="com.ruoyi.parking.dto.MoneyDto">
+            select
+            date_format(payTime, '%m') as month ,
+            count(id) as count,
+            sum(money) as money
+            from parking_record WHERE payState=1 AND payTime like concat(#{year }, '%') AND parkingLotInformationId=#{parkingLotInformationId}
+            GROUP BY month
     </select>
 </mapper>

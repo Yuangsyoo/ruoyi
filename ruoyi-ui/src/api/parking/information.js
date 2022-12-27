@@ -49,3 +49,10 @@ export function getParkingLots(id) {
     method: 'get'
   })
 }
+// 查询停车场管理详细
+export function getMoney(id) {
+  return request({
+    url: '/parking/record/getMoney/' + id,
+    method: 'get'
+  })
+}

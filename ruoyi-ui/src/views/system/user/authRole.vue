@@ -39,7 +39,7 @@
     <el-form label-width="100px">
       <el-form-item style="text-align: center;margin-left:-120px;margin-top:30px;">
         <el-button type="primary" @click="submitForm()">提交</el-button>
-        <el-button @click="close()">返回</el-button>
+<!--        <el-button @click="close()">返回</el-button>-->
       </el-form-item>
     </el-form>
   </div>
@@ -110,8 +110,9 @@ export default {
     },
     /** 关闭按钮 */
     close() {
-      const obj = { path: "/system/user/index" };
-      this.$tab.closeOpenPage(obj);
+     /* const obj = { path: "/system/user/index" };
+      this.$tab.closeOpenPage(obj);*/
+      this.$router.push("/system/user/index");
     },
   },
 };

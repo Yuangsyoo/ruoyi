@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+<!--    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="起步价" prop="startingprice">
         <el-input
           v-model="queryParams.startingprice"
@@ -39,7 +39,7 @@
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
-    </el-form>
+    </el-form>-->
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -91,11 +91,11 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序列号" align="center" prop="id" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
-      <el-table-column label="起步价" align="center" prop="startingprice" />
+<!--      <el-table-column label="起步价" align="center" prop="startingprice" />-->
 <!--      <el-table-column label="起步价时长" align="center" prop="startingpriceduration" />-->
-      <el-table-column label="每超过1小时加收" align="center" prop="increaseincome" />
+<!--      <el-table-column label="每超过1小时加收" align="center" prop="increaseincome" />
       <el-table-column label="单日收费上限
-" align="center" prop="superiorlimit" />
+" align="center" prop="superiorlimit" />-->
       <el-table-column label="计费方式" align="center" prop="type" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.type==0">常规+时段</span>

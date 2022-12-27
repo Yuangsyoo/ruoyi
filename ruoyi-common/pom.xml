@@ -101,12 +101,27 @@
             <artifactId>jaxb-api</artifactId>
         </dependency>
 
-        <!-- redis 缓存操作 -->
+       <!-- &lt;!&ndash; redis 缓存操作 &ndash;&gt;
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>-->
+        <!--整合Redis , 底层可以用jedis-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.lettuce</groupId>
+                    <artifactId>lettuce-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
         <!-- pool 对象池 -->
         <dependency>
             <groupId>org.apache.commons</groupId>

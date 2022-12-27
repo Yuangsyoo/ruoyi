@@ -13,16 +13,19 @@ import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.CodeGenerateUtils;
 import com.ruoyi.framework.websocket.WebSocketService;
 import com.ruoyi.parking.domain.*;
+import com.ruoyi.parking.dto.MoneyRes;
 import com.ruoyi.parking.mapper.ParkingBlackListMapper;
 import com.ruoyi.parking.mapper.ParkingCouponrecordMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
+import com.ruoyi.parking.dto.MoneyDto;
 import com.ruoyi.parking.vo.MoneyVo;
 import com.ruoyi.parking.vo.ParkingChargingDto;
 import com.ruoyi.parking.vo.ParkingRecordVo;
 import com.ruoyi.system.mapper.SysUserMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import com.ruoyi.parking.mapper.ParkingRecordMapper;
@@ -256,6 +259,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         return AjaxResult.success("请五分钟内离场");
     }
 
+
     @Override
     public ParkingRecord findByLicense1(String license, Long ParkingLotInformationId) {
         return  parkingRecordMapper.findByLicense1(license,ParkingLotInformationId);
@@ -375,12 +379,34 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         lprDemo.VzLPRClient_Cleanup();
         return AjaxResult.success();
     }
+
+    @Override
+    //@Cacheable(cacheNames = "money",key = "#id")
+    public AjaxResult getMoney(Long id) {
+        return getAjaxResult(id);
+    }
+
+    private AjaxResult getAjaxResult(Long id) {
+        if (id !=0) {
+            String year = String.valueOf(new Date().getYear()+1900);
+            List<MoneyDto> list = parkingRecordMapper.getMoney(id, year);
+            MoneyRes moneyRes = new MoneyRes();
+            for (MoneyDto moneyDto : list) {
+                moneyRes.getMoney().add(moneyDto.getMoney());
+                moneyRes.getMonth().add(moneyDto.getMonth());
+            }
+            return AjaxResult.success(moneyRes);
+        }
+        return AjaxResult.success();
+    }
+
     //停车场车位数加一
     private void updateRemainingParkingSpace(ParkingLotInformation parkingLotInformation) {
         Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
         parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
     }
+
 
 
     //添加无牌车进场记录
@@ -409,5 +435,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         //执行结束释放
         lprDemo.VzLPRClient_Cleanup();
     }
+
+
 
 }
