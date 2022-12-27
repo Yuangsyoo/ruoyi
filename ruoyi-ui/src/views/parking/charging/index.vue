@@ -1,46 +1,5 @@
 <template>
   <div class="app-container">
-<!--    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="起步价" prop="startingprice">
-        <el-input
-          v-model="queryParams.startingprice"
-          placeholder="请输入起步价"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="每超过1小时加收" prop="increaseincome">
-        <el-input
-          v-model="queryParams.increaseincome"
-          placeholder="请输入每超过1小时加收"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="单日收费上限
-" prop="superiorlimit">
-        <el-input
-          v-model="queryParams.superiorlimit"
-          placeholder="请输入单日收费上限
-"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="停车场id" prop="parkinglotinformationid">
-        <el-input
-          v-model="queryParams.parkinglotinformationid"
-          placeholder="请输入停车场id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>-->
-
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -313,7 +272,7 @@ export default {
           { required: true, message: "单日收费上限不能为空", trigger: "blur" }
         ],*/
         parkinglotinformationid: [
-          { required: true, message: "停车场id不能为空", trigger: "blur" }
+          { required: true, message: "请选择停车场", trigger: "blur" }
         ],
         type: [
           { required: true, message: "类型不能为空", trigger: "change" }

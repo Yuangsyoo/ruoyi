@@ -3,11 +3,8 @@ package com.ruoyi.parking.service.impl;
 import java.util.Date;
 import java.util.List;
 
-import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.exception.GlobalException;
-import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
 import com.ruoyi.parking.mapper.ParkingLotInformationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,4 +110,17 @@ public class ParkingBlackListServiceImpl implements IParkingBlackListService
     {
         return parkingBlackListMapper.deleteParkingBlackListById(id);
     }
+    /**
+     * 求出黑名单总和数量
+     * @return
+     */
+    @Override
+    public Long sumAllBlack(Long id){
+        if (id!=0){
+            return parkingBlackListMapper.selectAllBlackListSum(id);
+        }
+        return null;
+    }
+
+
 }

@@ -80,11 +80,11 @@ public interface IParkingRecordService
 
     AjaxResult updateToRecordFromCoupon(Long id);
 
-    AjaxResult noLicensePlate(Long parkinglotequipmentid, String license);
+    AjaxResult noLicensePlate(Long parkinglotequipmentid, String license,String openid);
 
     void editPayState(Long parkingLotInformationId, String license, Long parkinglotequipmentid,String paymentMethod);
 
-    AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String license);
+    AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String openid);
 
     AjaxResult indoor(Long parkingLotInformationId, String license);
 
@@ -92,4 +92,6 @@ public interface IParkingRecordService
     AjaxResult indoorCallback(ParkingRecordVo parkingRecordVo);
 
     AjaxResult getMoney(Long id);
+
+    AjaxResult getDailyInformation(Long id);
 }

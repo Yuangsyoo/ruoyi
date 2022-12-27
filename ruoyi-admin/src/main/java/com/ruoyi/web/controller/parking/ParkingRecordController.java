@@ -164,7 +164,7 @@ public class ParkingRecordController extends BaseController
              @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
             ,@RequestParam(value ="license") String license
             ,@RequestParam(value ="openid") String openid) {
-        return parkingRecordService.noLicensePlate(parkinglotequipmentid,license);
+        return parkingRecordService.noLicensePlate(parkinglotequipmentid,license,openid);
 
     }
 
@@ -190,8 +190,8 @@ public class ParkingRecordController extends BaseController
     @Anonymous
     @GetMapping("/echoInformationToLicense")
     public AjaxResult echoInformationToLicense( @RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid
-            ,@RequestParam(value ="license") String license,String openid){
-        return parkingRecordService.echoInformationToLicense(parkinglotequipmentid,license,openid);
+            , @RequestParam(value ="openid")String openid){
+        return parkingRecordService.echoInformationToLicense(parkinglotequipmentid,openid);
 
     }
 
@@ -215,6 +215,11 @@ public class ParkingRecordController extends BaseController
     @GetMapping("/getMoney/{id}")
     public AjaxResult getMoney(@PathVariable Long id){
         return parkingRecordService.getMoney(id);
+
+    }
+    @GetMapping("/getDailyInformation/{id}")
+    public AjaxResult getDailyInformation(@PathVariable Long id){
+        return parkingRecordService.getDailyInformation(id);
 
     }
 }

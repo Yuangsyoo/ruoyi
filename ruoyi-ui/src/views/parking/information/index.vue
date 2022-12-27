@@ -210,8 +210,8 @@
       <el-table-column label="营业结束时间" align="center" prop="endtime" width="120"/>
 
 
-      <el-table-column label="月卡购买最小月数" align="center" prop="minmonths" />
-      <el-table-column label="月卡购买最大月数" align="center" prop="maxmonths" />
+<!--      <el-table-column label="月卡购买最小月数" align="center" prop="minmonths" />
+      <el-table-column label="月卡购买最大月数" align="center" prop="maxmonths" />-->
       <el-table-column label="月卡购买" align="center" prop="monthlycardpurchase">
         <template scope="scope">
           <span style="color: green" v-if="scope.row.monthlycardpurchase==0">开启</span>
@@ -354,12 +354,12 @@
           <el-input v-model="form.endtime" placeholder="请输入正确的时间格式 例:24:00:00"/>
 
         </el-form-item>
-        <el-form-item label="月卡购买最小月数" prop="minmonths">
+<!--        <el-form-item label="月卡购买最小月数" prop="minmonths">
           <el-input v-model="form.minmonths" placeholder="请输入月卡购买最小月数" />
         </el-form-item>
         <el-form-item label="月卡购买最大月数" prop="maxmonths">
           <el-input v-model="form.maxmonths" placeholder="请输入月卡购买最大月数" />
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="月卡购买" prop="monthlycardpurchase">
           <template>
             <el-radio v-model="form.monthlycardpurchase" label="0">开启</el-radio>

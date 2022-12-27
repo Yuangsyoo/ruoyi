@@ -61,4 +61,15 @@ public interface ParkingWhiteListMapper
     public int deleteParkingWhiteListByIds(Long[] ids);
 
     ParkingWhiteList findByLicense(@Param("license") String license,@Param("parkingLotInformationId") Long parkingLotInformationId);
+    /**
+     * 查询总的白名单数量
+     * @return
+     */
+    public Long selectAllWhiteListSum(@Param("parkingLotInformationId")Long parkingLotInformationId);
+
+    /**
+     * 查询总的过期的白名单数量
+     * @return
+     */
+    public Long selectAllOverdueWhite(@Param("parkingLotInformationId")Long parkingLotInformationId);
 }

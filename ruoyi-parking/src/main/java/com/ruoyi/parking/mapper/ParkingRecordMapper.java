@@ -78,4 +78,10 @@ public interface ParkingRecordMapper {
     List<ParkingRecord> getPayRecord(Long id);
 
     List<MoneyDto> getMoney(@Param("parkingLotInformationId")Long id, @Param("year")String year);
+
+    ParkingRecord findByOpenid(@Param("openid")String openid,@Param("parkingLotInformationId") Long parkinglotinformationid);
+
+    Long getDailyInformation(@Param("parkingLotInformationId")Long id);
+
+    Long getDailyInformations(@Param("parkingLotInformationId")Long id);
 }

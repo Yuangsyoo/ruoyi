@@ -111,5 +111,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="findByLicense" resultType="com.ruoyi.parking.domain.ParkingWhiteList">
         select * from parking_white_list where license=#{license} and parkingLotInformationId=#{parkingLotInformationId}
     </select>
+    <!--    查询白名单总和数量-->
+    <select id="selectAllWhiteListSum" resultType="Long">
+        select count(*) from parking_white_list where parkingLotInformationId = #{parkingLotInformationId}
+    </select>
 
+    <!--    查询过期的白名单总和数量-->
+    <select id="selectAllOverdueWhite" resultType="Long">
+        select count(*) from parking_white_list where parkingLotInformationId = #{parkingLotInformationId} and state = 1
+    </select>
 </mapper>

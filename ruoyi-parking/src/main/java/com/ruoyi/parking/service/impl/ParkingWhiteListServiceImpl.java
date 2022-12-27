@@ -233,4 +233,38 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
         }
         return parkingWhiteListMapper.deleteParkingWhiteListById(id);
     }
+
+    /**
+     * 求出白名单总和数量
+     * @return
+     */
+    @Override
+    public Long summation(Long id){
+        if (id!=0){
+            return parkingWhiteListMapper.selectAllWhiteListSum(id);
+        }
+        return null;
+    }
+
+    /**
+     * 查询过期的白名单数量
+     * @return
+     */
+    @Override
+    public Long overdueWhiteList(Long id){
+        if (id!=0){
+            return parkingWhiteListMapper.selectAllOverdueWhite(id);
+        }
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
 }

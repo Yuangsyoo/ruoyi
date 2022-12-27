@@ -29,7 +29,6 @@
           <span style="color: green"  v-else-if="scope.row.licensepllatecolor===5">绿色</span>
         </template>
       </el-table-column>
-<!--      <el-table-column label="订单编号" align="center" prop="ordernumber" />-->
       <el-table-column label="订单状态" align="center" prop="orderstate">
         <template scope="scope">
           <span style="color: green" v-if="scope.row.orderstate==2">订单进行中</span>
@@ -37,9 +36,6 @@
           <span style="color: red" v-else-if="scope.row.orderstate==0">未支付</span>
         </template>
       </el-table-column>
-<!--      <el-table-column label="支付状态" v-if="false" align="center" prop="paystate" />-->
-<!--      <el-table-column label="应付金额" align="center" prop="amountpayable" />
-      <el-table-column label="优惠金额" align="center" prop="discountamount" />-->
       <el-table-column label="实付金额" align="center" prop="money" />
       <el-table-column label="支付方式" align="center" prop="paymentmethod" />
       <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />
@@ -60,11 +56,6 @@
                   ></el-image>
                 </template>
             </el-table-column>
-<!--      <el-table-column label="支付时间" align="center" prop="payTime" >
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
-      </el-table-column>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-show="scope.row.orderstate==2"
@@ -102,17 +93,6 @@
           <span>{{ parseTime(scope.row.exittime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor">
-        <template slot-scope="scope">
-          <span style="color: red" v-if="scope.row.licensepllatecolor==0">未知</span>
-          <span style="color: blue" v-if="scope.row.licensepllatecolor==1">蓝色</span>
-          <span style="color: yellow" v-if="scope.row.licensepllatecolor==2">黄色</span>
-          <span style="color: black" v-if="scope.row.licensepllatecolor==3">白色</span>
-          <span style="color: green" v-if="scope.row.licensepllatecolor==4">黑色</span>
-          <span style="color: green"  v-else-if="scope.row.licensepllatecolor===5">绿色</span>
-        </template>
-      </el-table-column>-->
-      <!--<el-table-column label="订单编号" align="center" prop="ordernumber" />-->
       <el-table-column label="订单状态" align="center" prop="orderstate">
         <template scope="scope">
           <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
@@ -120,34 +100,9 @@
           <span style="color: red" v-else-if="scope.row.orderstate==2">订单进行中</span>
         </template>
       </el-table-column>
-      <!--<el-table-column label="支付状态" v-if="false" align="center" prop="paystate" />-->
       <el-table-column label="应付金额" align="center" prop="amountpayable" />
       <el-table-column label="优惠金额" align="center" prop="discountamount" />
       <el-table-column label="实付金额" align="center" prop="money" />
-      <!--<el-table-column label="支付方式" align="center" prop="paymentmethod" />-->
-      <!--<el-table-column label="出入口名称" align="center" prop="entranceandexitname" />-->
-      <!--      <el-table-column label="进口照片" align="center" prop="numbertwo">
-        <template slot-scope="scope">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="scope.row.numbertwo">
-          </el-image>
-        </template>
-      </el-table-column>
-      <el-table-column label="出口照片" align="center" prop="numberthree" >
-        <template slot-scope="scope">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="scope.row.numberthree"
-            :preview-src-list="scope.row.numberthree"
-          ></el-image>
-        </template>
-      </el-table-column>-->
-      <!--   <el-table-column label="支付时间" align="center" prop="payTime" >
-       <template slot-scope="scope">
-           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-         </template>
-       </el-table-column>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
                     <el-button
@@ -325,8 +280,8 @@ export default {
     this.initWebSocket();
 
     this.getPayRecord(localStorage.getItem("uu"));
-
     this.setInterval1();
+
   },
   destroyed() {
     //销毁
@@ -336,10 +291,9 @@ export default {
   methods: {
 
     setInterval1(){
-
        setInterval(()=>{
+         console.log(1)
               this.getPayRecordOrder();
-
       },5000)
     },
     getPayRecordOrder(){
@@ -355,7 +309,7 @@ export default {
       //建立websocket连接
       if ("WebSocket" in window){
         //连接服务端访问的url，我这里配置在了env中，就是上面在线测试工具中的地址,下面放了实例
-        let ws ="ws://localhost:8080/websocket/"+JSON.parse(JSON.parse(localStorage.getItem("name")).data).username
+        let ws ="ws://localhost:8080/websocket/"+localStorage.getItem("name")
         this.websock = new WebSocket(ws);
         this.websock.onopen = this.websocketonopen;
         this.websock.onerror = this.websocketonerror;
@@ -478,7 +432,7 @@ export default {
       }
     },
     websocketclose: function (e) {
-      // console.log("连接关闭",)
+       console.log("连接关闭",)
       //重连
       this.reconnect();
     },
@@ -518,12 +472,6 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-   /* handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加停车记录";
-    },*/
     /**现金按钮操作 */
     handleUpdate(row) {
       console.log(row.id)
@@ -540,33 +488,6 @@ export default {
         this.recordList=this.getPayRecordOrder();
       })
     },
-    /** 提交按钮 */
-  /*  submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateRecord(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addRecord(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },*/
-
-    /** 导出按钮操作 */
-   /* handleExport() {
-      this.download('parking/record/export', {
-        ...this.queryParams
-      }, `record_${new Date().getTime()}.xlsx`)
-    }*/
   }
 };
 

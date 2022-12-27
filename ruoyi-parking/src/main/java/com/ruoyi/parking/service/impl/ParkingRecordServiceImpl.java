@@ -19,9 +19,7 @@ import com.ruoyi.parking.mapper.ParkingCouponrecordMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
 import com.ruoyi.parking.dto.MoneyDto;
-import com.ruoyi.parking.vo.MoneyVo;
-import com.ruoyi.parking.vo.ParkingChargingDto;
-import com.ruoyi.parking.vo.ParkingRecordVo;
+import com.ruoyi.parking.vo.*;
 import com.ruoyi.system.mapper.SysUserMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,17 +181,17 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     }
     //无牌车
     @Override
-    public AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String license) {
+    public AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String openid) {
         Date date = new Date();
         ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
-        ParkingRecord parkingRecord = parkingRecordMapper.findByLicense(license, parkingLotEquipment.getParkinglotinformationid());
+        ParkingRecord parkingRecord = parkingRecordMapper.findByOpenid(openid, parkingLotEquipment.getParkinglotinformationid());
         if (parkingRecord==null){
             return AjaxResult.error("无停车记录");
         }
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());
         parkingRecord.setOrderstate("2");
         parkingRecord.setExittime(date);
-
+        String license = parkingRecord.getLicense();
         ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord.getAdmissiontime(),new Date(),license);
         //金额
         MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
@@ -340,7 +338,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     }
     //添加无牌车接口
     @Override
-    public AjaxResult noLicensePlate(Long parkinglotequipmentid, String license) {
+    public AjaxResult noLicensePlate(Long parkinglotequipmentid, String license,String openid) {
         if (parkinglotequipmentid==null){
             return AjaxResult.error("网络异常，稍后重试");
         }
@@ -372,7 +370,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         //停车场车位数加一
         updateRemainingParkingSpace(parkingLotInformation);
         //添加无牌车进场记录
-        addParkingRecord(license, parkingLotEquipment);
+        addParkingRecord(license, parkingLotEquipment,openid);
         //关闭设备的控制句柄
         lprDemo.VzLPRClient_Close(handle);
         //执行结束释放
@@ -385,6 +383,22 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     public AjaxResult getMoney(Long id) {
         return getAjaxResult(id);
     }
+
+    @Override
+    public AjaxResult getDailyInformation(Long id) {
+        DailyInformationVo dailyInformationVo = new DailyInformationVo();
+        if (id !=0) {
+            dailyInformationVo.getName().add("今日停车未出场数");
+            Long count=parkingRecordMapper.getDailyInformation(id);
+            dailyInformationVo.getParkingLots().add(new ParkingLots(count,"今日停车未出场数"));
+            dailyInformationVo.getName().add("今日停车已出场数");
+            Long count1=parkingRecordMapper.getDailyInformations(id);
+            dailyInformationVo.getParkingLots().add(new ParkingLots(count1,"今日停车已出场数"));
+            return AjaxResult.success(dailyInformationVo);
+        }
+        return AjaxResult.success(dailyInformationVo);
+    }
+
 
     private AjaxResult getAjaxResult(Long id) {
         if (id !=0) {
@@ -410,12 +424,13 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
 
 
     //添加无牌车进场记录
-    private void addParkingRecord(String license, ParkingLotEquipment parkingLotEquipment) {
+    private void addParkingRecord(String license, ParkingLotEquipment parkingLotEquipment,String openid) {
         ParkingRecord parkingRecord = new ParkingRecord();
         parkingRecord.setLicense(license);
         parkingRecord.setParkinglotinformationid(parkingLotEquipment.getParkinglotinformationid());
         parkingRecord.setAdmissiontime(new Date());
         parkingRecord.setLicensepllatecolor("0");
+        parkingRecord.setOpenid(openid);
         //生成订单编号
         parkingRecord.setOrdernumber(CodeGenerateUtils.generateUnionPaySn());
         parkingRecord.setPaystate("0");

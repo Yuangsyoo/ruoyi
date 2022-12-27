@@ -1,9 +1,7 @@
 package com.ruoyi.parking.service.impl;
 
-import java.io.IOException;
 import java.util.List;
 
-import com.google.zxing.WriterException;
 import com.ruoyi.common.exception.GlobalException;
 import com.ruoyi.common.utils.QRCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,4 +114,31 @@ public class ParkingCouponServiceImpl implements IParkingCouponService
     {
         return parkingCouponMapper.deleteParkingCouponById(id);
     }
+
+    /**
+     * 求出发放优惠卷的总和数量
+     * @return
+     */
+    @Override
+    public Long sumAllCoupon(Long id){
+        if (id!=0){
+            return parkingCouponMapper.selectAllCouponSum(id);
+        }
+        return null;
+    }
+
+
+
+    /**
+     * 查询所有过期的优惠卷的总和数量
+     * @return
+     */
+    @Override
+    public Long sumAllExpiredCoupon(Long id){
+        if (id!=0){
+            return parkingCouponMapper.selectAllExpiredCoupon(id);
+        }
+        return null;
+    }
+
 }

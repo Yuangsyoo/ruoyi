@@ -112,4 +112,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <!--    查询全部优惠卷发放总量-->
+    <select id="selectAllCouponSum" resultType="Long">
+        select count(*) from parking_coupon where parkingLotInformationId = #{parkingLotInformationId}
+    </select>
+
+    <!--    查询全部过期的优惠卷总量-->
+    <select id="selectAllExpiredCoupon" resultType="Long">
+        select count(*) from parking_coupon where parkingLotInformationId = #{parkingLotInformationId} and state = 1
+    </select>
 </mapper>

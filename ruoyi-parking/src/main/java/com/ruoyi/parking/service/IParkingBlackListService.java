@@ -58,4 +58,9 @@ public interface IParkingBlackListService
      * @return 结果
      */
     public int deleteParkingBlackListById(Long id);
+    /**
+     * 求黑名单数量总和
+     * @return
+     */
+    public Long sumAllBlack(Long id);
 }

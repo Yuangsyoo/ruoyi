@@ -1,9 +1,13 @@
 package com.ruoyi.web.controller.parking;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.ruoyi.parking.service.IParkingBlackListService;
+import com.ruoyi.parking.service.IParkingCouponService;
+import com.ruoyi.parking.vo.SumAllListAndCouponVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +39,10 @@ public class ParkingWhiteListController extends BaseController
 {
     @Autowired
     private IParkingWhiteListService parkingWhiteListService;
+    @Autowired
+    private IParkingBlackListService parkingBlackListService;
+    @Autowired
+    private IParkingCouponService parkingCouponService;
 
     /**
      * 查询停车场白名单列表
@@ -110,5 +118,38 @@ public class ParkingWhiteListController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(parkingWhiteListService.deleteParkingWhiteListByIds(ids));
+    }
+
+    /**
+     * 查询白名单、过期白名单、黑名单、优惠卷领取总数量、优惠卷过期数量总汇
+     * @param id
+     * @return
+     */
+    @GetMapping("/getSumAllListAndCoupon/{id}")
+    public AjaxResult getSumAllListAndCoupon(@PathVariable Long id) {
+        if (id!=0){
+            SumAllListAndCouponVo sumAllListAndCouponVo = new SumAllListAndCouponVo();
+            List<String> list = sumAllListAndCouponVo.getName();
+            List<Long> list1 = sumAllListAndCouponVo.getCount();
+            Long wl = parkingWhiteListService.summation(id);
+            Long owl = parkingWhiteListService.overdueWhiteList(id);
+            Long bl = parkingBlackListService.sumAllBlack(id);
+            Long allCoupon = parkingCouponService.sumAllCoupon(id);
+            Long overdueAllCoupon = parkingCouponService.sumAllExpiredCoupon(id);
+            /*,'过期白名单','黑名单','优惠卷活动总数量','过期优惠数量'*/
+            list.add("白名单");
+            list.add("过期白名单");
+            list.add("黑名单");
+            list.add("优惠卷活动总数量");
+            list.add("过期优惠数量");
+            list1.add(wl);
+            list1.add(owl);
+            list1.add(bl);
+            list1.add(allCoupon);
+            list1.add(overdueAllCoupon);
+            return AjaxResult.success(sumAllListAndCouponVo);
+        }
+
+       return AjaxResult.success();
     }
 }

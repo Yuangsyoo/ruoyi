@@ -2,6 +2,7 @@ package com.ruoyi.parking.mapper;
 
 import java.util.List;
 import com.ruoyi.parking.domain.ParkingCoupon;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 优惠卷Mapper接口
@@ -58,4 +59,17 @@ public interface ParkingCouponMapper
      * @return 结果
      */
     public int deleteParkingCouponByIds(Long[] ids);
+    /**
+     * 查询全部发放的优惠卷总和
+     * @param
+     * @return
+     */
+    public Long selectAllCouponSum(@Param("parkingLotInformationId")Long parkingLotInformationId);
+
+    /**
+     * 查询全部过期的优惠卷数量
+     * @param
+     * @return
+     */
+    public Long selectAllExpiredCoupon(@Param("parkingLotInformationId")Long parkingLotInformationId);
 }

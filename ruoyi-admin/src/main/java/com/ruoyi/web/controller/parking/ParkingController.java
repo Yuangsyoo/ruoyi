@@ -127,6 +127,7 @@ public class ParkingController extends Thread {
             if (parkingLotInformation.getTemporaryvehiclerestrictions().equals("0")){
                 ParkingFixedparkingspace parkingFixedparkingspace=parkingFixedparkingspaceService.findByParkingLotInformationIdAndLicense(parkingLotInformation.getId(),license);
                 ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
+
                 if (parkingFixedparkingspace!=null && byLicense!=null  ){
                     String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"临时车限制进入\",\"is_pay\":\"false\"}}\n";
                     return a;
@@ -294,8 +295,25 @@ public class ParkingController extends Thread {
                 long l = DateTime.dateDiff(parkingRecord1.getPayTime(),date);
                 if (l>parkingLotInformation.getPayleavingtime()){
                    log.info("支付到离场时间超过"+parkingLotInformation.getPayleavingtime()+"分钟，不允开闸，待处理");
-                   String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超出出场时间\",\"is_pay\":\"true\"}}\n";
-                   return a;
+                    // TODO: 2022/12/27 超时补费
+                    //开启超时补费
+                    if (parkingLotInformation.getOvertimecompensation().equals("0")){
+                        ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord1.getPayTime(),date,license);
+                        //金额
+                        // TODO: 2022/12/27 需要添加超时补费金额指端
+                    //    MoneyVo moneyVo = parkingChargingService.overtimeCompensation(parkingChargingDto);
+                        String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超出出场时间\",\"is_pay\":\"true\"}}\n";
+                        return a;
+                    }
+                    //未开启超时补费
+                    else {
+                        //设备开闸
+                        SwitchOn(total.getAlarmInfoPlate().getIpaddr());
+                        //出场后修改停车场记录
+                        updateParkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
+                        //停车场车位数加一
+                        updateRemainingParkingSpace(parkingLotInformation);
+                    }
                }
                //设备开闸
                SwitchOn(total.getAlarmInfoPlate().getIpaddr());

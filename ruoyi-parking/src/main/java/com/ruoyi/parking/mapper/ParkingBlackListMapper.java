@@ -61,4 +61,9 @@ public interface ParkingBlackListMapper
     public int deleteParkingBlackListByIds(Long[] ids);
 
     ParkingBlackList selectParkingBlackListByIdAndLicense(@Param("parkingLotInformationId") Long id, @Param("license")String license);
+    /**
+     * 查询黑名单总
+     * @return
+     */
+    public Long selectAllBlackListSum(@Param("parkingLotInformationId")Long parkingLotInformationId);
 }

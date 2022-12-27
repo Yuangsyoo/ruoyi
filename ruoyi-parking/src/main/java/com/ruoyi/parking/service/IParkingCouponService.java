@@ -58,4 +58,17 @@ public interface IParkingCouponService
      * @return 结果
      */
     public int deleteParkingCouponById(Long id);
+    /**
+     * 查询所有发放优惠卷数量
+     * @param id
+     * @return
+     */
+    public Long sumAllCoupon(Long id);
+
+    /**
+     * 查询所有过期的优惠卷数量
+     * @param id
+     * @return
+     */
+    public Long sumAllExpiredCoupon(Long id);
 }

@@ -38,8 +38,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="license != null  and license != ''"> and p.license = #{license}</if>
             <if test="parkinglotinformationid != null and parkinglotinformationid != 0"> and p.parkingLotInformationId = #{parkinglotinformationid}</if>
-            <if test="admissiontime != null "> and p.admissionTime = #{admissiontime}</if>
-            <if test="exittime != null "> and p.exitTime = #{exittime}</if>
+            <if test="admissiontime != null "> and p.admissionTime  = #{admissiontime}</if>
+            <if test="exittime != null "> and p.exitTime  = #{exittime}</if>
             <if test="licensepllatecolor != null  and licensepllatecolor != ''"> and p.licensePllateColor = #{licensepllatecolor}</if>
             <if test="ordernumber != null  and ordernumber != ''"> and p.orderNumber = #{ordernumber}</if>
             <if test="orderstate != null  and orderstate != ''"> and p.orderState = #{orderstate}</if>
@@ -142,7 +142,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select  id="findByLicense" resultMap="ParkingRecordResult">
         select  * from parking_record where license=#{license} and parkingLotInformationId=#{parkingLotInformationId} and payState='0'
     </select>
-
+<!--ParkingRecord findByOpenid(@Param("openid")String openid,@Param("parkingLotInformationId") Long parkinglotinformationid);-->
+    <select  id="findByOpenid" resultMap="ParkingRecordResult">
+        select  * from parking_record where openid=#{openid} and parkingLotInformationId=#{parkingLotInformationId} and payState='0'
+    </select>
     <!--    //通过停车场id，车牌号,支付状态获取出场车停车记录
              ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license);-->
     <select id="findByParkingLotInformationLicenseAndPayOrder" resultMap="ParkingRecordResult">
@@ -184,4 +187,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             from parking_record WHERE payState=1 AND payTime like concat(#{year }, '%') AND parkingLotInformationId=#{parkingLotInformationId}
             GROUP BY month
     </select>
+
+ <!--   Long getDailyInformation(@Param("parkingLotInformationId")Long id);-->
+    <select id="getDailyInformation" resultType="Long">
+        select count(*) from parking_record where TO_DAYS(admissionTime) = TO_DAYS(NOW()) and payState !=1 and parkingLotInformationId=#{parkingLotInformationId}
+    </select>
+    <!--Long getDailyInformations(@Param("parkingLotInformationId")Long id);-->
+    <select id="getDailyInformations" resultType="Long">
+    select count(*) from parking_record where TO_DAYS(exitTime) = TO_DAYS(NOW()) and payState=1 and parkingLotInformationId=#{parkingLotInformationId}
+   </select>
+
 </mapper>

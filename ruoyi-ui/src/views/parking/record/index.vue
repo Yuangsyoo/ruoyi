@@ -9,13 +9,32 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+<!--      <el-form-item label="进场时间" prop="admissiontime">
+
+        <el-date-picker clearable
+                        v-model="queryParams.admissiontime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="请选择入场时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="离场时间" prop="exittime">
+        <el-date-picker clearable
+                        v-model="queryParams.exittime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="请选择操作时间">
+        </el-date-picker>
+      </el-form-item>-->
       <el-form-item label="支付状态" prop="paystate">
-        <el-input
-          v-model="queryParams.paystate"
-          placeholder="请输入支付状态"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.paystate" clearable  placeholder="请选择">
+          <el-option
+            v-for="item in paystates"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -102,7 +121,13 @@
           <span style="color: red" v-else-if="scope.row.orderstate==2">订单进行中</span>
         </template>
       </el-table-column>
-      <el-table-column label="支付状态" align="center" prop="paystate" />
+      <el-table-column label="支付状态" align="center" prop="paystate" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.paystate==1">已支付</span>
+          <span style="color: red" v-else-if="scope.row.paystate==0">未支付</span>
+
+        </template>
+      </el-table-column>
       <el-table-column label="应付金额" align="center" prop="amountpayable" />
       <el-table-column label="优惠金额" align="center" prop="discountamount" />
       <el-table-column label="实付金额" align="center" prop="money" />
@@ -190,17 +215,24 @@
             placeholder="请选择出场时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="车牌颜色" prop="licensepllatecolor">
+<!--        <el-form-item label="车牌颜色" prop="licensepllatecolor">
           <el-input v-model="form.licensepllatecolor" placeholder="请输入车牌颜色" />
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="订单编号" prop="ordernumber">
           <el-input v-model="form.ordernumber" placeholder="请输入订单编号" />
         </el-form-item>
-        <el-form-item label="订单状态0代表未支付1代表已支付" prop="orderstate">
-          <el-input v-model="form.orderstate" placeholder="请输入订单状态0代表未支付1代表已支付" />
+        <el-form-item label="订单状态" prop="orderstate">
+          <template>
+            <el-radio v-model="form.orderstate" label="0">未支付</el-radio>
+            <el-radio v-model="form.orderstate" label="1">已支付</el-radio>
+            <el-radio v-model="form.orderstate" label="2">进行中</el-radio>
+          </template>
         </el-form-item>
-        <el-form-item label="支付状态0代表未支付1代表已支付" prop="paystate">
-          <el-input v-model="form.paystate" placeholder="请输入支付状态0代表未支付1代表已支付" />
+        <el-form-item label="支付状态" prop="paystate">
+          <template>
+            <el-radio v-model="form.paystate" label="0">未支付</el-radio>
+            <el-radio v-model="form.paystate" label="1">已支付</el-radio>
+          </template>
         </el-form-item>
         <el-form-item label="支付金额" prop="money">
           <el-input v-model="form.money" placeholder="请输入支付金额" />
@@ -216,12 +248,8 @@
                           placeholder="请选择出场时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="预留字段2" prop="numbertwo">
-          <el-input v-model="form.numbertwo" placeholder="请输入预留字段2" />
-        </el-form-item>
-        <el-form-item label="预留字段3" prop="numberthree">
-          <el-input v-model="form.numberthree" placeholder="请输入预留字段3" />
-        </el-form-item>
+
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -239,7 +267,16 @@ export default {
   name: "Record",
   data() {
     return {
-
+      paystates:[{
+        id: '0',
+        name: '未支付'
+      }, {
+        id: '1',
+        name: '已支付'
+      }, {
+        id: '2',
+        name: '订单进行中'
+      }],
       parkinglotinformations:[],
       // 遮罩层
       loading: true,

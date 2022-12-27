@@ -59,4 +59,16 @@ public interface IParkingWhiteListService
      * @return 结果
      */
     public int deleteParkingWhiteListById(Long id);
+
+    /**
+     * 求白名单数量总和
+     * @return
+     */
+    public Long summation(Long id);
+
+    /**
+     * 查询过期白名单的数量
+     * @return
+     */
+    public Long overdueWhiteList(Long id);
 }
