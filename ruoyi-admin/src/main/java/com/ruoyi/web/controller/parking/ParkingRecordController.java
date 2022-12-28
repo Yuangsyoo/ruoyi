@@ -167,9 +167,6 @@ public class ParkingRecordController extends BaseController
         return parkingRecordService.noLicensePlate(parkinglotequipmentid,license,openid);
 
     }
-
-
-
     //有牌车从redis中获取要出口闸出场车信息等待扫码页面调用
     @GetMapping("/echoInformation/{parkinglotequipmentid}")
     @Anonymous
