@@ -123,9 +123,9 @@
       </el-table-column>
       <el-table-column label="支付状态" align="center" prop="paystate" >
         <template scope="scope">
-          <span style="color: green" v-if="scope.row.paystate==1">已支付</span>
-          <span style="color: red" v-else-if="scope.row.paystate==0">未支付</span>
-
+          <span style="color: red"   v-if="scope.row.paystate==0">未支付</span>
+          <span style="color: green" v-else-if="scope.row.paystate==1">已支付</span>
+          <span style="color: red"   v-else-if="scope.row.paystate==2">超时补费</span>
         </template>
       </el-table-column>
       <el-table-column label="应付金额" align="center" prop="amountpayable" />
@@ -232,6 +232,7 @@
           <template>
             <el-radio v-model="form.paystate" label="0">未支付</el-radio>
             <el-radio v-model="form.paystate" label="1">已支付</el-radio>
+            <el-radio v-model="form.paystate" label="2">超时补费</el-radio>
           </template>
         </el-form-item>
         <el-form-item label="支付金额" prop="money">
