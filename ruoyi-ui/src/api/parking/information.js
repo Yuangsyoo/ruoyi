@@ -70,3 +70,10 @@ export function getSumAllListAndCoupon(id) {
     method: 'get'
   })
 }
+// 获取各个停车场被占用停车位总数
+export function getOccupiedParkingSpace(id) {
+  return request({
+    url: '/parking/information/getOccupiedParkingSpace/' + id,
+    method: 'get'
+  })
+}

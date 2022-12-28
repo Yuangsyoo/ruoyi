@@ -174,11 +174,21 @@ public class ParkingRecordController extends BaseController
 
         ParkingRecordVo parkingRecordVo = (ParkingRecordVo) redisTemplate.opsForValue().get(String.valueOf(parkinglotequipmentid));
         if (parkingRecordVo!=null){
+            //判断是否是超时补费
+            String license = parkingRecordVo.getLicense();
+            Long parkinglotinformationid = parkingRecordVo.getParkinglotinformationid();
+            ParkingRecord parkingRecord= parkingRecordService.findbypaystateandlicense(parkinglotinformationid,license);
+            if (parkingRecord!=null){
+                parkingRecord.setMoney(parkingRecord.getMoney()+parkingRecordVo.getMoney());
+                parkingRecord.setAmountpayable(parkingRecord.getAmountpayable()+parkingRecordVo.getMoney());
+                parkingRecordService.updateParkingRecord(parkingRecord);
+            }
+
             redisTemplate.delete(String.valueOf(parkinglotequipmentid));
             return AjaxResult.success(parkingRecordVo);
         }else {
 
-            return AjaxResult.error("网络异常，稍后重试");
+            return AjaxResult.error("无记录");
         }
 
     }

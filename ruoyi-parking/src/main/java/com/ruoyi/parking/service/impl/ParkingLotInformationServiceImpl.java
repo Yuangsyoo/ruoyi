@@ -12,6 +12,7 @@ import com.ruoyi.common.core.mapper.SysUserRoleMapper;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.parking.dto.ParkingLotEquipmentDto;
 import com.ruoyi.common.core.service.ISysUserService;
+import com.ruoyi.parking.vo.NumberOfCarParksVo;
 import com.ruoyi.parking.vo.ParkingLots;
 import com.ruoyi.parking.vo.ParkingLotsVo;
 import org.springframework.beans.BeanUtils;
@@ -192,5 +193,31 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
         list.add(new ParkingLots(number-remainingParkingSpace,"已停车位数"));
 
         return AjaxResult.success(parkingLotsVo);
+    }
+    /**
+     * 查询所有不同的停车场停的车辆数
+     * @param id 判断传进来的值是否为管理员
+     * @return
+     */
+    @Override
+    public AjaxResult getNumberOfCarParks(Long id){
+        // 判断id是否是管理员id
+        if (id==0) {
+            NumberOfCarParksVo numberOfCarParksVo = new NumberOfCarParksVo();
+            List<ParkingLotInformation> date = parkingLotInformationMapper.selectAllNumberOfCarParks();
+            for (ParkingLotInformation parkingLotInformation : date) {
+                //总数
+                Long number = parkingLotInformation.getNumber();
+                //剩余车位
+                Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                //停车名字
+                String name = parkingLotInformation.getName();
+                //占用车位
+                numberOfCarParksVo.getValue().add(number - remainingParkingSpace);
+                numberOfCarParksVo.getName().add(name);
+            }
+            return AjaxResult.success(numberOfCarParksVo);
+        }
+        return AjaxResult.success();
     }
 }

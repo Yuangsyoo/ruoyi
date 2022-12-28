@@ -164,8 +164,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!--    //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
-    ParkingRecord findByParkingLotInformationLicense(@Param("parkingLotInformationId")Long id,@Param("license") String license);-->
-   <select id="findByParkingLotInformationLicense" resultMap="ParkingRecordResult">
+    ParkingRecord findByParkingLotInformationLicense1(@Param("parkingLotInformationId")Long id,@Param("license") String license);-->
+   <select id="findByParkingLotInformationLicense1" resultMap="ParkingRecordResult">
        select *  from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} order by payTime desc
    </select>
 
@@ -196,5 +196,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="getDailyInformations" resultType="Long">
     select count(*) from parking_record where TO_DAYS(exitTime) = TO_DAYS(NOW()) and payState=1 and parkingLotInformationId=#{parkingLotInformationId}
    </select>
-
+<!--ParkingRecord findbypaystateandlicense(@Param("parkingLotInformationId")Long parkinglotinformationid, @Param("license")String license);-->
+    <select id="findbypaystateandlicense" resultMap="ParkingRecordResult">
+        select * from parking_record where  parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and payState=2
+    </select>
 </mapper>

@@ -148,7 +148,7 @@ public class ParkingController extends Thread {
                 parkingRecordService.deleteParkingRecordById(parkingRecord.getId());
             }
             //车牌颜色
-            int carColor = total.getAlarmInfoPlate().getResult().getPlateResult().getCarColor();
+            int carColor = total.getAlarmInfoPlate().getResult().getPlateResult().getColorType();
             //生成订单号
             String s = CodeGenerateUtils.generateUnionPaySn();
             //进入口名称
@@ -290,27 +290,62 @@ public class ParkingController extends Thread {
             //通过 停车场id，车牌号，和支付状态查询是否有无未支付订单，没有放行
             if (parkingRecord==null){
                //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
-               ParkingRecord parkingRecord1=parkingRecordService.findByParkingLotInformationLicense(parkingLotInformation.getId(),license);
+               ParkingRecord parkingRecord1=parkingRecordService.findByParkingLotInformationLicense1(parkingLotInformation.getId(),license);
                //判断支付时间和当前开闸时间是否超过停车场设置离场时间
                 long l = DateTime.dateDiff(parkingRecord1.getPayTime(),date);
                 if (l>parkingLotInformation.getPayleavingtime()){
                    log.info("支付到离场时间超过"+parkingLotInformation.getPayleavingtime()+"分钟，不允开闸，待处理");
-                    // TODO: 2022/12/27 超时补费
+                    //  超时补费
                     //开启超时补费
                     if (parkingLotInformation.getOvertimecompensation().equals("0")){
                         ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord1.getPayTime(),date,license);
                         //金额
                         // TODO: 2022/12/27 需要添加超时补费金额指端
-                    //    MoneyVo moneyVo = parkingChargingService.overtimeCompensation(parkingChargingDto);
-                        String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超出出场时间\",\"is_pay\":\"true\"}}\n";
-                        return a;
+                        MoneyVo moneyVo = parkingChargingService.overtimeCompensation(parkingChargingDto);
+                        //获取出闸口设备名称
+                        String name = parkingLotEquipment.getName();
+                        parkingRecord1.setExittime(date);
+                        //保存出场照片
+                        parkingRecord1.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                        //超时补费状态
+                        parkingRecord1.setPaystate("2");
+                        parkingRecord1.setOrderstate("1");
+                        // 获取全部的进出口名称
+                        String allName = parkingRecord1.getEntranceandexitname();
+                        // 用逗号分隔符分割开
+                        String [] a = allName.split(",");
+                        // 判断分割的长度是否小于2
+                        if (a.length<2){
+                            // 如果小于2直接赋值进数据库
+                            parkingRecord1.setEntranceandexitname(parkingRecord1.getEntranceandexitname()+","+parkingLotEquipment.getName());
+                        }else {
+                            // 如果大于2就提取最后一次出口的名字
+                            String name1 = parkingLotEquipment.getName();
+                            // 获取入口的长度值
+                            int aa = a[0].length();
+                            // 提取入口名字
+                            String b = allName.substring(0,aa);
+                            // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
+                            parkingRecord1.setEntranceandexitname(b+","+name1);
+                        }
+                        parkingRecordService.updateParkingRecord(parkingRecord1);
+                        ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
+                        //超时补费金额
+                        parkingRecord1.setMoney(moneyVo.getMoney());
+                        BeanUtils.copyProperties(parkingRecord1,parkingRecordVo);
+                        parkingRecordVo.setParkingLotInformationName(parkingLotInformation.getName());
+                        parkingRecordVo.setParkingLotEquipmentName(parkingLotEquipment.getName());
+                        parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
+                        redisTemplate.opsForValue().set(String.valueOf(parkingLotEquipment.getId()),parkingRecordVo,5, TimeUnit.MINUTES);
+                        String a1="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超出出场时间\",\"is_pay\":\"true\"}}\n";
+                        return a1;
                     }
                     //未开启超时补费
                     else {
                         //设备开闸
                         SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                         //出场后修改停车场记录
-                        updateParkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
+                        updateparkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
                         //停车场车位数加一
                         updateRemainingParkingSpace(parkingLotInformation);
                     }
@@ -318,7 +353,7 @@ public class ParkingController extends Thread {
                //设备开闸
                SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                //出场后修改停车场记录
-               updateParkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
+               updateparkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
               //停车场车位数加一
                updateRemainingParkingSpace(parkingLotInformation);
            }
@@ -398,11 +433,7 @@ public class ParkingController extends Thread {
                 //金额
                 MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
                 BeanUtils.copyProperties(moneyVo,parkingRecord);
-
-
-
                parkingRecordService.updateParkingRecord(parkingRecord);
-
                list.add(parkingRecord);
                String s = JSON.toJSONString(list);
                //WebSocketService发送给前端消息
@@ -424,13 +455,13 @@ public class ParkingController extends Thread {
         return null;
     }
     //出场后修改停车场记录
-    private void updateParkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {
+    private void updateparkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {
         //获取出闸口设备名称
         String name = parkingLotEquipment.getName();
         //获取停车场id
         Long id = parkingLotInformation.getId();
         //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
-        ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicense(parkingLotInformation.getId(),license);
+        ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicense1(parkingLotInformation.getId(),license);
         parkingRecord.setExittime(date);
         //保存出场照片
         parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);

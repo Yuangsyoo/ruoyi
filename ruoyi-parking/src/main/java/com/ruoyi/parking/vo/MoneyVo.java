@@ -22,7 +22,6 @@ public class MoneyVo {
     /** 应缴金额 */
     private Long amountpayable;
     /** 支付金额 */
-
     private Long money;
     /*支付方式*/
     private  String paymentmethod;

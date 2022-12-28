@@ -66,5 +66,6 @@ public interface IParkingLotInformationService
     List<ParkingLotInformation> findParkingLotInformationList(Long id);
 
     AjaxResult getParkingLots(Long id);
-
+    // 查询所有不同的停车场停的车辆数
+    public AjaxResult getNumberOfCarParks(Long id);
 }

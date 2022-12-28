@@ -132,6 +132,31 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         parkingChargingMapper.deleteParkingBillingPeriodByParkingChargingId(id);
         return parkingChargingMapper.deleteParkingChargingById(id);
     }
+    //超时补费
+    @Override
+    public MoneyVo overtimeCompensation(ParkingChargingDto parkingChargingDto) {
+        //离场时间
+        Date endTime = parkingChargingDto.getEndTime();
+        //支付时间
+        Date startTime = parkingChargingDto.getStartTime();
+        //停车场id
+        Long id = parkingChargingDto.getParkinglotinformationid();
+        //车牌
+        String license = parkingChargingDto.getLicense();
+        //超时好多分钟
+        long l = DateTime.dateDiff(startTime, endTime);
+        //停车超时几小时
+        Long aLong = totalDuration(l);
+        //停车场计费规则
+        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(id);
+        //没超过一小时加收好多
+        Long increaseincome = parkingCharging.getIncreaseincome();
+        //超时总费用
+        long l1 = aLong * increaseincome;
+        MoneyVo moneyVo = new MoneyVo(0L,l1,l1,null);
+       return moneyVo;
+
+    }
 
     /**
      * 新增计费时间段信息

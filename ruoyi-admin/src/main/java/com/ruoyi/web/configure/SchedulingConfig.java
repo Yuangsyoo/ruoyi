@@ -37,6 +37,7 @@ public class SchedulingConfig {
 	//@Scheduled(cron = "0 */10 * * * ?") // 每10分钟执行一次
 	//@Scheduled(cron = "*/5 * * * * ?") // 每5秒执行一次
     public void scheduledTasks() {
+        System.out.println(1);
         Date date = new Date();
         LPRDemo lprDemo = new LPRDemo();
         System.out.println(1);
@@ -71,6 +72,7 @@ public class SchedulingConfig {
 
 
     private void deleteWhiteLis(LPRDemo lprDemo, ParkingWhiteList parkingWhiteList) {
+        System.out.println(2);
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingWhiteList.getParkinglotinformationid());
         ParkingLotEquipment parkingLotEquipment = new ParkingLotEquipment();
         parkingLotEquipment.setParkinglotinformationid(parkingLotInformation.getId());

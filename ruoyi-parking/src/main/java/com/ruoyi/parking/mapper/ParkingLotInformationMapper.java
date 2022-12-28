@@ -64,5 +64,7 @@ public interface ParkingLotInformationMapper
 
     List<ParkingLotInformation> findParkingLotInformationList(Long id);
 
-    ParkingLotInformation findParkingLotInformations( Long id,ParkingLotInformation parkingLotInformation);
+    ParkingLotInformation findParkingLotInformations( Long id,ParkingLotInformation parkingLotInformation);// 查询所有不同的停车场不同的停车数量
+    List<ParkingLotInformation> selectAllNumberOfCarParks();
+
 }

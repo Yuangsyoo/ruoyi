@@ -2,6 +2,8 @@ package com.ruoyi.parking.service;
 
 import java.util.List;
 import com.ruoyi.parking.domain.ParkingCharging;
+import com.ruoyi.parking.vo.MoneyVo;
+import com.ruoyi.parking.vo.ParkingChargingDto;
 
 /**
  * 计费规则Service接口
@@ -58,4 +60,6 @@ public interface IParkingChargingService
      * @return 结果
      */
     public int deleteParkingChargingById(Long id);
+
+    MoneyVo overtimeCompensation(ParkingChargingDto parkingChargingDto);
 }

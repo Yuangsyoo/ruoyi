@@ -233,4 +233,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+    <select id="selectAllNumberOfCarParks" resultMap="ParkingLotInformationResult">
+        select name,number,remainingParkingSpace from parking_lot_information
+    </select>
 </mapper>

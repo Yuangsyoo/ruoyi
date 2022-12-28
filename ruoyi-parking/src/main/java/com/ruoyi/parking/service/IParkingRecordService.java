@@ -69,7 +69,7 @@ public interface IParkingRecordService
 
     ParkingRecord findByLicense1(String license, Long id);
 
-    ParkingRecord findByParkingLotInformationLicense(Long id, String license);
+    ParkingRecord findByParkingLotInformationLicense1(Long id, String license);
 
     ParkingRecord findByParkingLotInformationLicenseAndPayOrder(Long id, String license);
 
@@ -94,4 +94,6 @@ public interface IParkingRecordService
     AjaxResult getMoney(Long id);
 
     AjaxResult getDailyInformation(Long id);
+
+    ParkingRecord findbypaystateandlicense(Long parkinglotinformationid, String license);
 }

@@ -18,7 +18,7 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @EnableScheduling
-@EnableCaching
+
 public class RuoYiApplication {
     public static void main(String[] args) {
         SpringApplication.run(RuoYiApplication.class, args);

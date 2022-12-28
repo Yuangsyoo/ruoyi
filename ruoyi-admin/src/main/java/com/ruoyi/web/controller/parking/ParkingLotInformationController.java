@@ -121,5 +121,10 @@ public class ParkingLotInformationController extends BaseController
     {
         return parkingLotInformationService.getParkingLots(id);
     }
+    // 查询不同停车场总停车量
+    @GetMapping("/getOccupiedParkingSpace/{id}")
+    public AjaxResult getOccupiedParkingSpace(@PathVariable("id") Long id){
+        return parkingLotInformationService.getNumberOfCarParks(id);
+    }
 
 }

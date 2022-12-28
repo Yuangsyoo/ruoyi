@@ -70,7 +70,7 @@ public interface ParkingRecordMapper {
 
 
     //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
-    List<ParkingRecord> findByParkingLotInformationLicense(@Param("parkingLotInformationId")Long id,@Param("license") String license);
+    List<ParkingRecord> findByParkingLotInformationLicense1(@Param("parkingLotInformationId")Long id,@Param("license") String license);
 
     ParkingRecord findByParkingLotInformationLicenseAndPayOrder(@Param("parkingLotInformationId")Long id,@Param("license")String license);
 
@@ -84,4 +84,6 @@ public interface ParkingRecordMapper {
     Long getDailyInformation(@Param("parkingLotInformationId")Long id);
 
     Long getDailyInformations(@Param("parkingLotInformationId")Long id);
+
+    ParkingRecord findbypaystateandlicense(@Param("parkingLotInformationId")Long parkinglotinformationid, @Param("license")String license);
 }

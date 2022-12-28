@@ -21,6 +21,7 @@ import com.ruoyi.parking.service.*;
 import com.ruoyi.parking.dto.MoneyDto;
 import com.ruoyi.parking.vo.*;
 import com.ruoyi.system.mapper.SysUserMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -264,8 +265,8 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     }
     //通过停车场id，车牌号,当前时间（通过时间排序获取最近时间）获取出场车停车记录
     @Override
-    public ParkingRecord findByParkingLotInformationLicense(Long id, String license) {
-      List<ParkingRecord>list = parkingRecordMapper.findByParkingLotInformationLicense(id, license);
+    public ParkingRecord findByParkingLotInformationLicense1(Long id, String license) {
+      List<ParkingRecord>list = parkingRecordMapper.findByParkingLotInformationLicense1(id, license);
       if (list.size()!=0){
           ParkingRecord parkingRecord = list.get(0);
           return parkingRecord;
@@ -381,7 +382,17 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     @Override
     //@Cacheable(cacheNames = "money",key = "#id")
     public AjaxResult getMoney(Long id) {
-        return getAjaxResult(id);
+        if (id !=0) {
+            String year = String.valueOf(new Date().getYear()+1900);
+            List<MoneyDto> list = parkingRecordMapper.getMoney(id, year);
+            MoneyRes moneyRes = new MoneyRes();
+            for (MoneyDto moneyDto : list) {
+                moneyRes.getMoney().add(moneyDto.getMoney());
+                moneyRes.getMonth().add(moneyDto.getMonth());
+            }
+            return AjaxResult.success(moneyRes);
+        }
+        return null;
     }
 
     @Override
@@ -399,20 +410,12 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         return AjaxResult.success(dailyInformationVo);
     }
 
+    @Override
+    public ParkingRecord findbypaystateandlicense(Long parkinglotinformationid, String license) {
+        return  parkingRecordMapper.findbypaystateandlicense( parkinglotinformationid,license);
 
-    private AjaxResult getAjaxResult(Long id) {
-        if (id !=0) {
-            String year = String.valueOf(new Date().getYear()+1900);
-            List<MoneyDto> list = parkingRecordMapper.getMoney(id, year);
-            MoneyRes moneyRes = new MoneyRes();
-            for (MoneyDto moneyDto : list) {
-                moneyRes.getMoney().add(moneyDto.getMoney());
-                moneyRes.getMonth().add(moneyDto.getMonth());
-            }
-            return AjaxResult.success(moneyRes);
-        }
-        return AjaxResult.success();
     }
+
 
     //停车场车位数加一
     private void updateRemainingParkingSpace(ParkingLotInformation parkingLotInformation) {
