@@ -308,8 +308,8 @@ export default {
 
       //建立websocket连接
       if ("WebSocket" in window){
-        //连接服务端访问的url，我这里配置在了env中，就是上面在线测试工具中的地址,下面放了实例
-        let ws ="ws://localhost:8080/websocket/"+localStorage.getItem("name")
+        //连接服务端访问的url
+        let ws ="ws://203.25.215.64:7399/websocket/"+localStorage.getItem("name")
         this.websock = new WebSocket(ws);
         this.websock.onopen = this.websocketonopen;
         this.websock.onerror = this.websocketonerror;

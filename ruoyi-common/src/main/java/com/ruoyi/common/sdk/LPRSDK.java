@@ -11,7 +11,7 @@ public interface LPRSDK extends Library {
 	/**/
 	/**加载SDK动态库*/
 	/** LPRSDK INSTANCE = (LPRSDK) Native.load("/home/sober/eclipse-workspace/LPRDemo/lib/libVzLPRSDK.so", LPRSDK.class);*/
-	LPRSDK INSTANCE = (LPRSDK) Native.load("C:\\Users\\lenovo\\Desktop\\sdk\\sdk\\SDK\\一体机SDK\\SDK(64位)\\bin\\VzLPRSDK.dll", LPRSDK.class);
+	LPRSDK INSTANCE = (LPRSDK) Native.load("C:\\Users\\Administrator\\Desktop\\sdk\\sdk\\SDK\\一体机SDK\\SDK(64位)\\bin\\VzLPRSDK.dll", LPRSDK.class);
 	
 	/**图像信息*/
 	public static class VZ_LPRC_IMAGE_INFO_Pointer extends Structure

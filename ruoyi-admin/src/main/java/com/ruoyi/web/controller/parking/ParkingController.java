@@ -128,12 +128,13 @@ public class ParkingController extends Thread {
                 ParkingFixedparkingspace parkingFixedparkingspace=parkingFixedparkingspaceService.findByParkingLotInformationIdAndLicense(parkingLotInformation.getId(),license);
                 ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
 
-                if (parkingFixedparkingspace!=null && byLicense!=null  ){
+                if (parkingFixedparkingspace==null && byLicense==null  ){
                     String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"临时车限制进入\",\"is_pay\":\"false\"}}\n";
                     return a;
                 }
 
             }
+
             //黑名单拒绝放行
            ParkingBlackList parkingBlackList= parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingLotInformation.getId(),license);
             if (parkingBlackList!=null){
@@ -175,6 +176,21 @@ public class ParkingController extends Thread {
                 } finally {
                     lock.unlock();
                 }
+            }else {
+                    ParkingFixedparkingspace parkingFixedparkingspace=parkingFixedparkingspaceService.findByParkingLotInformationIdAndLicense(parkingLotInformation.getId(),license);
+                    ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
+                    if (parkingFixedparkingspace!=null || byLicense!=null  ){
+                        //保存进场信息
+                        saveParkingRecord(date,parkingLotEquipment, carColor, s, name,license,parkingLotInformation.getId(),imagePath);
+                        //设备开闸
+                        SwitchOn(total.getAlarmInfoPlate().getIpaddr());
+                        // 停车场车位数减一
+                        parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getRemainingParkingSpace()-1);
+                        parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
+                        String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"欢迎光临\",\"is_pay\":\"false\"}}\n";
+                        return a;
+                    }
+
             }
         }
         else {

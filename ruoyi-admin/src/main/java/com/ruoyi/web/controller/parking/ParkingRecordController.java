@@ -157,7 +157,7 @@ public class ParkingRecordController extends BaseController
         parkingRecordService.editPayState(parkingLotInformationId,license,parkinglotequipmentid,paymentMethod);
     }
     //无牌车进场接口  不做有排车扫码书车牌计费
-    // TODO: 2022/12/26 待修改
+    //  2022/12/26 待修改
     @Anonymous
     @GetMapping("/noLicensePlate")
     public AjaxResult noLicensePlate(
