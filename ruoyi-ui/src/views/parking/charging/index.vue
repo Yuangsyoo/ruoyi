@@ -50,11 +50,6 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序列号" align="center" prop="id" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
-<!--      <el-table-column label="起步价" align="center" prop="startingprice" />-->
-<!--      <el-table-column label="起步价时长" align="center" prop="startingpriceduration" />-->
-<!--      <el-table-column label="每超过1小时加收" align="center" prop="increaseincome" />
-      <el-table-column label="单日收费上限
-" align="center" prop="superiorlimit" />-->
       <el-table-column label="计费方式" align="center" prop="type" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.type==0">常规+时段</span>
@@ -106,10 +101,11 @@
         </el-form-item>
 
         <el-form-item label="计费方式" prop="type">
+
           <template>
-            <el-radio v-model="form.type" label="0">常规+时段</el-radio>
-            <el-radio v-model="form.type" label="1">时长叠加</el-radio>
-            <el-radio v-model="form.type" label="2">分时段不同计费规则</el-radio>
+            <el-radio v-model="form.type" :label="0">常规+时段</el-radio>
+            <el-radio v-model="form.type" :label="1">时长叠加</el-radio>
+            <el-radio v-model="form.type" :label="2">分时段不同计费规则</el-radio>
           </template>
         </el-form-item>
 

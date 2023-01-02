@@ -156,15 +156,15 @@
         </el-form-item>
         <el-form-item label="优惠卷类型" prop="type">
           <template>
-            <el-radio v-model="form.type" label="0">次卷</el-radio>
-            <el-radio v-model="form.type" label="1">小时卷</el-radio>
-            <el-radio v-model="form.type" label="2">金额卷</el-radio>
+            <el-radio v-model="form.type" :label="0">次卷</el-radio>
+            <el-radio v-model="form.type" :label="1">小时卷</el-radio>
+            <el-radio v-model="form.type" :label="2">金额卷</el-radio>
           </template>
         </el-form-item>
         <el-form-item label="优惠卷有效期" prop="usetype">
           <template>
-            <el-radio v-model="form.usetype" label="0">当天有效</el-radio>
-            <el-radio v-model="form.usetype" label="1">与二维码有效时间相同</el-radio>
+            <el-radio v-model="form.usetype" :label="0">当天有效</el-radio>
+            <el-radio v-model="form.usetype" :label="1">与二维码有效时间相同</el-radio>
           </template>
         </el-form-item>
         <el-form-item label="优惠卷名称" prop="name">
@@ -330,8 +330,8 @@ export default {
       const id = row.id || this.ids
       getCoupon(id).then(response => {
         this.form = response.data;
-        this.form.type= String.valueOf(response.data.type)
-        this.form.usetype=String.valueOf(response.data.usetype)
+       /* this.form.type= String.valueOf(response.data.type)
+        this.form.usetype=String.valueOf(response.data.usetype)*/
         this.open = true;
 
         this.title = "修改优惠卷";

@@ -1,6 +1,7 @@
 package com.ruoyi.common.sdk;
 import com.sun.jna.Pointer;
 import java.io.UnsupportedEncodingException;
+import java.util.Scanner;
 
 
 public class LPRDemo {
@@ -47,7 +48,7 @@ public class LPRDemo {
 			return handle;
 
 
-			/*int callbackindex = lpr.VzLPRClient_SetPlateInfoCallBack(handle, PlateCallBack, Pointer.NULL, 1);
+		/*	int callbackindex = lpr.VzLPRClient_SetPlateInfoCallBack(handle, PlateCallBack, Pointer.NULL, 1);
 			System.out.println(callbackindex);
 
 			Scanner input = new Scanner(System.in);
@@ -251,6 +252,7 @@ public class LPRDemo {
 
 		return ret;
 	}
+
 
 	// 测试485数据发送
 	public int SendSerialData(int serial_handle) {

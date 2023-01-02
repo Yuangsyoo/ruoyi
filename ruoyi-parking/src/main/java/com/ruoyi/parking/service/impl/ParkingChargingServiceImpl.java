@@ -532,6 +532,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
             }
                 return getMoneyVo(count,count,0L,null);
     }
+
     private Date getDate2(Date date1,String time){
         Calendar begin = Calendar.getInstance();
         // begin.add(Calendar.DATE, 1);
@@ -548,6 +549,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         long l = time1.getTime() +1000;
         return time1;
     }
+
     private Date getDate1(Date date1,String time){
         Calendar begin = Calendar.getInstance();
         // begin.add(Calendar.DATE, 1);
@@ -564,6 +566,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         long l = time1.getTime() - 1000;
         return time1;
     }
+
     private Date getDate(Date date1,String time){
         Calendar begin = Calendar.getInstance();
         // begin.add(Calendar.DATE, 1);
@@ -625,7 +628,6 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
 
         return new ResultVo(false,2L);
     }
-
 
     private MoneyVo ruleTwo(ParkingChargingDto parkingChargingDto) {
         Long parkinglotinformationid = parkingChargingDto.getParkinglotinformationid();
@@ -921,7 +923,31 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         }
         //如果有计费时间段
         if (list.size()>0){
-        // TODO: 2022/12/20
+            if (parkingCouponrecord==null) {
+                //没超过起步时长
+                if (time<=startingpriceduration){
+                    return getMoneyVo(parkingCharging.getStartingprice(),0L,0L,null);
+                }
+                if (aLong<24){
+                    //停车开始时间
+                    Date startTime = parkingChargingDto.getStartTime();
+                    //停车结束时间
+                    Date endTime = parkingChargingDto.getEndTime();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(startTime);
+                    Calendar instance = Calendar.getInstance();
+                    instance.setTime(endTime);
+                    int i = calendar.get(Calendar.DATE);
+                    int i1 = instance.get(Calendar.DATE);
+                      //同一天
+                      if (i==i1){
+
+                      }
+                }
+
+
+
+            }
         }
         //如果没有计费时间段
         if (list.size()==0){
@@ -1152,7 +1178,8 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
             }
 
         }
-           return new MoneyVo();
+
+        return new MoneyVo();
     }
 
     //计费方式二叠加总 金额
@@ -1166,6 +1193,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
 
         return new MoneyVo(0L, l2,l2,null);
     }
+
     //计费方式一时长小于24小时 金额
     private MoneyVo addMoneyVo(ParkingCharging parkingCharging, Long startingpriceduration, Long startingprice, Long superiorlimit, Long aLong) {
         //减去起步时长
@@ -1196,6 +1224,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
            return l=l2;
         }
     }
+
     //返回值
     private MoneyVo getMoneyVo(Long money,Long amountpayable,Long discountamount,String paymentmethod ) {
         MoneyVo moneyVo = new MoneyVo();
