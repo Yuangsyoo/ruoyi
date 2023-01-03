@@ -103,7 +103,7 @@
         <el-form-item label="计费方式" prop="type">
 
           <template>
-            <el-radio v-model="form.type" :label="0">常规+时段</el-radio>
+            <el-radio v-model="form.type" :label="0">常规</el-radio>
             <el-radio v-model="form.type" :label="1">时长叠加</el-radio>
             <el-radio v-model="form.type" :label="2">分时段不同计费规则</el-radio>
           </template>
@@ -122,13 +122,15 @@
         <el-form-item v-if="this.form.type!=1" label="单日收费上限" prop="superiorlimit">
           <el-input v-model="form.superiorlimit" placeholder="请输入单日收费上限" />元
         </el-form-item>
+        <div v-show="this.form.type!=0 ">
+          <el-divider content-position="center">计费时间段信息</el-divider>
+        </div>
 
-        <el-divider content-position="center">计费时间段信息</el-divider>
         <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
+          <el-col :span="1.5" v-show="this.form.type!=0 ">
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddParkingBillingPeriod">添加</el-button>
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5"  v-show="this.form.type!=0 ">
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteParkingBillingPeriod">删除</el-button>
           </el-col>
         </el-row>

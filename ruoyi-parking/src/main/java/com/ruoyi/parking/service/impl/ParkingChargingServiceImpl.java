@@ -939,13 +939,62 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
                     instance.setTime(endTime);
                     int i = calendar.get(Calendar.DATE);
                     int i1 = instance.get(Calendar.DATE);
+                    //判断是哪个时间段上
+                    int start=0;
+                    Long type=null;
+                    int end=0;
+                    Long type1=null;
                       //同一天
                       if (i==i1){
+                          //判断在哪个时间段内
+                        for (int b=0;b<list.size();b++){
+                            ParkingBillingPeriod parkingBillingPeriod = list.get(b);
+                            //时间段开始时间
+                            String startime = parkingBillingPeriod.getStartime();
+                            //时间段结束时间
+                            String endtime = parkingBillingPeriod.getEndtime();
+                            //判断是否在时间段内
+                            ResultVo judge = judge(startTime, startime, endtime);
+                            if (judge.getState()){
+                                start=b;
+                                type=judge.getType();
+                                for(int b1 = 0; b1< list.size(); b1++) {
+                                    ParkingBillingPeriod parkingBillingPeriod1 = list.get(b1);
+                                    ResultVo judge1 = judge(endTime, parkingBillingPeriod1.getStartime(), parkingBillingPeriod1.getEndtime());
+                                    if (judge1.getState()){
+                                        end=b1;
+                                        type1=judge1.getType();
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        //如果是同一个时段
+                          if (start==end ){
+                              if (start==0 && type1==0){
+                                  //没在计费时间段内
+                                  MoneyVo moneyVo = addMoneyVo(parkingCharging, startingpriceduration, startingprice, superiorlimit, aLong);
+                                  return moneyVo;
+                              }
+                              //在时段开始时间前
+                              if (type==0){
+                                  //停车结束时间在时段结束时间前
+                                  if (type1==0){
+
+                                  }
+                                  //停车结束时间在时段结束时间后
+                                  if (type1==1){
+
+                                  }
+                              }
+
+                          }
+
+
 
                       }
                 }
-
-
 
             }
         }
@@ -998,7 +1047,6 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
                 //总金额
                 MoneyVo moneyVo = addMoneyVo(parkingCharging, startingpriceduration, startingprice, superiorlimit, aLong);
                 if (parkingCouponrecord!=null){
-
                     //判断是优惠卷 0是次卷
                     if (parkingCouponrecord.getParkingCoupon()!=null){
                         if (parkingCouponrecord.getParkingCoupon().getType()==0){

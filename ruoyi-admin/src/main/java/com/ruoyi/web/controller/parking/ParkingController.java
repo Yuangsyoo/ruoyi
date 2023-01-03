@@ -24,9 +24,7 @@ import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
 import com.ruoyi.parking.service.impl.ParkingChargingServiceImpl;
 import com.ruoyi.parking.service.impl.ParkingLotInformationServiceImpl;
-import com.ruoyi.parking.vo.MoneyVo;
-import com.ruoyi.parking.vo.ParkingChargingDto;
-import com.ruoyi.parking.vo.ParkingRecordVo;
+import com.ruoyi.parking.vo.*;
 import com.ruoyi.system.mapper.SysUserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -86,7 +84,7 @@ public class ParkingController extends Thread {
 
     @PostMapping("/operation")
     @Transactional
-    public String test1(@RequestBody Total total){
+    public Object test1(@RequestBody Total total){
         System.out.println(total);
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
@@ -110,10 +108,22 @@ public class ParkingController extends Thread {
 
             //判断停车场状态异常停车场不可用 只针对进口a
             if (parkingLotInformation.getState().equals("1")){
-                //实验是否显示content消息info 如果是 ok 表示开闸
+                // TODO: 2023/1/3
+                ParkingResVo parkingResVo = new ParkingResVo();
+                Response_AlarmInfoPlate response_alarmInfoPlate = parkingResVo.getResponse_AlarmInfoPlate();
+                response_alarmInfoPlate.setInfo("ok");
+                response_alarmInfoPlate.setIs_pay(false);
+                SerialData serialData = response_alarmInfoPlate.getSerialData();
+                List<SerialPort> list = serialData.getList();
+                SerialPort serialPort = new SerialPort();
+                serialPort.setSerialChannel("0");
+                serialPort.setSerialChannel("停车场不可用");
+                serialPort.setDataLen(6);
+                list.add(serialPort);
+                System.out.println(parkingResVo);
                 String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"停车场不可用\",\"is_pay\":\"false\"}}\n";
                 log.info(a);
-                return a;
+                return parkingResVo;
             }
             //判断设备是否可用
             if (parkingLotEquipment.getState().equals("1")){
@@ -134,8 +144,8 @@ public class ParkingController extends Thread {
                 }
 
             }
-            // TODO: 2023/1/1 放伪车牌  数据接收不到
-            if (parkingLotEquipment.getLicenseplatanticounterfeiting().equals("0")){
+            // 放伪车牌  曌系列相机才有防伪字段
+           /* if (parkingLotEquipment.getLicenseplatanticounterfeiting().equals("0")){
                 String is_fake_plate = total.getAlarmInfoPlate().getResult().getPlateResult().getIs_fake_plate();
                 if (is_fake_plate.equals("1")){
                     //实验是否显示content消息info 如果是 ok 表示开闸
@@ -143,7 +153,7 @@ public class ParkingController extends Thread {
                     log.info(a);
                     return a;
                 }
-            }
+            }*/
 
             //黑名单拒绝放行
            ParkingBlackList parkingBlackList= parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingLotInformation.getId(),license);
@@ -376,7 +386,6 @@ public class ParkingController extends Thread {
                     if (parkingLotInformation.getOvertimecompensation().equals("0")){
                         ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformation.getId(),parkingRecord1.getPayTime(),date,license);
                         //金额
-                        // TODO: 2022/12/27 需要添加超时补费金额指端
                         MoneyVo moneyVo = parkingChargingService.overtimeCompensation(parkingChargingDto);
                         //获取出闸口设备名称
                         String name = parkingLotEquipment.getName();
@@ -602,7 +611,6 @@ public class ParkingController extends Thread {
         parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
     }
-
     //开闸方法
     private void SwitchOn(String ipAdress) {
         LPRDemo lprDemo = new LPRDemo();
