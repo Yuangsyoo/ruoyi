@@ -923,7 +923,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         }
         //如果有计费时间段
         if (list.size()>0){
-            if (parkingCouponrecord==null) {
+          /*  if (parkingCouponrecord==null) {
                 //没超过起步时长
                 if (time<=startingpriceduration){
                     return getMoneyVo(parkingCharging.getStartingprice(),0L,0L,null);
@@ -996,7 +996,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
                       }
                 }
 
-            }
+            }*/
         }
         //如果没有计费时间段
         if (list.size()==0){

@@ -3,9 +3,12 @@ package com.ruoyi.web.controller.parking;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.annotation.Anonymous;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.CodeGenerateUtils;
 import com.ruoyi.common.utils.DateTime.DateTime;
@@ -24,9 +27,11 @@ import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
 import com.ruoyi.parking.service.impl.ParkingChargingServiceImpl;
 import com.ruoyi.parking.service.impl.ParkingLotInformationServiceImpl;
+import com.ruoyi.parking.utils.SerialPortUtils;
 import com.ruoyi.parking.vo.*;
 import com.ruoyi.system.mapper.SysUserMapper;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -50,9 +55,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @RestController
 @RequestMapping("/parking")
-@Anonymous
 @Slf4j
-
 public class ParkingController extends Thread {
     //停车记录
     @Autowired
@@ -84,12 +87,15 @@ public class ParkingController extends Thread {
 
     @PostMapping("/operation")
     @Transactional
+    @Anonymous
     public Object test1(@RequestBody Total total){
-        System.out.println(total);
+        //System.out.println(total);
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
+        //车牌id
+        int plateid = total.getAlarmInfoPlate().getResult().getPlateResult().getPlateid();
         //获取出入场图片
-        String imagePath = total.getAlarmInfoPlate().getResult().getPlateResult().getImagePath();
+        String imagePath = total.getAlarmInfoPlate().getResult().getPlateResult().getImageFile();
         //获取推送数据设备序列号
         String serialno = total.getAlarmInfoPlate().getSerialno();
         //通过序列号获取推送数据设备信息
@@ -104,26 +110,27 @@ public class ParkingController extends Thread {
 
        //等于0则是进口，不等则是出口
         if(parkingLotEquipment.getDirection().equals("0")){
-
-
             //判断停车场状态异常停车场不可用 只针对进口a
             if (parkingLotInformation.getState().equals("1")){
-                // TODO: 2023/1/3
-                ParkingResVo parkingResVo = new ParkingResVo();
-                Response_AlarmInfoPlate response_alarmInfoPlate = parkingResVo.getResponse_AlarmInfoPlate();
-                response_alarmInfoPlate.setInfo("ok");
-                response_alarmInfoPlate.setIs_pay(false);
-                SerialData serialData = response_alarmInfoPlate.getSerialData();
-                List<SerialPort> list = serialData.getList();
-                SerialPort serialPort = new SerialPort();
-                serialPort.setSerialChannel("0");
-                serialPort.setSerialChannel("停车场不可用");
-                serialPort.setDataLen(6);
-                list.add(serialPort);
-                System.out.println(parkingResVo);
-                String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"停车场不可用\",\"is_pay\":\"false\"}}\n";
-                log.info(a);
-                return parkingResVo;
+                String data1="停车场不可用";
+                int length = data1.length();
+                String data = SerialPortUtils.addSerialPort(data1);
+                String a="{\n" +
+                        "\"Response_AlarmInfoPlate\": {\n" +
+                        "\"info\":\"no\",\n" +
+                        "\"channelNum\" : 0, \n" +
+                        "\"manualTrigger\" : \"no\",\n" +
+                        "\"is_pay\":\"true\",\n" +
+                        "\"serialData\" :[\n" +
+                        "{\n" +
+                        "\"serialChannel\":0,\n" +
+                        "\"data\" : \""+data+"\",\n" +
+                        "\"dataLen\" : "+length+"\n" +
+                        "}\n" +
+                        "]\n" +
+                        "}\n" +
+                        "}";
+                return a ;
             }
             //判断设备是否可用
             if (parkingLotEquipment.getState().equals("1")){
@@ -142,19 +149,7 @@ public class ParkingController extends Thread {
                     log.info(a);
                     return a;
                 }
-
             }
-            // 放伪车牌  曌系列相机才有防伪字段
-           /* if (parkingLotEquipment.getLicenseplatanticounterfeiting().equals("0")){
-                String is_fake_plate = total.getAlarmInfoPlate().getResult().getPlateResult().getIs_fake_plate();
-                if (is_fake_plate.equals("1")){
-                    //实验是否显示content消息info 如果是 ok 表示开闸
-                    String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"伪车牌\",\"is_pay\":\"false\"}}\n";
-                    log.info(a);
-                    return a;
-                }
-            }*/
-
             //黑名单拒绝放行
            ParkingBlackList parkingBlackList= parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingLotInformation.getId(),license);
             if (parkingBlackList!=null){
@@ -247,7 +242,7 @@ public class ParkingController extends Thread {
                     //有bug 要改进
                     parkingRecord.setPaystate("1");
                     parkingRecord.setOrderstate("1");
-                    parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                    parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
                     parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
                     parkingRecord.setPaymentmethod("特定车辆");
                     //实际支金额
@@ -291,7 +286,7 @@ public class ParkingController extends Thread {
                     parkingRecord.setPaystate("1");
                     parkingRecord.setOrderstate("1");
                     parkingRecord.setMoney(0L);
-                    parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                    parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
                     parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
                     parkingRecord.setPaymentmethod("白名单");
                     //实际支金额
@@ -349,7 +344,7 @@ public class ParkingController extends Thread {
                 parkingRecord.setPaystate("1");
                 parkingRecord.setOrderstate("1");
                 parkingRecord.setMoney(0L);
-                parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
                 parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
                 parkingRecord.setPaymentmethod("固定车位车辆");
                 //实际支金额
@@ -391,7 +386,7 @@ public class ParkingController extends Thread {
                         String name = parkingLotEquipment.getName();
                         parkingRecord1.setExittime(date);
                         //保存出场照片
-                        parkingRecord1.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                        parkingRecord1.setNumberthree("data:image/jpg;base64,"+imagePath);
                         //超时补费状态
                         parkingRecord1.setPaystate("2");
                         parkingRecord1.setOrderstate("1");
@@ -464,7 +459,7 @@ public class ParkingController extends Thread {
                    parkingRecord.setPaystate("1");
                    parkingRecord.setOrderstate("1");
                    parkingRecord.setMoney(0L);
-                   parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                   parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
                    parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
                    parkingRecord.setPaymentmethod("免费");
                    //支付时间
@@ -493,7 +488,7 @@ public class ParkingController extends Thread {
                //订单正在进行中
                parkingRecord.setOrderstate("2");
                 //保存出场照片
-                parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+                parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
                 parkingRecord.setExittime(date);
 
                 // 获取全部的进出口名称
@@ -541,6 +536,19 @@ public class ParkingController extends Thread {
         }
         return null;
     }
+
+    private ParkingResVo getResponse_alarmInfoPlate(String state,int plateid, List<SerialData> serialData) {
+        Response_AlarmInfoPlate response_alarmInfoPlate = new Response_AlarmInfoPlate();
+        response_alarmInfoPlate.setInfo(state);
+        response_alarmInfoPlate.setIs_pay(false);
+        response_alarmInfoPlate.setPlateid(plateid);
+        response_alarmInfoPlate.setManualTrigger("no");
+        response_alarmInfoPlate.setSerialData(serialData);
+        ParkingResVo parkingResVo = new ParkingResVo();
+        parkingResVo.setResponse_AlarmInfoPlate(response_alarmInfoPlate);
+        return parkingResVo;
+    }
+
     //出场后修改停车场记录
     private void updateparkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {
         //获取出闸口设备名称
@@ -551,7 +559,7 @@ public class ParkingController extends Thread {
         ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicense1(parkingLotInformation.getId(),license);
         parkingRecord.setExittime(date);
         //保存出场照片
-        parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+        parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
         //有bug 要改进
         parkingRecord.setPaystate("1");
         parkingRecord.setOrderstate("1");
@@ -579,7 +587,7 @@ public class ParkingController extends Thread {
         ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
         parkingRecord.setExittime(date);
         //保存出场照片
-        parkingRecord.setNumberthree("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+        parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
         //有bug 要改进
         parkingRecord.setPaystate("1");
         parkingRecord.setOrderstate("1");
@@ -623,7 +631,7 @@ public class ParkingController extends Thread {
         //执行结束释放
         lprDemo.VzLPRClient_Cleanup();
     }
-    //保存进场信息  dqweqewq
+    //保存进场信息
     private void saveParkingRecord(Date date, ParkingLotEquipment parkingLotEquipment,int carColor, String s, String name,String license,Long parkingLotInformationId,String imagePath) {
 
         //添加进场信息
@@ -631,7 +639,7 @@ public class ParkingController extends Thread {
         parkingRecord1.setLicense(license);
         parkingRecord1.setAdmissiontime(date);
         //进场照片
-        parkingRecord1.setNumbertwo("http://"+parkingLotEquipment.getIpadress()+":80"+imagePath);
+        parkingRecord1.setNumbertwo("data:image/jpg;base64,"+imagePath);
         parkingRecord1.setParkinglotinformationid(parkingLotInformationId);
         /** 车牌颜色 */
         parkingRecord1.setLicensepllatecolor(String.valueOf(carColor));
@@ -645,6 +653,7 @@ public class ParkingController extends Thread {
         parkingRecord1.setEntranceandexitname(name);
         parkingRecordService.insertParkingRecord(parkingRecord1);
     }
+
 
 
 }

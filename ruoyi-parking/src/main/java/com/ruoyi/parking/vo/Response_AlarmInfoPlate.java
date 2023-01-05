@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -20,7 +23,7 @@ public class Response_AlarmInfoPlate {
     //回复 ok 开闸
     private String info;
     // 当前车牌 id
-    private String plateid;
+    private int plateid;
     //回复开闸端口号，若无，则默认为 0
     private Long channelNum=0L;
     //回复 ok 进行手动触发
@@ -28,7 +31,7 @@ public class Response_AlarmInfoPlate {
     //是否支付
     private Boolean is_pay;
     //回复串口数据可以发送到相应串口
-    private SerialData serialData;
+    private List<SerialData>serialData=new ArrayList<>();
 
 
 

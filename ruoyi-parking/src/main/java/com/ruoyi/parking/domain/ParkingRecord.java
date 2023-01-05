@@ -81,6 +81,7 @@ public class ParkingRecord extends BaseEntity
     private Date payTime;
 
     /** 预留字段2 */
+
     @Excel(name = "预留字段2")
     private String numbertwo;
 

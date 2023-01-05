@@ -202,7 +202,6 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
     @Override
     public AjaxResult getNumberOfCarParks(Long id){
         // 判断id是否是管理员id
-        if (id==0) {
             NumberOfCarParksVo numberOfCarParksVo = new NumberOfCarParksVo();
             List<ParkingLotInformation> date = parkingLotInformationMapper.selectAllNumberOfCarParks();
             for (ParkingLotInformation parkingLotInformation : date) {
@@ -217,7 +216,5 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
                 numberOfCarParksVo.getName().add(name);
             }
             return AjaxResult.success(numberOfCarParksVo);
-        }
-        return AjaxResult.success();
     }
 }

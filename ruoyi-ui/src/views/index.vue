@@ -172,22 +172,25 @@ export default {
     drawBarChartid() {
       if (localStorage.getItem("uu")==0) {
         getOccupiedParkingSpace(localStorage.getItem("uu")).then(res => {
-          var name = res.data.name
-          var number = res.data.value
-          this.chartBarid = echarts.init(document.getElementById('chartBarid'));
-          this.chartBarid.setOption({
-            title: {text: '数量'},
-            tooltip: {},
-            xAxis: {
-              data: name
-            },
-            yAxis: {},
-            series: [{
-              name: '名单数量',
-              type: 'bar',
-              data: number
-            }]
-          });
+          if (res.code===200){
+            var name = res.data.name
+            var number = res.data.value
+            this.chartBarid = echarts.init(document.getElementById('chartBarid'));
+            this.chartBarid.setOption({
+              title: {text: '数量'},
+              tooltip: {},
+              xAxis: {
+                data: name
+              },
+              yAxis: {},
+              series: [{
+                name: '名单数量',
+                type: 'bar',
+                data: number
+              }]
+            });
+          }
+
         })
       }
     },

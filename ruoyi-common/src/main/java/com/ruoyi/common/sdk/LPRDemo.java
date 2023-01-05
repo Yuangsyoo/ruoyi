@@ -23,7 +23,7 @@ public class LPRDemo {
 	   lpr.VzLPRClient_Cleanup();
 	}
 
-	//开杆 int uChnId, int nDuration  参数不知（如何指定哪个停车场哪个设备开闸未知  怀疑后面两个参数控制）
+	//开杆
 	public int switchOn(int handle, int uChnId, int nDuration){
 	 int i = lpr.VzLPRClient_SetIOOutputAuto(handle,uChnId,nDuration);
 	 return i;

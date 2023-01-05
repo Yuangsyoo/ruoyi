@@ -49,7 +49,7 @@ public class PlateResult {
         //：推送的结果中有"imagePath": "/snapshot/lpr/tri_snap_24.jpg"，后面是访问截图的 http 路
         //径，前面加上一体机的网址，就可以得到截图的地址如http://192.168.1.100:8080/snapshot/lpr/tri_snap_24.jpg
         //识别大图片的路径,开启推送大图片后，没有此字段
-        private String imagePath;
+        private String imageFile;
         //车牌号字符串，如“京 AAAAAA”
         private String license;
         //车牌在图片中位置
