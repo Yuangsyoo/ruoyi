@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -88,7 +89,7 @@ public class ParkingController extends Thread {
     @PostMapping("/operation")
     @Transactional
     @Anonymous
-    public Object test1(@RequestBody Total total){
+    public String test1(@RequestBody Total total) throws Exception {
         //System.out.println(total);
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
@@ -112,24 +113,7 @@ public class ParkingController extends Thread {
         if(parkingLotEquipment.getDirection().equals("0")){
             //判断停车场状态异常停车场不可用 只针对进口a
             if (parkingLotInformation.getState().equals("1")){
-                String data1="停车场不可用";
-                int length = data1.length();
-                String data = SerialPortUtils.addSerialPort(data1);
-                String a="{\n" +
-                        "\"Response_AlarmInfoPlate\": {\n" +
-                        "\"info\":\"no\",\n" +
-                        "\"channelNum\" : 0, \n" +
-                        "\"manualTrigger\" : \"no\",\n" +
-                        "\"is_pay\":\"true\",\n" +
-                        "\"serialData\" :[\n" +
-                        "{\n" +
-                        "\"serialChannel\":0,\n" +
-                        "\"data\" : \""+data+"\",\n" +
-                        "\"dataLen\" : "+length+"\n" +
-                        "}\n" +
-                        "]\n" +
-                        "}\n" +
-                        "}";
+                String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"停车场不可用\",\"is_pay\":\"false\"}}\n";
                 return a ;
             }
             //判断设备是否可用
@@ -179,16 +163,13 @@ public class ParkingController extends Thread {
                     if (parkingLotInformation.getRemainingParkingSpace()>0){
                         //保存进场信息
                         saveParkingRecord(date,parkingLotEquipment, carColor, s, name,license,parkingLotInformation.getId(),imagePath);
-
-                        //设备开闸
-                        SwitchOn(total.getAlarmInfoPlate().getIpaddr());
+                        /*//设备开闸
+                        SwitchOn(total.getAlarmInfoPlate().getIpaddr());*/
                         // 停车场车位数减一
                         parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getRemainingParkingSpace()-1);
                         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
-                        String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"欢迎光临\",\"is_pay\":\"false\"}}\n";
-                        log.info(a);
-                        return a;
-
+                         String data = SerialPortUtils.addSerialPort("减速慢行");
+                        return data;
                     }
                 } finally {
                     lock.unlock();

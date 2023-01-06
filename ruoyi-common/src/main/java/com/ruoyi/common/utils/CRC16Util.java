@@ -2,6 +2,7 @@ package com.ruoyi.common.utils;
 
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 @Slf4j
 public class CRC16Util {
@@ -88,5 +89,47 @@ public class CRC16Util {
         //高低位互换，输出符合相关工具对Modbus CRC16的运算
         crc = ((crc & 0xFF00) >> 8) | ((crc & 0x00FF) << 8);
         return String.format("%04X", crc);
+    }
+
+    public static int[] CRC16(int[] bytes)
+    {
+        //计算并填写CRC校验码
+        int crc = 0xffff;
+        int len = bytes.length;
+        for (int n = 0; n < len; n++)
+        {
+            byte i;
+            crc = crc ^ bytes[n];
+            for (i = 0; i < 8; i++)
+            {
+                int TT;
+                TT = crc & 1;
+                crc = crc >> 1;
+                crc = crc & 0x7fff;
+                if (TT == 1)
+                {
+                    crc = crc ^ 0xa001;
+                }
+                crc = crc & 0xffff;
+            }
+
+        }
+
+        var nl = bytes.length + 2;
+        //生成的两位校验码
+        int[] redata = new int[2];
+        redata[0] = (int)((crc & 0xff));
+        redata[1] = (int)((crc >> 8) & 0xff);
+
+        //重新组织字节数组
+        int[] newByte = new int[nl];
+        for (int i = 0; i < bytes.length; i++)
+        {
+            newByte[i] =bytes [i];
+        }
+        newByte[nl - 2] = redata[0];
+        newByte[nl - 1] = redata[1];
+
+        return newByte;
     }
 }

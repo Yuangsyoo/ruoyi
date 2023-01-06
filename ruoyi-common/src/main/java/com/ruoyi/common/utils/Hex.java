@@ -1,5 +1,8 @@
 package com.ruoyi.common.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class Hex {
 
     /**
@@ -310,10 +313,10 @@ public class Hex {
      * @param bytes byte数组
      * @return 16进制字符串
      */
-    public static String bytesToHexString(byte[] bytes) {
+    public static String bytesToHexString(int[] bytes) {
         char[] buf = new char[bytes.length * 2];
         int c = 0;
-        for (byte b : bytes) {
+        for (int b : bytes) {
             buf[c++] = digits[(b >> 4) & 0x0F];
             buf[c++] = digits[b & 0x0F];
         }
@@ -332,4 +335,35 @@ public class Hex {
         return byteArray;
     }
     private final static char[] digits = "0123456789ABCDEF".toCharArray();
+
+
+    public static String test(String args) throws Exception {
+
+        //将字符串转为GB2312数组
+        byte[] arr = args.getBytes("GB2312");
+
+        //将数组转为16进制字符串
+        String hexStr = "";
+        for (int i = 0; i < arr.length; i++) {
+            String str = byteToHex(arr[i]);
+            hexStr = hexStr + str;
+        }
+        System.out.println("【十六进制字符串】"+hexStr);
+            return hexStr;
+
+    }
+
+    public static String byteToHex(byte b){
+
+        String hex = Integer.toHexString(b & 0xFF);
+        if(hex.length() < 2){
+            hex = "0" + hex;
+        }
+        return hex;
+    }
+
+
+
+
+
 }

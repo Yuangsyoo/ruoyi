@@ -377,12 +377,12 @@ public class LPRDemo {
 		//String crc3 = CRC16Util.getCRC3(bytes);
 		//System.out.println(crc3);
 		//AA5521640011000901BBB6D3ADC8FDC1D9BDD3AF
-		byte data[] = new byte[]{(byte)0xAA,0x55,0x21,0x64,0x00,0x11,0x00,0x09,0x01,(byte)0xBB,(byte)0xB6,(byte)0xD3,(byte)0xAD,(byte)0xC8,(byte)0xFD,(byte)0xC1,(byte)0xD9,(byte)0xBD,(byte)0xD3,(byte)0xAF};
+		byte data[] = new byte[]{(byte)0xAA,0x55,0x01,0x64,0x00,0x26,0x00,0x0A,0x01,0x00,0x01,0x00,(byte)0xC1,(byte)0xD9,(byte)0xCA,(byte)0xB1,(byte)0xB3,(byte)0xB5,0x52,(byte)0x87,(byte)0xAF};
 		 byte base64_data[] = Base64.getEncoder().encode(data);
 		String base64_str = new String(base64_data);
 		 System.out.println("base64 str:" + base64_str);
-		LPRDemo lprtest = new LPRDemo();
-		lprtest.InitClient();
+		//LPRDemo lprtest = new LPRDemo();
+		//lprtest.InitClient();
 	}
 
 }
