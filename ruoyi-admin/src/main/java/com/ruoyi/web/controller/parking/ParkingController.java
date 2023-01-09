@@ -89,8 +89,7 @@ public class ParkingController extends Thread {
     @PostMapping("/operation")
     @Transactional
     @Anonymous
-    public String test1(@RequestBody Total total) throws Exception {
-        //System.out.println(total);
+    public String test1(@RequestBody Total total) {
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
         //车牌id
@@ -103,25 +102,20 @@ public class ParkingController extends Thread {
         ParkingLotEquipment parkingLotEquipment=parkingLotEquipmentService.findParkingLotEquipmentBySerialno(serialno);
         //查询停车场通过序列号
         ParkingLotInformation parkingLotInformation=parkingLotEquipmentService.findBySerialno(serialno);
-
         Timeval timeval = total.getAlarmInfoPlate().getResult().getPlateResult().getTimeStamp().getTimeval();
         //获取出入场时间
         Date date = DateTime.combineTime2(timeval.getDecyear(), timeval.getDecmon(), timeval.getDecday(), timeval.getDechour(), timeval.getDecmin(), timeval.getDecsec());
-
-
        //等于0则是进口，不等则是出口
         if(parkingLotEquipment.getDirection().equals("0")){
             //判断停车场状态异常停车场不可用 只针对进口a
             if (parkingLotInformation.getState().equals("1")){
-                String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"停车场不可用\",\"is_pay\":\"false\"}}\n";
-                return a ;
+                String data = SerialPortUtils.abnormal();
+                return data;
             }
             //判断设备是否可用
             if (parkingLotEquipment.getState().equals("1")){
-                //实验是否显示content消息info 如果是 ok 表示开闸
-                String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"设备状态异常\",\"is_pay\":\"false\"}}\n";
-                log.info(a);
-                return a;
+                String data = SerialPortUtils.equipmentAbnormality();
+                return data;
             }
             //判断是否时临时车限制
             if (parkingLotInformation.getTemporaryvehiclerestrictions().equals("0")){
@@ -129,18 +123,15 @@ public class ParkingController extends Thread {
                 ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
 
                 if (parkingFixedparkingspace==null && byLicense==null  ){
-                    String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"临时车限制进入\",\"is_pay\":\"false\"}}\n";
-                    log.info(a);
-                    return a;
+                    String data = SerialPortUtils.temporaryVehicle(license);
+                    return data;
                 }
             }
             //黑名单拒绝放行
            ParkingBlackList parkingBlackList= parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingLotInformation.getId(),license);
             if (parkingBlackList!=null){
-                //实验是否显示content消息info 如果是 ok 表示开闸
-            String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"黑名单拒绝放行\",\"is_pay\":\"false\"}}\n";
-                log.info(a);
-                return a;
+                String data = SerialPortUtils.blacklist(license);
+                return data;
             }
             //通过停车场id，车牌号查询有无未支付订单
             ParkingRecord parkingRecord= parkingRecordService.findByLicense(license,parkingLotInformation.getId());
@@ -163,12 +154,10 @@ public class ParkingController extends Thread {
                     if (parkingLotInformation.getRemainingParkingSpace()>0){
                         //保存进场信息
                         saveParkingRecord(date,parkingLotEquipment, carColor, s, name,license,parkingLotInformation.getId(),imagePath);
-                        /*//设备开闸
-                        SwitchOn(total.getAlarmInfoPlate().getIpaddr());*/
                         // 停车场车位数减一
                         parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getRemainingParkingSpace()-1);
                         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
-                         String data = SerialPortUtils.addSerialPort("减速慢行");
+                         String data = SerialPortUtils.addSerialPort(license);
                         return data;
                     }
                 } finally {
@@ -186,24 +175,21 @@ public class ParkingController extends Thread {
                         parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getRemainingParkingSpace()-1);
                         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
                         String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"欢迎光临\",\"is_pay\":\"false\"}}\n";
-                        log.info(a);
+                      log.info(license+"车主进场");
                         return a;
                     }
-
             }
         }
         else {
             //判断设备是否可用
             if (parkingLotEquipment.getState().equals("1")){
-                //实验是否显示content消息info 如果是 ok 表示开闸
-                String a="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"设备状态异常\",\"is_pay\":\"false\"}}\n";
-                log.info(a);
-                return a;
+                String data = SerialPortUtils.equipmentAbnormality();
+                log.info(parkingLotEquipment.getName()+"异常");
+                return data;
             }
             //查询没有支付得记录信息
             ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
             ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
-
             //特定车辆
             String specificvehicleexit = parkingLotEquipment.getSpecificvehicleexit();
             if (specificvehicleexit.equals("0")){
@@ -211,8 +197,6 @@ public class ParkingController extends Thread {
                 int []type={5,6,8,9,10,11,15,16,17};
                 boolean contains = Arrays.asList(type).contains(type1);
                 if (contains){
-                    //设备开闸
-                    SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                     //停车场车位数加一
                     updateRemainingParkingSpace(parkingLotInformation);
                     //获取出闸口设备名称
@@ -224,7 +208,24 @@ public class ParkingController extends Thread {
                     parkingRecord.setPaystate("1");
                     parkingRecord.setOrderstate("1");
                     parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
-                    parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+                    // 获取全部的进出口名称
+                    String allName = parkingRecord.getEntranceandexitname();
+                    // 用逗号分隔符分割开
+                    String [] a = allName.split(",");
+                    // 判断分割的长度是否小于2
+                    if (a.length<2){
+                        // 如果小于2直接赋值进数据库
+                        parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+                    }else {
+                        // 如果大于2就提取最后一次出口的名字
+                        String name1 = parkingLotEquipment.getName();
+                        // 获取入口的长度值
+                        int aa = a[0].length();
+                        // 提取入口名字
+                        String b = allName.substring(0,aa);
+                        // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
+                        parkingRecord.setEntranceandexitname(b+","+name1);
+                    }
                     parkingRecord.setPaymentmethod("特定车辆");
                     //实际支金额
                     parkingRecord.setMoney(0L);
@@ -241,26 +242,20 @@ public class ParkingController extends Thread {
                     for (SysUser user : list1) {
                         webSocketService.sendMessage(user.getUserName(),s);
                     }
-                    String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
-                    log.info(a);
-
-                    return a;
+                    log.info(license+"特定车辆，直接放行");
+                    String data = SerialPortUtils.specificvehicleexit(license);
+                    return data;
                 }
             }
-
             // 判断是否在白名单范围  在直接放行
             if (byLicense!=null){
                 if (!byLicense.getState().equals("1")){
-                    //设备开闸
-                    SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                     //停车场车位数加一
                     updateRemainingParkingSpace(parkingLotInformation);
                     //获取出闸口设备名称
                     String name = parkingLotEquipment.getName();
                     //获取停车场id
                     Long id = parkingLotInformation.getId();
-              /*      //查询没有支付得记录信息
-                    ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);*/
                     parkingRecord.setExittime(date);
                     parkingRecord.setPayTime(new Date());
                     //有bug 要改进
@@ -268,7 +263,24 @@ public class ParkingController extends Thread {
                     parkingRecord.setOrderstate("1");
                     parkingRecord.setMoney(0L);
                     parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
-                    parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+                    // 获取全部的进出口名称
+                    String allName = parkingRecord.getEntranceandexitname();
+                    // 用逗号分隔符分割开
+                    String [] a = allName.split(",");
+                    // 判断分割的长度是否小于2
+                    if (a.length<2){
+                        // 如果小于2直接赋值进数据库
+                        parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+                    }else {
+                        // 如果大于2就提取最后一次出口的名字
+                        String name1 = parkingLotEquipment.getName();
+                        // 获取入口的长度值
+                        int aa = a[0].length();
+                        // 提取入口名字
+                        String b = allName.substring(0,aa);
+                        // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
+                        parkingRecord.setEntranceandexitname(b+","+name1);
+                    }
                     parkingRecord.setPaymentmethod("白名单");
                     //实际支金额
                     parkingRecord.setMoney(0L);
@@ -286,17 +298,17 @@ public class ParkingController extends Thread {
                     for (SysUser user : list1) {
                         webSocketService.sendMessage(user.getUserName(),s);
                     }
-                    String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
-                    log.info(a);
-                    return a;
+                    Date starttime = byLicense.getStarttime();
+                    Date endtime = byLicense.getEndtime();
+                    long l = (endtime.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
+                    String data = SerialPortUtils.whiteList(license,l);
+                    log.info(license+"白名单车主，直接放行");
+                    return data;
                 }
             }
-
             //   判断有无优惠卷次卷 停车场id 车牌号  次卷  状态(待使用状态)
            ParkingCouponrecord parkingCouponrecord=parkingCouponrecordService.findByParkingLotInformationIdAndLicense( parkingLotInformation.getId(),license);
             if (parkingCouponrecord!=null){
-                //设备开闸
-                SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                 //出场后修改停车场记录
                 String s = update(parkingLotEquipment, parkingLotInformation, date, license, imagePath);
                 //停车场车位数加一
@@ -304,16 +316,15 @@ public class ParkingController extends Thread {
                 parkingCouponrecord.setState("1");
                 parkingCouponrecord.setOrdernumber(s);
                 parkingCouponrecordService.updateParkingCouponrecord(parkingCouponrecord);
-                String b="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
-                log.info(b);
-                return b;
+                //出口次卷下发临显指令
+                String data = SerialPortUtils.ExportSecondaryVolume(license);
+                log.info(license+"拥有次卷优惠卷直接放行");
+                return data;
             }
 
             // 2022/12/13 判断是否是固定停车位
           ParkingFixedparkingspace parkingFixedparkingspace=parkingFixedparkingspaceService.findByParkingLotInformationIdAndLicense(parkingLotInformation.getId(),license);
             if (parkingFixedparkingspace!=null && date.getTime()<parkingFixedparkingspace.getEndtime().getTime()){
-                //设备开闸
-                SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                 //停车场车位数加一
                 updateRemainingParkingSpace(parkingLotInformation);
                 //获取出闸口设备名称
@@ -326,7 +337,24 @@ public class ParkingController extends Thread {
                 parkingRecord.setOrderstate("1");
                 parkingRecord.setMoney(0L);
                 parkingRecord.setNumberthree("data:image/jpg;base64,"+imagePath);
-                parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+                // 获取全部的进出口名称
+                String allName = parkingRecord.getEntranceandexitname();
+                // 用逗号分隔符分割开
+                String [] a = allName.split(",");
+                // 判断分割的长度是否小于2
+                if (a.length<2){
+                    // 如果小于2直接赋值进数据库
+                    parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+                }else {
+                    // 如果大于2就提取最后一次出口的名字
+                    String name1 = parkingLotEquipment.getName();
+                    // 获取入口的长度值
+                    int aa = a[0].length();
+                    // 提取入口名字
+                    String b = allName.substring(0,aa);
+                    // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
+                    parkingRecord.setEntranceandexitname(b+","+name1);
+                }
                 parkingRecord.setPaymentmethod("固定车位车辆");
                 //实际支金额
                 parkingRecord.setMoney(0L);
@@ -343,9 +371,8 @@ public class ParkingController extends Thread {
                 for (SysUser user : list1) {
                     webSocketService.sendMessage(user.getUserName(),s);
                 }
-                String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
-                log.info(a);
-                return a;
+                String data = SerialPortUtils.ExportSecondaryVolume(license);
+                return data;
             }
 
             //停车场内支付业务逻辑
@@ -356,7 +383,6 @@ public class ParkingController extends Thread {
                //判断支付时间和当前开闸时间是否超过停车场设置离场时间
                 long l = DateTime.dateDiff(parkingRecord1.getPayTime(),date);
                 if (l>parkingLotInformation.getPayleavingtime()){
-                   log.info("支付到离场时间超过"+parkingLotInformation.getPayleavingtime()+"分钟，不允开闸，待处理");
                     //  超时补费
                     //开启超时补费
                     if (parkingLotInformation.getOvertimecompensation().equals("0")){
@@ -378,7 +404,7 @@ public class ParkingController extends Thread {
                         // 判断分割的长度是否小于2
                         if (a.length<2){
                             // 如果小于2直接赋值进数据库
-                            parkingRecord1.setEntranceandexitname(parkingRecord1.getEntranceandexitname()+","+parkingLotEquipment.getName());
+                            parkingRecord1.setEntranceandexitname(parkingRecord1.getEntranceandexitname()+","+name);
                         }else {
                             // 如果大于2就提取最后一次出口的名字
                             String name1 = parkingLotEquipment.getName();
@@ -398,26 +424,21 @@ public class ParkingController extends Thread {
                         parkingRecordVo.setParkingLotEquipmentName(parkingLotEquipment.getName());
                         parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
                         redisTemplate.opsForValue().set(String.valueOf(parkingLotEquipment.getId()),parkingRecordVo,5, TimeUnit.MINUTES);
-                        String a1="{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"超出出场时间\",\"is_pay\":\"true\"}}\n";
-                        log.info(a1);
-                        return a1;
-                    }
-                    //未开启超时补费
-                    else {
-                        //设备开闸
-                        SwitchOn(total.getAlarmInfoPlate().getIpaddr());
-                        //出场后修改停车场记录
-                        updateparkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
-                        //停车场车位数加一
-                        updateRemainingParkingSpace(parkingLotInformation);
+                        String data = SerialPortUtils.overtime(license,moneyVo.getMoney());
+                        log.info("场内支付超过离场时间，等待支付 ");
+                        return data;
                     }
                }
-               //设备开闸
-               SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                //出场后修改停车场记录
                updateparkingRecord(parkingLotEquipment, parkingLotInformation,date,license,imagePath);
-              //停车场车位数加一
+               //停车场车位数加一
                updateRemainingParkingSpace(parkingLotInformation);
+               //进场时间  出场时间date
+                Date admissiontime = parkingRecord1.getAdmissiontime();
+                long l1 = (date.getTime()-admissiontime.getTime()) / (1000*60);
+                String data1 = SerialPortUtils.Exit(license,l1);
+                log.info("场内支付未超过离场时间 ");
+                return data1;
            }
            //门闸口支付业务逻辑  
             else {
@@ -428,8 +449,6 @@ public class ParkingController extends Thread {
 
                //如果停车场免费时常大于实际停车时间  放行
                if(freetime>time){
-                   //设备开闸
-                   SwitchOn(total.getAlarmInfoPlate().getIpaddr());
                    //停车场车位数加一
                    updateRemainingParkingSpace(parkingLotInformation);
                    //获取出闸口设备名称PayOrder
@@ -461,9 +480,11 @@ public class ParkingController extends Thread {
                    for (SysUser user : list1) {
                        webSocketService.sendMessage(user.getUserName(),s);
                    }
-                   String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"放行\",\"is_pay\":\"true\"}}\n";
-                   log.info(a);
-                   return a;
+                   Date admissiontime = parkingRecord.getAdmissiontime();
+                   long l1 = (date.getTime()-admissiontime.getTime()) / (1000*60);
+                   String data1 = SerialPortUtils.Exit(license,l1);
+                   log.info("停车时间在免费时间段内");
+                   return data1;
                }
                List<ParkingRecord> list = new ArrayList<>();
                //订单正在进行中
@@ -510,26 +531,17 @@ public class ParkingController extends Thread {
                 parkingRecordVo.setParkingLotEquipmentName(parkingLotEquipment.getName());
                 parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
                 redisTemplate.opsForValue().set(String.valueOf(parkingLotEquipment.getId()),parkingRecordVo,5, TimeUnit.MINUTES);
-
-
-
+                //进场时间  出场时间date
+                Date admissiontime = parkingRecord.getAdmissiontime();
+                long l1 = (date.getTime()-admissiontime.getTime()) / (1000*60);
+                String data1 = SerialPortUtils.ExitOne(license,l1,moneyVo.getMoney());
+                log.info("门闸口支付业务逻辑 ");
+                return data1;
            }
         }
-        return null;
+        log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"程序异常，请联系管理人员\",\"is_pay\":\"true\"}}");
+        return "{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"程序异常，请联系管理人员\",\"is_pay\":\"true\"}}";
     }
-
-    private ParkingResVo getResponse_alarmInfoPlate(String state,int plateid, List<SerialData> serialData) {
-        Response_AlarmInfoPlate response_alarmInfoPlate = new Response_AlarmInfoPlate();
-        response_alarmInfoPlate.setInfo(state);
-        response_alarmInfoPlate.setIs_pay(false);
-        response_alarmInfoPlate.setPlateid(plateid);
-        response_alarmInfoPlate.setManualTrigger("no");
-        response_alarmInfoPlate.setSerialData(serialData);
-        ParkingResVo parkingResVo = new ParkingResVo();
-        parkingResVo.setResponse_AlarmInfoPlate(response_alarmInfoPlate);
-        return parkingResVo;
-    }
-
     //出场后修改停车场记录
     private void updateparkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {
         //获取出闸口设备名称
@@ -544,7 +556,24 @@ public class ParkingController extends Thread {
         //有bug 要改进
         parkingRecord.setPaystate("1");
         parkingRecord.setOrderstate("1");
-        parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+        // 获取全部的进出口名称
+        String allName = parkingRecord.getEntranceandexitname();
+        // 用逗号分隔符分割开
+        String [] a = allName.split(",");
+        // 判断分割的长度是否小于2
+        if (a.length<2){
+            // 如果小于2直接赋值进数据库
+            parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+        }else {
+            // 如果大于2就提取最后一次出口的名字
+            String name1 = parkingLotEquipment.getName();
+            // 获取入口的长度值
+            int aa = a[0].length();
+            // 提取入口名字
+            String b = allName.substring(0,aa);
+            // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
+            parkingRecord.setEntranceandexitname(b+","+name1);
+        }
         //出场后修改停车场记录
         parkingRecordService.updateParkingRecord(parkingRecord);
         List<ParkingRecord> list = new ArrayList<>();
@@ -580,7 +609,24 @@ public class ParkingController extends Thread {
         parkingRecord.setDiscountamount(0L);
         //应收金额
         parkingRecord.setAmountpayable(0L);
-        parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+        // 获取全部的进出口名称
+        String allName = parkingRecord.getEntranceandexitname();
+        // 用逗号分隔符分割开
+        String [] a = allName.split(",");
+        // 判断分割的长度是否小于2
+        if (a.length<2){
+            // 如果小于2直接赋值进数据库
+            parkingRecord.setEntranceandexitname(parkingRecord.getEntranceandexitname()+","+name);
+        }else {
+            // 如果大于2就提取最后一次出口的名字
+            String name1 = parkingLotEquipment.getName();
+            // 获取入口的长度值
+            int aa = a[0].length();
+            // 提取入口名字
+            String b = allName.substring(0,aa);
+            // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
+            parkingRecord.setEntranceandexitname(b+","+name1);
+        }
         //出场后修改停车场记录
         parkingRecordService.updateParkingRecord(parkingRecord);
         List<ParkingRecord> list = new ArrayList<>();

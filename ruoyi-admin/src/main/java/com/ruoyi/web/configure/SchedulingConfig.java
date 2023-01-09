@@ -39,7 +39,7 @@ public class SchedulingConfig {
     public void scheduledTasks() {
         System.out.println(1);
         Date date = new Date();
-        LPRDemo lprDemo = new LPRDemo();
+       LPRDemo lprDemo = new LPRDemo();
         System.out.println(1);
         //定时任务白名单业务逻辑
        List<ParkingWhiteList> list = parkingWhiteListService.selectParkingWhiteListList(null);
@@ -51,10 +51,6 @@ public class SchedulingConfig {
                 //删除白名单
                 deleteWhiteLis(lprDemo, parkingWhiteList);
             }
-         /*  if (parkingWhiteList.getState()==1){
-               //删除白名单
-               deleteWhiteLis(lprDemo, parkingWhiteList);
-           }*/
         }
         //优惠卷二维码定时器
         List<ParkingCoupon> list1 = parkingCouponMapper.selectParkingCouponList(null);
