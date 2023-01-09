@@ -1,7 +1,11 @@
 package com.ruoyi.parking.utils;
 import com.ruoyi.common.utils.Hex;
+import com.ruoyi.parking.domain.ParkingLotEquipment;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +16,22 @@ import java.util.Base64;
  */
 @Slf4j
 public class SerialPortUtils {
+    //出口支付后临显指令
+    public static  List<byte[]> payAfter(String data) {
+        byte[] s4 = getStringOne("减速慢行", "040A");
+        byte[] s3 = getStringOne("一车一杆", "030A");
+        byte[] s2 = getStringOne(data, "020A");
+        byte[] s1 = getStringOne("一路顺风","010A");
+        byte[] s5 = payAfter(data, "02");
+        List<byte[]> list = new ArrayList<>();
+        list.add(s1);
+        list.add(s2);
+        list.add(s3);
+        list.add(s4);
+        list.add(s5);
+        return list;
+
+    }
     //出口待缴费临显指令
     public static String ExitOne(String data,Long time,Long money)  {
 
@@ -421,10 +441,10 @@ public class SerialPortUtils {
         return a;
     }
     //进口下发临显指令
-    public static String addSerialPort(String data) {
+    public static String addSerialPort(String data,Long manth) {
         String s4 = getString4("减速慢行");
-        String s3 = getString3("一车一杆");
-        String s2 = getString2(data);
+        String s3 = getString2("剩余车位:"+manth);
+        String s2 = getString3(data);
         String s1 = getString1("欢迎光临");
         String s5 = voicePlayback(data,"01");
         String[] split2 = s2.split(",");
@@ -592,6 +612,32 @@ public class SerialPortUtils {
         return base64_str+','+length1;
     }
 
+    private static byte[] getStringOne(String data,String math) {
+        String test=null;
+        try {
+            test = Hex.test( data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(test);
+        //长度
+        int length = bytes.length+2;
+        //长度转换16进制
+        String s3 = numToHex16(length);
+        log.info("长度="+s3);
+        String s = "01640020"+ s3+math+test+"0000";
+        log.info(s);
+        String s1 = "01640020"+ s3+math+test;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        return bytes2;
+    }
     //语音播放进口
     private static String voicePlayback(String data,String math) {
         String test=null;
@@ -607,11 +653,6 @@ public class SerialPortUtils {
         //长度转换16进制
         String s3 = numToHex16(length+1);
         log.info("长度="+s3);
-        // AA5501 640022 0009 B4A8473941463332 01 FC21AF
-         //  AA5501 640022 0009 b4a8473941463332 01 fc21AF
-        // AA5515 640022 0009 D4C1423132333435 01 8880AF
-        // AA5505 640022 0009 d4c1423132333435 01 4d8dAF 校验位前01代表欢迎光临02一路平安09此车黑名单0a车位已满0b请缴费
-        // AA5515 640022 0009 b4a8473941463332 01 f86eAF
         String s = "00640022"+ s3+test+math+"0000";
         log.info(s);
         String s1 = "00640022"+ s3+test+math;
@@ -627,6 +668,33 @@ public class SerialPortUtils {
         String base64_str = new String(base64_data);
         return base64_str+','+length1;
     }
+    //支付后语音播放进口
+    private static byte[] payAfter(String data,String math) {
+        String test=null;
+        try {
+            test = Hex.test( data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(test);
+        //长度
+        int length = bytes.length;
+        //长度转换16进制
+        String s3 = numToHex16(length+1);
+        log.info("长度="+s3);
+        String s = "00640022"+ s3+test+math+"0000";
+        log.info(s);
+        String s1 = "00640022"+ s3+test+math;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        return bytes2;
+    }
     //需要使用2字节表示b
     public static String numToHex16(int b) {
         return String.format("%04x", b);
@@ -640,4 +708,159 @@ public class SerialPortUtils {
     }
 
 
+    public static List<byte[]> advertisement(ParkingLotEquipment parkingLotEquipment) {
+        byte[] bytes = advertisement1(parkingLotEquipment.getOnedisplay());
+        byte[] bytes1 = advertisement2(parkingLotEquipment.getTwodisplay());
+        byte[] bytes2 = advertisement3(parkingLotEquipment.getThreedisplay());
+        byte[] bytes3 = advertisement4(parkingLotEquipment.getFourdisplay());
+       byte[] bytes4 = advertisement5(String.valueOf(parkingLotEquipment.getVolume()));
+        ArrayList<byte[]> list = new ArrayList<>();
+        list.add(bytes);
+        list.add(bytes1);
+        list.add(bytes2);
+        list.add(bytes3);
+         list.add(bytes4);
+        return list;
+    }
+
+    //广告位第4行
+    private static byte[] advertisement4(String data) {
+        String test=null;
+        try {
+            test = Hex.test( data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(test);
+        //长度
+        int length = bytes.length+1;
+        //长度转换16进制
+        String s3 = numToHex16(length);
+        //  AA55 25 64 0011 0009 04 BCF5CBD9C2FDD0D060F5AF
+        log.info("长度="+s3);
+        String s = "03640011"+ s3+"04"+test+"0000";
+        log.info(s);
+        String s1 = "03640011"+ s3+"04"+test;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        return bytes2;
+    }
+    //广告位第3行
+    private static byte[] advertisement3(String data) {
+        String test=null;
+        try {
+            test = Hex.test( data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(test);
+        //长度
+        int length = bytes.length+1;
+        //长度转换16进制
+        String s3 = numToHex16(length);
+        log.info("长度="+s3);
+        String s = "02640011"+ s3+"03"+test+"0000";
+        log.info(s);
+        String s1 = "02640011"+ s3+"03"+test;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        return bytes2;
+    }
+    //广告位第2行
+    private static byte[] advertisement2(String data) {
+        String test=null;
+        try {
+            test = Hex.test( data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(test);
+        //长度
+        int length = bytes.length+1;
+        //长度转换16进制
+        String s3 = numToHex16(length);
+        log.info("长度="+s3);
+        String s =  "01640011"+ s3+"02"+test+"0000";
+        log.info(s);
+        String s1 = "01640011"+ s3+"02"+test;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss2="+s4);
+        log.info(s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+
+        return bytes2;
+    }
+    //广告位第1行
+    private static byte[] advertisement1(String data) {
+        String test=null;
+        try {
+            test = Hex.test( data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(test);
+        //长度
+        int length = bytes.length+1;
+        //长度转换16进制
+        String s3 = numToHex16(length);
+        log.info("长度="+s3);
+        String s = "00640011"+ s3+"01"+test+"0000";
+        log.info(s);
+        String s1 = "00640011"+ s3+"01"+test;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        return bytes2;
+    }
+
+    //设置音量
+    private static byte[] advertisement5(String data) {/*
+        String test=null;
+        try {
+            test = Hex.test( data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(test);
+        //长度
+        int length = bytes.length+1;
+        //长度转换16进制
+        String s3 = numToHex16(length);*/
+//AA 55 16 64 00 F0 00 01 02 875FAF
+        String s = "006400F000010"+data+"0000";
+        log.info(s);
+        String s1 = "006400F000010"+data;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        return bytes2;
+    }
+    //AA55 2A 64 00 F0 00 01 09 44 2F AF
 }

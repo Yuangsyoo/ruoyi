@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.exception.GlobalException;
+import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.QRCodeGenerator;
+import com.ruoyi.parking.utils.SerialPortUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
@@ -75,6 +77,15 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
                 String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
                 parkingLotEquipment.setQrcode(s);
             }
+            LPRDemo lprDemo = new LPRDemo();
+            int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
+            List<byte[]> list = SerialPortUtils.advertisement(parkingLotEquipment);
+            //485串口发送数据
+            lprDemo.SendSerialData(handle,list);
+            //关闭设备的控制句柄
+            lprDemo.VzLPRClient_Close(handle);
+            //执行结束释放
+            lprDemo.VzLPRClient_Cleanup();
             return parkingLotEquipmentMapper.updateParkingLotEquipment(parkingLotEquipment);
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,6 +103,16 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     @Override
     public int updateParkingLotEquipment(ParkingLotEquipment parkingLotEquipment)
     {
+        LPRDemo lprDemo = new LPRDemo();
+        int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
+        List<byte[]> list = SerialPortUtils.advertisement(parkingLotEquipment);
+        //485串口发送数据
+        lprDemo.SendSerialData(handle,list);
+        //关闭设备的控制句柄
+        lprDemo.VzLPRClient_Close(handle);
+        //执行结束释放
+        lprDemo.VzLPRClient_Cleanup();
+
         return parkingLotEquipmentMapper.updateParkingLotEquipment(parkingLotEquipment);
     }
 

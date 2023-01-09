@@ -1,6 +1,7 @@
 package com.ruoyi.common.sdk;
 import com.sun.jna.Pointer;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -32,31 +33,31 @@ public class LPRDemo {
 	public   int InitClient(String ip){
 
 			lpr.VzLPRClient_Setup();
-			// 搜索设备
-			//int i = lpr.VZLPRClient_StartFindDeviceEx(findCallBack, Pointer.NULL);
 		   //连接设备返回句柄
 			int handle = lpr.VzLPRClient_Open(ip, 80, "admin", "admin");
-			//接收图片
-			/*int i = lpr.VzLPRClient_SetPlateInfoCallBack(handle, PlateCallBack, Pointer.NULL, 1);
-			System.out.println(i);
-
-			Scanner input = new Scanner(System.in);
-
-			int end = input.nextInt();
-
-			System.out.println(end);*/
 			return handle;
 
-
-		/*	int callbackindex = lpr.VzLPRClient_SetPlateInfoCallBack(handle, PlateCallBack, Pointer.NULL, 1);
-			System.out.println(callbackindex);
-
-			Scanner input = new Scanner(System.in);
-
-			int end = input.nextInt();
-			System.out.println(end);*/
-
 	}
+
+	// 测试485数据发送
+	public void SendSerialData(int handle, List<byte[]>list) {
+
+		// 485测试(串口句柄只用打开一次)
+		int serial_handle = lpr.VzLPRClient_SerialStart(handle, 0, SerialCallBack, Pointer.NULL);
+		for (byte[] bytes : list) {
+			try {
+				// 可以发任意多次的485数据
+				int ret = lpr.VzLPRClient_SerialSend(serial_handle, bytes, bytes.length);
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		// 使用完，关闭串口
+		lpr.VzLPRClient_SerialStop(serial_handle);
+	}
+
+
 	// 根据id获取车牌记录图片数据
 	public boolean LoadImg(int handle, int id) {
 		boolean ret = false;
@@ -254,14 +255,7 @@ public class LPRDemo {
 	}
 
 
-	// 测试485数据发送
-	public int SendSerialData(int serial_handle) {
-		byte data[] = new byte[]{0x01, 0x02, 0x05, (byte)0xAA, (byte)0xDD};
-		int ret = lpr.VzLPRClient_SerialSend(serial_handle, data, data.length);
 
-		System.out.println("SendSerialData ret:" + ret);
-		return ret;
-	}
 
 	// 测试截图
 	public int SnapImg(int handle) {

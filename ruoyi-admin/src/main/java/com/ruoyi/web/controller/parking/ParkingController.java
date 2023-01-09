@@ -137,6 +137,7 @@ public class ParkingController extends Thread {
             ParkingRecord parkingRecord= parkingRecordService.findByLicense(license,parkingLotInformation.getId());
             if (parkingRecord!=null){
                 //如果有就删除掉
+                updateRemainingParkingSpace(parkingLotInformation);
                 parkingRecordService.deleteParkingRecordById(parkingRecord.getId());
             }
             //车牌颜色
@@ -155,9 +156,10 @@ public class ParkingController extends Thread {
                         //保存进场信息
                         saveParkingRecord(date,parkingLotEquipment, carColor, s, name,license,parkingLotInformation.getId(),imagePath);
                         // 停车场车位数减一
-                        parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getRemainingParkingSpace()-1);
+                        long l = parkingLotInformation.getRemainingParkingSpace() - 1;
+                        parkingLotInformation.setRemainingParkingSpace(l);
                         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
-                         String data = SerialPortUtils.addSerialPort(license);
+                         String data = SerialPortUtils.addSerialPort(license,l);
                         return data;
                     }
                 } finally {

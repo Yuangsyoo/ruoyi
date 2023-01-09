@@ -151,7 +151,7 @@
           <span style="color: green" v-else-if="scope.row.residualscreen==0">开启</span>
         </template>
       </el-table-column>
-      <el-table-column label="音量范围0-10" align="center" prop="volume" />
+      <el-table-column label="音量范围0-9" align="center" prop="volume" />
 <!--      <el-table-column label="预留字段" align="center" prop="numberone" />
       <el-table-column label="预留字段2" align="center" prop="numbertwo" />
       <el-table-column label="预留字段3" align="center" prop="numberthree" />-->
@@ -263,18 +263,9 @@
             <el-radio v-model="form.residualscreen" label="1">禁用</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="音量范围0-10" prop="volume">
-          <el-input v-model="form.volume" placeholder="请输入音量范围0-10" />
+        <el-form-item label="音量范围0-9" prop="volume">
+          <el-input v-model="form.volume" placeholder="请输入音量范围0-9" />
         </el-form-item>
-<!--        <el-form-item label="预留字段" prop="numberone">
-          <el-input v-model="form.numberone" placeholder="请输入预留字段" />
-        </el-form-item>
-        <el-form-item label="预留字段2" prop="numbertwo">
-          <el-input v-model="form.numbertwo" placeholder="请输入预留字段2" />
-        </el-form-item>
-        <el-form-item label="预留字段3" prop="numberthree">
-          <el-input v-model="form.numberthree" placeholder="请输入预留字段3" />
-        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>

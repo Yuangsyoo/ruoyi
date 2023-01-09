@@ -19,6 +19,7 @@ import com.ruoyi.parking.mapper.ParkingCouponrecordMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
 import com.ruoyi.parking.dto.MoneyDto;
+import com.ruoyi.parking.utils.SerialPortUtils;
 import com.ruoyi.parking.vo.*;
 import com.ruoyi.system.mapper.SysUserMapper;
 import org.apache.ibatis.annotations.Param;
@@ -158,12 +159,14 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
                 parkingCouponrecordMapper.updateParkingCouponrecord(byParkingLotInformationIdAndLicense);
             }
             ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
-            //开闸处理
             LPRDemo lprDemo = new LPRDemo();
             //初始化返回句柄
             int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
             //开闸
             int i1 = lprDemo.switchOn(handle, 0, 500);
+            List<byte[]> list2 = SerialPortUtils.payAfter(license);
+            //485串口发送数据
+            lprDemo.SendSerialData(handle,list2);
             //关闭设备的控制句柄
             lprDemo.VzLPRClient_Close(handle);
             //执行结束释放
@@ -209,7 +212,6 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
         return AjaxResult.success(parkingRecordVo);
     }
-
     //室内扫码回显支付信息
     @Override
     public AjaxResult indoor(Long parkingLotInformationId, String license) {
@@ -234,7 +236,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
         BeanUtils.copyProperties(parkingRecord,parkingRecordVo);
         parkingRecordVo.setParkingLotInformationName(parkingLotInformation.getName());
-        // TODO: 2022/12/11 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式(支付方式后面加优惠卷)  计算方式时当前时间计算  回调接口传过来所有信息 保存
+        // 调用计费规则显示总费用 优惠金额  实际支付金额  优惠方式(支付方式后面加优惠卷)  计算方式时当前时间计算  回调接口传过来所有信息 保存
         ParkingChargingDto parkingChargingDto = new ParkingChargingDto(parkingLotInformationId,parkingRecord.getAdmissiontime(),new Date(),license);
         //金额
         MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
