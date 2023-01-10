@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -107,6 +109,27 @@ public class ParkingController extends Thread {
         Date date = DateTime.combineTime2(timeval.getDecyear(), timeval.getDecmon(), timeval.getDecday(), timeval.getDechour(), timeval.getDecmin(), timeval.getDecsec());
        //等于0则是进口，不等则是出口
         if(parkingLotEquipment.getDirection().equals("0")){
+            //停车场营业时间
+            String starttime = parkingLotInformation.getStarttime();
+            String endtime = parkingLotInformation.getEndtime();
+            //当前时间需转为HH:mm的时间格式：
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            String now = sdf.format(date);
+            boolean effectiveDate=true;
+            //HH:mm格式的当前时间
+            try {
+                Date nowTime = sdf.parse(now);
+                //时间区间String转Date
+                Date startTime = sdf.parse(starttime);
+                Date endTime  = sdf.parse(endtime);
+                 effectiveDate = DateTime.isEffectiveDate(nowTime, startTime, endTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (!effectiveDate){
+                log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"不在营业范围内\",\"is_pay\":\"false\"}}");
+                return "{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"不在营业范围内\",\"is_pay\":\"false\"}}";
+            }
             //判断停车场状态异常停车场不可用 只针对进口a
             if (parkingLotInformation.getState().equals("1")){
                 String data = SerialPortUtils.abnormal();
@@ -544,6 +567,11 @@ public class ParkingController extends Thread {
         log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"程序异常，请联系管理人员\",\"is_pay\":\"true\"}}");
         return "{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"程序异常，请联系管理人员\",\"is_pay\":\"true\"}}";
     }
+
+
+
+
+
     //出场后修改停车场记录
     private void updateparkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {
         //获取出闸口设备名称

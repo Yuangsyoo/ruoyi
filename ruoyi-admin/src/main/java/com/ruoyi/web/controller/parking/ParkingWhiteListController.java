@@ -26,6 +26,7 @@ import com.ruoyi.parking.domain.ParkingWhiteList;
 import com.ruoyi.parking.service.IParkingWhiteListService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 停车场白名单Controller
@@ -152,4 +153,25 @@ public class ParkingWhiteListController extends BaseController
 
        return AjaxResult.success();
     }
+
+    @Log(title = "添加停车场名单", businessType = BusinessType.IMPORT) // todo
+    @PreAuthorize("@ss.hasPermi('parking:whitelist:import')") // todo
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file, boolean updateSupport,Long parkingLotInformationId) throws Exception
+    {
+        System.out.println(parkingLotInformationId);
+        ExcelUtil<ParkingWhiteList> util = new ExcelUtil<>(ParkingWhiteList.class); // todo
+        List<ParkingWhiteList> stuList = util.importExcel(file.getInputStream()); // todo
+        String operName = getUsername();
+        String message = parkingWhiteListService.importUser(stuList, updateSupport, operName,parkingLotInformationId); // todo
+        return AjaxResult.success(message);
+    }
+
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response)
+    {
+        ExcelUtil<ParkingWhiteList> util = new ExcelUtil<>(ParkingWhiteList.class); // todo
+        util.importTemplateExcel(response, "白名单基本信息");
+    }
+
 }

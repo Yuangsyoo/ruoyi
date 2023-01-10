@@ -42,7 +42,7 @@
             <el-table-column label="进口照片" align="center" prop="numbertwo">
               <template slot-scope="scope">
                 <el-image
-                  style="width: 100px; height: 100px"
+                  style="width: 200px; height: 200px"
                   :src="scope.row.numbertwo">
                 </el-image>
               </template>
@@ -50,7 +50,7 @@
             <el-table-column label="出口照片" align="center" prop="numberthree" >
                 <template slot-scope="scope">
                   <el-image
-                    style="width: 100px; height: 100px"
+                    style="width: 200px; height: 200px"
                     :src="scope.row.numberthree"
                     :preview-src-list="scope.row.numberthree"
                   ></el-image>

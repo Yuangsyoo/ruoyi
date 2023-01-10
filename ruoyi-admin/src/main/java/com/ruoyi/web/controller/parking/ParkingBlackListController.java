@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.parking;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.parking.domain.ParkingWhiteList;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import com.ruoyi.parking.domain.ParkingBlackList;
 import com.ruoyi.parking.service.IParkingBlackListService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 黑名单管理Controller
@@ -100,5 +103,26 @@ public class ParkingBlackListController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(parkingBlackListService.deleteParkingBlackListByIds(ids));
+    }
+
+
+    @Log(title = "添加停车场名单", businessType = BusinessType.IMPORT) // todo
+    @PreAuthorize("@ss.hasPermi('parking:blackList:import')") // todo
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file, boolean updateSupport, Long parkingLotInformationId) throws Exception
+    {
+        System.out.println(parkingLotInformationId);
+        ExcelUtil<ParkingBlackList> util = new ExcelUtil<>(ParkingBlackList.class); // todo
+        List<ParkingBlackList> stuList = util.importExcel(file.getInputStream()); // todo
+        String operName = getUsername();
+        String message = parkingBlackListService.importUser(stuList, updateSupport, operName,parkingLotInformationId); // todo
+        return AjaxResult.success(message);
+    }
+
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response)
+    {
+        ExcelUtil<ParkingBlackList> util = new ExcelUtil<>(ParkingBlackList.class); // todo
+        util.importTemplateExcel(response, "白名单基本信息");
     }
 }

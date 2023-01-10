@@ -26,54 +26,49 @@ public class ParkingWhiteList extends BaseEntity
     private Long id;
 
     /** 停车场id */
-    @Excel(name = "停车场id")
+
     private Long parkinglotinformationid;
 
     /** 车牌号 */
     @Excel(name = "车牌号")
     @NotNull(message = "请填写车牌号")
     private String license;
-
+    /** 添加时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
+    @Excel(name = "添加时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date addtime;
     /** 开始时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
     @Excel(name = "开始时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date starttime;
 
-    /** 结束时间 */
+    /** 截至时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
-    @Excel(name = "结束时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @Excel(name = "截止时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date endtime;
-
-    /** 添加时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
-    @Excel(name = "添加时间", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date addtime;
-
+    /** 操作员 */
+    @Excel(name = "操作员")
+    private String operator;
+    /** 状态0代表启用1代表禁用 */
+    @Excel(name = "状态",readConverterExp = "0=有效期,1=已到期")
+    private Integer state;
     /** 白名单用户姓名 */
-    @Excel(name = "白名单用户姓名")
+    @Excel(name = "姓名")
     private String name;
-
     /** 手机号 */
-    @Excel(name = "手机号")
+    @Excel(name = "电话")
     //手机号码也用个性化提示，使用正则表达式进行匹配，非空时不验证
     @Pattern(regexp="^1(3|4|5|7|8)\\d{9}$",message="手机号码格式错误！")
     private String phone;
-
     /** 地址 */
     @Excel(name = "地址")
     private String adress;
-
     /** 月费 */
     @Excel(name = "月费")
     private Long monthlyfee;
 
-    /** 状态0代表启用1代表禁用 */
-    @Excel(name = "状态0代表启用1代表禁用")
-    private Integer state;
 
-    /** 操作员 */
-    @Excel(name = "操作员")
-    private String operator;
+
 
     private ParkingLotInformation parkingLotInformation;
 

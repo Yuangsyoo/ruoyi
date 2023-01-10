@@ -71,4 +71,14 @@ public interface IParkingWhiteListService
      * @return
      */
     public Long overdueWhiteList(Long id);
+    /**
+     * 导入用户数据
+     *
+     * @param stuList 用户数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName 操作用户
+     * @return 结果
+     */
+    public String importUser(List<ParkingWhiteList> stuList, Boolean isUpdateSupport, String operName,Long parkingLotInformationId);
+
 }

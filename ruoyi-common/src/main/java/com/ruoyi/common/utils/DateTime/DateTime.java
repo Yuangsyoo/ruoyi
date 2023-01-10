@@ -2,6 +2,7 @@ package com.ruoyi.common.utils.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -27,7 +28,6 @@ public class DateTime {
 
     public static long dateDiff(Date startTime, Date endTime)  {
         //按照传入的格式生成一个simpledateformate对象
-
         long nd = 1000*24*60*60;//一天的毫秒数
         long nh = 1000*60*60;//一小时的毫秒数
         long nm = 1000*60;//一分钟的毫秒数
@@ -42,6 +42,30 @@ public class DateTime {
         long sec = diff%nd%nh%nm/ns;//计算差多少秒//输出结果*/
 
         return l ;
+    }
+    /**
+     * 判断当前时间是否在[startTime, endTime]区间，注意三个参数的时间格式要一致
+     * @param nowTime
+     * @param startTime
+     * @param endTime
+     * @return 在时间段内返回true，不在返回false
+     */
+    public static boolean isEffectiveDate(Date nowTime, Date startTime, Date endTime) {
+        if (nowTime.getTime() == startTime.getTime()
+                || nowTime.getTime() == endTime.getTime()) {
+            return true;
+        }
+
+        Calendar date = Calendar.getInstance();
+        date.setTime(nowTime);
+
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(startTime);
+
+        Calendar end = Calendar.getInstance();
+        end.setTime(endTime);
+
+        return date.after(begin) && date.before(end);
     }
 
 }

@@ -709,17 +709,29 @@ public class SerialPortUtils {
 
 
     public static List<byte[]> advertisement(ParkingLotEquipment parkingLotEquipment) {
-        byte[] bytes = advertisement1(parkingLotEquipment.getOnedisplay());
-        byte[] bytes1 = advertisement2(parkingLotEquipment.getTwodisplay());
-        byte[] bytes2 = advertisement3(parkingLotEquipment.getThreedisplay());
-        byte[] bytes3 = advertisement4(parkingLotEquipment.getFourdisplay());
-       byte[] bytes4 = advertisement5(String.valueOf(parkingLotEquipment.getVolume()));
         ArrayList<byte[]> list = new ArrayList<>();
-        list.add(bytes);
-        list.add(bytes1);
-        list.add(bytes2);
-        list.add(bytes3);
-         list.add(bytes4);
+        String onedisplay = parkingLotEquipment.getOnedisplay();
+        if (onedisplay!=null||!onedisplay.equals("")){
+            byte[] bytes = advertisement1(onedisplay);
+            list.add(bytes);
+        }
+        String twodisplay = parkingLotEquipment.getTwodisplay();
+        if (twodisplay!=null||!twodisplay.equals("")){
+            byte[] bytes1 = advertisement2(twodisplay);
+            list.add(bytes1);
+        }
+        String threedisplay = parkingLotEquipment.getThreedisplay();
+        if (threedisplay!=null||!threedisplay.equals("")){
+            byte[] bytes2 = advertisement3(threedisplay);
+            list.add(bytes2);
+        }
+        String fourdisplay = parkingLotEquipment.getFourdisplay();
+        if (fourdisplay!=null||!fourdisplay.equals("")){
+            byte[] bytes3 = advertisement4(fourdisplay);
+            list.add(bytes3);
+        }
+        byte[] bytes4 = advertisement5(String.valueOf(parkingLotEquipment.getVolume()));
+        list.add(bytes4);
         return list;
     }
 
@@ -834,22 +846,8 @@ public class SerialPortUtils {
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
-
     //设置音量
-    private static byte[] advertisement5(String data) {/*
-        String test=null;
-        try {
-            test = Hex.test( data);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //转换为byte数组
-        byte[] bytes = Hex.toByteArray(test);
-        //长度
-        int length = bytes.length+1;
-        //长度转换16进制
-        String s3 = numToHex16(length);*/
-//AA 55 16 64 00 F0 00 01 02 875FAF
+    private static byte[] advertisement5(String data) {
         String s = "006400F000010"+data+"0000";
         log.info(s);
         String s1 = "006400F000010"+data;
@@ -862,5 +860,40 @@ public class SerialPortUtils {
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
-    //AA55 2A 64 00 F0 00 01 09 44 2F AF
+    //心跳
+    private static String heartbeat() {
+
+        String s = "006400010000"+"0000";
+        log.info(s);
+        String s1 = "006400010000";
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55"+s1+crc+"AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
+    }
+    //心跳
+    public static String returnHeartbeat() {
+        String s1 = heartbeat();
+        String[] split1 = s1.split(",");
+        String a="{\n" +
+                "\"Response_AlarmInfoPlate\": {\n" +
+                "\"serialData\" :[\n" +
+                "{\n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split1[0]+"\",\n" +
+                "\"dataLen\" : "+split1[1]+"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "}";
+        return a;
+    }
+
 }

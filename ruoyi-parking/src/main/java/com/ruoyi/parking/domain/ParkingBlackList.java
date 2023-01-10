@@ -22,34 +22,27 @@ public class ParkingBlackList extends BaseEntity
     private Long id;
 
     /** 停车场 */
-    @Excel(name = "停车场")
     private Long parkinglotinformationid;
 
     /** 车牌号 */
     @Excel(name = "车牌号")
     private String license;
-
     /** 添加时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "添加时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date time;
-
     /** 车主姓名 */
     @Excel(name = "车主姓名")
     private String name;
-
     /** 电话 */
     @Excel(name = "电话")
     private String phone;
-
     /** 地址 */
     @Excel(name = "地址")
     private String address;
-
     /** 备注 */
     @Excel(name = "备注")
     private String remarks;
-
     /** 操作员 */
     @Excel(name = "操作员")
     private String operator;
