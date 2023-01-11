@@ -3,13 +3,13 @@ import com.ruoyi.common.utils.Hex;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
- *
  * @Author: yangyang
  * @Date: 2023/01/04/9:30
  * @Description:
@@ -34,20 +34,23 @@ public class SerialPortUtils {
     }
     //出口待缴费临显指令
     public static String ExitOne(String data,Long time,Long money)  {
-
+        //天数
+        long l = time /(24 * 60 );
+        //天数后剩余分钟
+        long l3 = time % (24 * 60 );
         //停车小时
-        long l = time /60;
+        long l1 = l3 /60;
         //停车剩余分钟
-        long l1 = time % 60;
+        long l2 = l3 % 60;
         String s4 = getString4("待支付金额:"+money);
         String s3 = getString3("请扫码缴费");
         String s2 = getString2(data);
-        String s1 = getString1("停车时长:"+l+"小时"+l1+"分钟");
+        String s1 = getString1("停车时长:"+l+"天"+l1+"小时"+l2+"分钟");
         String[] split2 = s2.split(",");
         String[] split1 = s1.split(",");
         String[] split3 = s3.split(",");
         String[] split4 = s4.split(",");
-        String s5 = voicePlayback(data, "0b");
+        String s5 = voicePlayback1(l,l1,l2,data, "0b",money);
         String[] split5 = s5.split(",");
         String a="{\n" +
                 "\"Response_AlarmInfoPlate\": {\n" +
@@ -140,17 +143,25 @@ public class SerialPortUtils {
         return a;
     }
     //超出出场时间补费
-    public static String overtime(String data,Long money) {
+    public static String overtime(Long time,String data,Long money) {
+//天数
+        long l = time /(24 * 60 );
+        //天数后剩余分钟
+        long l3 = time % (24 * 60 );
+        //停车小时
+        long l1 = l3 /60;
+        //停车剩余分钟
+        long l2 = l3 % 60;
 
         String s4 = getString4("减速慢行");
         String s3 = getString3("需要补缴费用:"+money+"元");
         String s2 = getString2(data);
-        String s1 = getString1("超出出场时间");
+        String s1 = getString1("超出时长:"+l+"天"+l1+"小时"+l2+"分钟");
         String[] split2 = s2.split(",");
         String[] split1 = s1.split(",");
         String[] split3 = s3.split(",");
         String[] split4 = s4.split(",");
-        String s5 = voicePlayback(data, "0b");
+       String s5 = voicePlayback2(l,l1,l2,data, "0b",money);
         String[] split5 = s5.split(",");
         String a="{\n" +
                 "\"Response_AlarmInfoPlate\": {\n" +
@@ -583,6 +594,7 @@ public class SerialPortUtils {
     }
     //进出口临显第1行
     private static String getString1(String data) {
+
         String test=null;
         try {
             test = Hex.test( data);
@@ -639,6 +651,347 @@ public class SerialPortUtils {
         return bytes2;
     }
     //语音播放进口
+    private static String voicePlayback2(Long l,Long l1,Long l2,String data,String math,Long money) {
+        String test="";
+        String test1="";
+        String test5="";
+        try {
+            test = Hex.test(data);
+            if (l!=0) {
+                //天数长度
+                String s1 = String.valueOf(l);
+                int[] arr = new int[s1.length()];
+                for (int i = 0; i < s1.length(); i++) {
+                    arr[i] = Integer.parseInt(s1.substring(i, i + 1));//substring是找出包含起始位置，不包含结束位置，到结束位置的前一位的子串
+                }
+                if (arr.length == 4) {
+                    test1 = Hex.test(String.valueOf(arr[0]));
+                    String lengh = Hex.test("千");
+                    String test2 = Hex.test(String.valueOf(arr[1]));
+                    String test3 = Hex.test(String.valueOf(arr[2]));
+                    String test4 = Hex.test(String.valueOf(arr[3]));
+                    if (arr[1] == 0 && arr[2] == 0 && arr[3] == 0) {
+                        test1 = test1 + lengh + "CCEC";
+                    } else {
+                        if (arr[1] != 0) {
+                            test1 = test1 + lengh + test2 + "B0D9";
+                        }
+                        if (arr[1] == 0) {
+                            test1 = test1 + lengh + "30";
+                        }
+                        if (arr[2] != 0) {
+                            test1 = test1 + test3 + "CAAE";
+                        } else {
+                            if (arr[1] != 0) {
+                                test1 = test1 + "30";
+                            }
+                        }
+                        if (arr[3] != 0) {
+                            test1 = test1 + test4 + "CCEC";
+                        } else {
+                            if (arr[2] == 0) {
+                                test1 = test1.substring(0, test1.length() - 2) + "CCEC";   //截掉
+                            } else {
+                                test1 = test1 + "CCEC";
+                            }
+                        }
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (arr.length == 3) {
+                    test1 = Hex.test(String.valueOf(arr[0]));
+                    String test2 = Hex.test(String.valueOf(arr[1]));
+                    String test3 = Hex.test(String.valueOf(arr[2]));
+                    if (arr[1] == 0 && arr[2] == 0) {
+                        test1 = test1 + "b0d9" + "CCEC";
+                    } else {
+                        if (arr[1] != 0) {
+                            test1 = test1 + "b0d9" + test2 + "CAAE";
+                        }
+                        if (arr[1] == 0) {
+                            test1 = test1 + "b0d9" + "30";
+                        }
+                        if (arr[2] != 0) {
+                            test1 = test1 + test3 + "CCEC";
+                        } else {
+                            if (arr[1] == 0) {
+                                test1 = test1.substring(0, test1.length() - 2) + "CCEC";
+                            } else {
+                                test1 = test1 + "CCEC";
+                            }
+                        }
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (arr.length == 2) {
+                    test1 = Hex.test(String.valueOf(arr[0]));
+                    String test2 = Hex.test(String.valueOf(arr[1]));
+                    if (arr[1] == 0) {
+                        test1 = test1 + "CAAE" + "CCEC";
+                    } else {
+                        test1 = test1 + "CAAE" + test2 + "CCEC";
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (arr.length == 1) {
+                    test1 = Hex.test(String.valueOf(arr[0])) + "CCEC";
+                    System.out.println("test1=" + test1);
+                }
+            }
+            if (l1!=0) {
+                //小时
+                String s2 = String.valueOf(l1);
+                int length = s2.length();
+                int[] ints = new int[length];
+                for (int i = 0; i < s2.length(); i++) {
+                    ints[i] = Integer.parseInt(s2.substring(i, i + 1));//substring是找出包含起始位置，不包含结束位置，到结束位置的前一位的子串
+                }
+                if (ints.length == 2) {
+                    String test3 = Hex.test(String.valueOf(ints[0]));
+                    String test2 = Hex.test(String.valueOf(ints[1]));
+                    if (ints[1] == 0) {
+                        test1 = test1 + test3 + "CAAE" + "2F";
+                    } else {
+                        test1 = test1 + test3 + "CAAE" + test2 + "2F";
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (ints.length == 1) {
+                    test1 = test1 + Hex.test(String.valueOf(ints[0])) + "2F";
+                    System.out.println("test1=" + test1);
+                }
+            }
+                //分钟
+                String s = String.valueOf(l2);
+                int[] ints1 = new int[s.length()];
+                for (int i = 0; i < s.length(); i++) {
+                    ints1[i] = Integer.parseInt(s.substring(i, i + 1));//substring是找出包含起始位置，不包含结束位置，到结束位置的前一位的子串
+                }
+                if (ints1.length == 2) {
+                    String test3 = Hex.test(String.valueOf(ints1[0]));
+                    String test2 = Hex.test(String.valueOf(ints1[1]));
+                    if (ints1[1] == 0) {
+                        test1 = test1 + test3 + "CAAE" + "B7D6";
+                    } else {
+                        test1 = test1 + test3 + "CAAE" + test2 + "B7D6";
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (ints1.length == 1) {
+                    test1 = test1 + Hex.test(String.valueOf(ints1[0])) + "B7D6";
+                    System.out.println("test1=" + test1);
+                }
+            /*上面是时间下面是金额*/
+            String s3 = NumberTo.num2Ch(money);
+            String s4 = s3.replace("零", "0");
+            String s5 = s4.replace("一", "1");
+            String s6 =s5.replace("二", "2");
+            String s7 =s6.replace("三", "3");
+            String s8 =s7.replace("四", "4");
+            String s9 =s8.replace("五", "5");
+            String s10 =s9.replace("六", "6");
+            String s11 =s10.replace("七", "7");
+            String s12 =s11.replace("八", "8");
+            String s13 =s12.replace("九", "9");
+            test5 = Hex.test(s13+"元");
+            log.info("test5="+test5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String s2 = test + "6d6e6f" + test1+math+test5;
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(s2);
+        //长度
+        int length = bytes.length;
+        //长度转换16进制
+        String s3 = numToHex16(length);
+        log.info("长度="+s3);
+        String s = "00640022"+ s3+s2+"0000";
+        log.info(s);
+        String s1 = "00640022"+ s3+s2;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
+    }
+    private static String voicePlayback1(Long l,Long l1,Long l2,String data,String math,Long money) {
+        String test="";
+        String test1="";
+        String test5="";
+        try {
+            test = Hex.test( data);
+            if (l!=0) {
+                //天数长度
+                String s1 = String.valueOf(l);
+                int[] arr = new int[s1.length()];
+                for (int i = 0; i < s1.length(); i++) {
+                    arr[i] = Integer.parseInt(s1.substring(i, i + 1));//substring是找出包含起始位置，不包含结束位置，到结束位置的前一位的子串
+                }
+                if (arr.length == 4) {
+                    test1 = Hex.test(String.valueOf(arr[0]));
+                    String lengh = Hex.test("千");
+                    String test2 = Hex.test(String.valueOf(arr[1]));
+                    String test3 = Hex.test(String.valueOf(arr[2]));
+                    String test4 = Hex.test(String.valueOf(arr[3]));
+                    if (arr[1] == 0 && arr[2] == 0 && arr[3] == 0) {
+                        test1 = test1 + lengh + "CCEC";
+                    } else {
+                        if (arr[1] != 0) {
+                            test1 = test1 + lengh + test2 + "B0D9";
+                        }
+                        if (arr[1] == 0) {
+                            test1 = test1 + lengh + "30";
+                        }
+                        if (arr[2] != 0) {
+                            test1 = test1 + test3 + "CAAE";
+                        } else {
+                            if (arr[1] != 0) {
+                                test1 = test1 + "30";
+                            }
+                        }
+                        if (arr[3] != 0) {
+                            test1 = test1 + test4 + "CCEC";
+                        } else {
+                            if (arr[2] == 0) {
+                                test1 = test1.substring(0, test1.length() - 2) + "CCEC";   //截掉
+                            } else {
+                                test1 = test1 + "CCEC";
+                            }
+                        }
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (arr.length == 3) {
+                    test1 = Hex.test(String.valueOf(arr[0]));
+                    String test2 = Hex.test(String.valueOf(arr[1]));
+                    String test3 = Hex.test(String.valueOf(arr[2]));
+                    if (arr[1] == 0 && arr[2] == 0) {
+                        test1 = test1 + "b0d9" + "CCEC";
+                    } else {
+                        if (arr[1] != 0) {
+                            test1 = test1 + "b0d9" + test2 + "CAAE";
+                        }
+                        if (arr[1] == 0) {
+                            test1 = test1 + "b0d9" + "30";
+                        }
+                        if (arr[2] != 0) {
+                            test1 = test1 + test3 + "CCEC";
+                        } else {
+                            if (arr[1] == 0) {
+                                test1 = test1.substring(0, test1.length() - 2) + "CCEC";
+                            } else {
+                                test1 = test1 + "CCEC";
+                            }
+                        }
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (arr.length == 2) {
+                    test1 = Hex.test(String.valueOf(arr[0]));
+                    String test2 = Hex.test(String.valueOf(arr[1]));
+                    if (arr[1] == 0) {
+                        test1 = test1 + "CAAE" + "CCEC";
+                    } else {
+                        test1 = test1 + "CAAE" + test2 + "CCEC";
+                    }
+                    System.out.println("test1=" + test1);
+                }
+                if (arr.length == 1) {
+                    test1 = Hex.test(String.valueOf(arr[0])) + "CCEC";
+                    System.out.println("test1=" + test1);
+                }
+            }
+            if (l1!=0){
+                //小时
+                String s2 = String.valueOf(l1);
+                int length = s2.length();
+                int[] ints = new int[length];
+                for (int i = 0; i < s2.length(); i++) {
+                    ints[i] = Integer.parseInt(s2.substring(i, i + 1));//substring是找出包含起始位置，不包含结束位置，到结束位置的前一位的子串
+                }
+                if (ints.length==2){
+                    String test3 = Hex.test(String.valueOf(ints[0]));
+                    String test2 = Hex.test(String.valueOf(ints[1]));
+                    if (ints[1]==0){
+                        test1=test1+test3 + "CAAE"+"2F";
+                    }else {
+                        test1=test1+test3 + "CAAE"+test2+"2F";
+                    }
+                    System.out.println("test1="+test1);
+                }
+                if (ints.length==1){
+                    test1 = test1+Hex.test(String.valueOf(ints[0]))+"2F";
+                    System.out.println("test1="+test1);
+                }
+            }
+
+            //分钟
+            String s = String.valueOf(l2);
+            int[] ints1 = new int[s.length()];
+            for (int i = 0; i < s.length(); i++) {
+                ints1[i] = Integer.parseInt(s.substring(i, i + 1));//substring是找出包含起始位置，不包含结束位置，到结束位置的前一位的子串
+            }
+            if (ints1.length==2){
+                String test3 = Hex.test(String.valueOf(ints1[0]));
+                String test2 = Hex.test(String.valueOf(ints1[1]));
+                if (ints1[1]==0){
+                    test1=test1+test3 + "CAAE"+"B7D6";
+                }else {
+                    test1=test1+test3 + "CAAE"+test2+"B7D6";
+                }
+                System.out.println("test1="+test1);
+            }
+            if (ints1.length==1){
+                test1 =test1+ Hex.test(String.valueOf(ints1[0]))+"B7D6";
+                System.out.println("test1="+test1);
+            }
+            /*上面是时间下面是金额*/
+            String s3 = NumberTo.num2Ch(money);
+            String s4 = s3.replace("零", "0");
+            String s5 = s4.replace("一", "1");
+            String s6 =s5.replace("二", "2");
+            String s7 =s6.replace("三", "3");
+            String s8 =s7.replace("四", "4");
+            String s9 =s8.replace("五", "5");
+            String s10 =s9.replace("六", "6");
+            String s11 =s10.replace("七", "7");
+            String s12 =s11.replace("八", "8");
+            String s13 =s12.replace("九", "9");
+            test5 = Hex.test(s13+"元");
+             log.info("test5="+test5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String s2 = test + "2e" + test1+math+test5;
+        //转换为byte数组
+        byte[] bytes = Hex.toByteArray(s2);
+        //长度
+        int length = bytes.length;
+        //长度转换16进制
+        String s3 = numToHex16(length);
+        log.info("长度="+s3);
+        String s = "00640022"+ s3+s2+"0000";
+        log.info(s);
+        String s1 = "00640022"+ s3+s2;
+        byte[] bytes1 = Hex.toByteArray(s);
+        int i = CRCUtil.calcCrc16(bytes1);
+        String crc = String.format("%04x", i);
+        System.out.println("校验位"+crc);
+        String s4 = "AA55" + s1 + crc + "AF";
+        log.info("ss="+s4);
+        byte[] bytes2 = Hex.toByteArray(s4);
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
+    }
     private static String voicePlayback(String data,String math) {
         String test=null;
         try {
@@ -701,13 +1054,12 @@ public class SerialPortUtils {
     }
     //测试
     public static void main(String[] args)  {
-        voicePlayback("粤B12345","01");
+        voicePlayback1(23L,15L,56L,"粤B12345","0b",22L);
         // addSerialPort("一车一杆");
         ///addSerialPort("欢迎光临");
         //addSerialPort("ss");
+        //getString2("23天15小时56分");
     }
-
-
     public static List<byte[]> advertisement(ParkingLotEquipment parkingLotEquipment) {
         ArrayList<byte[]> list = new ArrayList<>();
         String onedisplay = parkingLotEquipment.getOnedisplay();
@@ -734,7 +1086,6 @@ public class SerialPortUtils {
         list.add(bytes4);
         return list;
     }
-
     //广告位第4行
     private static byte[] advertisement4(String data) {
         String test=null;

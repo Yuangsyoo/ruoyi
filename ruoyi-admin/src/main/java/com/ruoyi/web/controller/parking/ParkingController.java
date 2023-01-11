@@ -132,12 +132,14 @@ public class ParkingController extends Thread {
             }
             //判断停车场状态异常停车场不可用 只针对进口a
             if (parkingLotInformation.getState().equals("1")){
+                log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"车场状态异常停车场不可用\",\"is_pay\":\"false\"}}");
                 String data = SerialPortUtils.abnormal();
                 return data;
             }
             //判断设备是否可用
             if (parkingLotEquipment.getState().equals("1")){
                 String data = SerialPortUtils.equipmentAbnormality();
+                log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"设备不可用\",\"is_pay\":\"false\"}}");
                 return data;
             }
             //判断是否时临时车限制
@@ -147,6 +149,7 @@ public class ParkingController extends Thread {
 
                 if (parkingFixedparkingspace==null && byLicense==null  ){
                     String data = SerialPortUtils.temporaryVehicle(license);
+                    log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"临时车限制进入\",\"is_pay\":\"false\"}}");
                     return data;
                 }
             }
@@ -154,6 +157,7 @@ public class ParkingController extends Thread {
            ParkingBlackList parkingBlackList= parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingLotInformation.getId(),license);
             if (parkingBlackList!=null){
                 String data = SerialPortUtils.blacklist(license);
+                log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"黑名单拒绝放行\",\"is_pay\":\"false\"}}");
                 return data;
             }
             //通过停车场id，车牌号查询有无未支付订单
@@ -183,6 +187,7 @@ public class ParkingController extends Thread {
                         parkingLotInformation.setRemainingParkingSpace(l);
                         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
                          String data = SerialPortUtils.addSerialPort(license,l);
+                         log.info(license+"车主进入停车场内");
                         return data;
                     }
                 } finally {
@@ -192,16 +197,23 @@ public class ParkingController extends Thread {
                     ParkingFixedparkingspace parkingFixedparkingspace=parkingFixedparkingspaceService.findByParkingLotInformationIdAndLicense(parkingLotInformation.getId(),license);
                     ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
                     if (parkingFixedparkingspace!=null || byLicense!=null  ){
-                        //保存进场信息
-                        saveParkingRecord(date,parkingLotEquipment, carColor, s, name,license,parkingLotInformation.getId(),imagePath);
-                        //设备开闸
-                        SwitchOn(total.getAlarmInfoPlate().getIpaddr());
-                        // 停车场车位数减一
-                        parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getRemainingParkingSpace()-1);
-                        parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
-                        String a="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"欢迎光临\",\"is_pay\":\"false\"}}\n";
-                      log.info(license+"车主进场");
-                        return a;
+                        //加锁
+                        lock.lock();
+                        try {
+                            //保存进场信息
+                            saveParkingRecord(date, parkingLotEquipment, carColor, s, name, license, parkingLotInformation.getId(), imagePath);
+                            //设备开闸
+                            SwitchOn(total.getAlarmInfoPlate().getIpaddr());
+                            // 停车场车位数减一
+                            long l = parkingLotInformation.getRemainingParkingSpace() - 1;
+                            parkingLotInformation.setRemainingParkingSpace(l);
+                            parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
+                            String data = SerialPortUtils.addSerialPort(license, l);
+                            log.info(license + "车主进场");
+                            return data;
+                        }finally {
+                            lock.unlock();
+                        }
                     }
             }
         }
@@ -209,7 +221,7 @@ public class ParkingController extends Thread {
             //判断设备是否可用
             if (parkingLotEquipment.getState().equals("1")){
                 String data = SerialPortUtils.equipmentAbnormality();
-                log.info(parkingLotEquipment.getName()+"异常");
+                log.info(parkingLotEquipment.getName()+"设备异常");
                 return data;
             }
             //查询没有支付得记录信息
@@ -397,6 +409,7 @@ public class ParkingController extends Thread {
                     webSocketService.sendMessage(user.getUserName(),s);
                 }
                 String data = SerialPortUtils.ExportSecondaryVolume(license);
+                log.info("固定停车位车主，直接放行");
                 return data;
             }
 
@@ -449,7 +462,7 @@ public class ParkingController extends Thread {
                         parkingRecordVo.setParkingLotEquipmentName(parkingLotEquipment.getName());
                         parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
                         redisTemplate.opsForValue().set(String.valueOf(parkingLotEquipment.getId()),parkingRecordVo,5, TimeUnit.MINUTES);
-                        String data = SerialPortUtils.overtime(license,moneyVo.getMoney());
+                        String data = SerialPortUtils.overtime(l,license,moneyVo.getMoney());
                         log.info("场内支付超过离场时间，等待支付 ");
                         return data;
                     }

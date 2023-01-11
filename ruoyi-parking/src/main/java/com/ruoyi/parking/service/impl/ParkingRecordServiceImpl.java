@@ -64,6 +64,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     private IParkingFixedparkingspaceService parkingFixedparkingspaceService;
     @Autowired
     private ParkingChargingServiceImpl parkingChargingService;
+
     /**
      * 查询停车记录
      * 
@@ -181,7 +182,47 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
                 webSocketService.sendMessage(user.getUserName(),s);
             }
             updateRemainingParkingSpace(parkingLotInformation);
+        }else {
+            //超时补费
+            ParkingRecord findbypaystateandlicense = findbypaystateandlicense(parkingLotInformationId, license);
+            if (findbypaystateandlicense!=null){
+                //从redis获取需要补费金额
+                Long money = (Long)redisTemplate.opsForValue().get(parkinglotequipmentid + "Overtimefee");
+                if(money==null){
+                    return;
+                }
+                findbypaystateandlicense.setPayTime(new Date());
+                findbypaystateandlicense.setPaystate("1");
+                findbypaystateandlicense.setOrderstate("1");
+                findbypaystateandlicense.setMoney(findbypaystateandlicense.getMoney()+money);
+                findbypaystateandlicense.setAmountpayable(findbypaystateandlicense.getAmountpayable()+money);
+                ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
+                LPRDemo lprDemo = new LPRDemo();
+                //初始化返回句柄
+                int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
+                //开闸
+                lprDemo.switchOn(handle, 0, 500);
+                List<byte[]> list2 = SerialPortUtils.payAfter(license);
+                //485串口发送数据
+                lprDemo.SendSerialData(handle,list2);
+                //关闭设备的控制句柄
+                lprDemo.VzLPRClient_Close(handle);
+                //执行结束释放
+                lprDemo.VzLPRClient_Cleanup();
+                updateParkingRecord(findbypaystateandlicense);
+                List<ParkingRecord> list = new ArrayList<>();
+                list.add(findbypaystateandlicense);
+                String s = JSON.toJSONString(list);
+                //WebSocketService发送给前端消息
+                List<SysUser> list1 = sysUserMapper.findUserList(parkinglotequipmentid);
+                for (SysUser user : list1) {
+                    webSocketService.sendMessage(user.getUserName(),s);
+                }
+                updateRemainingParkingSpace(parkingLotInformation);
+                redisTemplate.delete(parkinglotequipmentid + "Overtimefee");
+            }
         }
+
     }
     //无牌车
     @Override
