@@ -71,7 +71,7 @@
 
     <el-table v-loading="loading" :data="parkingWhiteListOperationRecordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="序号" align="center" prop="id" />
+      <el-table-column label="序列号" align="center" prop="id" />
       <el-table-column label="停车场名称" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="操作时间" align="center" prop="time" width="180">

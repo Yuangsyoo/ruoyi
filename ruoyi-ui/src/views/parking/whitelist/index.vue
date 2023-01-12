@@ -115,7 +115,7 @@
 
     <el-table v-loading="loading" :data="whitelistList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
+      <el-table-column label="序列号" align="center" prop="id" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="开始时间" align="center" prop="starttime" width="180">
@@ -133,7 +133,7 @@
           <span>{{ parseTime(scope.row.addtime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="白名单用户姓名" align="center" prop="name" />
+      <el-table-column label="姓名" align="center" prop="name" />
       <el-table-column label="手机号" align="center" prop="phone" />
       <el-table-column label="地址" align="center" prop="adress" />
       <el-table-column label="状态" align="center" prop="state">
@@ -204,7 +204,7 @@
           </el-date-picker>
         </el-form-item>
 
-        <el-form-item label="白名单用户姓名" prop="name">
+        <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入白名单用户姓名" />
         </el-form-item>
         <el-form-item label="手机号" prop="phone">

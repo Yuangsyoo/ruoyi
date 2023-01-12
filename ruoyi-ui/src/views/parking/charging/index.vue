@@ -126,7 +126,7 @@
           <el-divider content-position="center">计费时间段信息</el-divider>
         </div>
 
-        <el-row :gutter="10" class="mb8">
+        <el-row :gutter="10" class="mb8"v-if="this.form.type!=0" >
           <el-col :span="1.5" >
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddParkingBillingPeriod">添加</el-button>
           </el-col>
@@ -134,7 +134,8 @@
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteParkingBillingPeriod">删除</el-button>
           </el-col>
         </el-row>
-        <el-table :data="parkingBillingPeriodList" :row-class-name="rowParkingBillingPeriodIndex" @selection-change="handleParkingBillingPeriodSelectionChange" ref="parkingBillingPeriod">
+
+        <el-table v-if="this.form.type!=0"  :data="parkingBillingPeriodList" :row-class-name="rowParkingBillingPeriodIndex" @selection-change="handleParkingBillingPeriodSelectionChange" ref="parkingBillingPeriod">
           <el-table-column type="selection" width="50" align="center" />
 <!--          <el-table-column label="序号" align="center" prop="index" width="50"/>-->
           <el-table-column v-if="this.form.type==0 || this.form.type==2" label="开始时间" prop="startime" width="150">
@@ -174,9 +175,9 @@
               <el-input v-model="scope.row.superiorlimit" placeholder="	请输入收费上限（元）" />
             </template>
           </el-table-column>
-          <el-table-column  v-if="this.form.type==3" label="按时记或者一口价" prop="type" width="150">
+          <el-table-column  v-if="this.form.type==3" label="按时计或者一口价" prop="type" width="150">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.type" placeholder="请选择按时记或者一口价">
+              <el-select v-model="scope.row.type" placeholder="请选择按时计或者一口价">
                 <el-option label="按时" value="0" />
                 <el-option label="一口价" value="1" />
               </el-select>
@@ -195,12 +196,15 @@
          注意正确的时间格式 例:07:00:00，时间段从低到高。最多可添加24个时间段,时段计费优先其他计费
  <div style="color:#F00">注意: 起步时长必须是60的倍数，最大不超过1440分钟</div>
        </span>
+
         <span v-if="this.form.type==1">
         注意分钟从低到高;最大值1440（即24小时）。最多可添加24组
  <div style="color:#F00">注意: 起步时长必须是60的倍数，最大不超过1440分钟</div>
        </span>
+
         <span v-if="this.form.type==2">
-        注意时间从低到高,最多可添加5组
+           <div style="color:#F00">注意: 正确的时间格式 例:07:00:00，时间段从低到高。最多可添加24个时间段,时段计费优先其他计费</div>
+           <div style="color:#F00"> 注意: 时间从低到高,最多可添加5组</div>
  <div style="color:#F00">注意: 起步时长必须是60的倍数，最大不超过1440分钟</div>
        </span>
 

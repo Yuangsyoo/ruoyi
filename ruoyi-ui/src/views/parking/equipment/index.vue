@@ -89,7 +89,7 @@
 
     <el-table v-loading="loading" :data="equipmentList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
+      <el-table-column label="序列号" align="center" prop="id" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="设备名称" align="center" prop="name" />
       <el-table-column label="摄象机序列号" align="center" prop="cameraserialnumber" />

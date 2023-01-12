@@ -64,7 +64,7 @@
 
     <el-table v-loading="loading" :data="parkingWhiteListChargeRecordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
+      <el-table-column label="序列号" align="center" prop="id" />
       <el-table-column label="停车场id" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="缴费时间" align="center" prop="paymenttime" width="180">
         <template slot-scope="scope">

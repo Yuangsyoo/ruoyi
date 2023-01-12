@@ -12,6 +12,7 @@ import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.CodeGenerateUtils;
+import com.ruoyi.common.utils.Compress;
 import com.ruoyi.common.utils.DateTime.DateTime;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.TokenService;
@@ -97,7 +98,7 @@ public class ParkingController extends Thread {
         //车牌id
         int plateid = total.getAlarmInfoPlate().getResult().getPlateResult().getPlateid();
         //获取出入场图片
-        String imagePath = total.getAlarmInfoPlate().getResult().getPlateResult().getImageFile();
+        String imagePath = Compress.resizeImageTo40K(total.getAlarmInfoPlate().getResult().getPlateResult().getImageFile());
         //获取推送数据设备序列号
         String serialno = total.getAlarmInfoPlate().getSerialno();
         //通过序列号获取推送数据设备信息

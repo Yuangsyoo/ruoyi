@@ -22,6 +22,7 @@ import com.ruoyi.parking.dto.MoneyDto;
 import com.ruoyi.parking.utils.SerialPortUtils;
 import com.ruoyi.parking.vo.*;
 import com.ruoyi.system.mapper.SysUserMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2022-11-24
  */
 @Service
+@Slf4j
 public class ParkingRecordServiceImpl implements IParkingRecordService 
 {
     @Autowired
@@ -146,6 +148,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
     @Override
     @Transactional
     public void editPayState(Long parkingLotInformationId,String license ,Long parkinglotequipmentid,String paymentMethod) {
+        ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
         ParkingRecord parkingRecord = parkingRecordMapper.findByLicense(license, parkingLotInformationId);
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotInformationId);
         if (parkingRecord!=null){
@@ -159,29 +162,14 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
                 byParkingLotInformationIdAndLicense.setState("1");
                 parkingCouponrecordMapper.updateParkingCouponrecord(byParkingLotInformationIdAndLicense);
             }
-            ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
-            LPRDemo lprDemo = new LPRDemo();
-            //初始化返回句柄
-            int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
-            //开闸
-            int i1 = lprDemo.switchOn(handle, 0, 500);
-            List<byte[]> list2 = SerialPortUtils.payAfter(license);
-            //485串口发送数据
-            lprDemo.SendSerialData(handle,list2);
-            //关闭设备的控制句柄
-            lprDemo.VzLPRClient_Close(handle);
-            //执行结束释放
-            lprDemo.VzLPRClient_Cleanup();
+            //开闸处理
+            extracted(license, parkingLotEquipment);
             updateParkingRecord(parkingRecord);
             List<ParkingRecord> list = new ArrayList<>();
             list.add(parkingRecord);
-            String s = JSON.toJSONString(list);
-            //WebSocketService发送给前端消息
-            List<SysUser> list1 = sysUserMapper.findUserList(parkinglotequipmentid);
-            for (SysUser user : list1) {
-                webSocketService.sendMessage(user.getUserName(),s);
-            }
+            send(parkinglotequipmentid, list);
             updateRemainingParkingSpace(parkingLotInformation);
+            log.info("无超时补费信息，门口处缴费回调开闸");
         }else {
             //超时补费
             ParkingRecord findbypaystateandlicense = findbypaystateandlicense(parkingLotInformationId, license);
@@ -189,41 +177,57 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
                 //从redis获取需要补费金额
                 Long money = (Long)redisTemplate.opsForValue().get(parkinglotequipmentid + "Overtimefee");
                 if(money==null){
+                    log.info("redis无补费金额信息");
                     return;
                 }
-                findbypaystateandlicense.setPayTime(new Date());
-                findbypaystateandlicense.setPaystate("1");
-                findbypaystateandlicense.setOrderstate("1");
-                findbypaystateandlicense.setMoney(findbypaystateandlicense.getMoney()+money);
-                findbypaystateandlicense.setAmountpayable(findbypaystateandlicense.getAmountpayable()+money);
-                ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
-                LPRDemo lprDemo = new LPRDemo();
-                //初始化返回句柄
-                int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
-                //开闸
-                lprDemo.switchOn(handle, 0, 500);
-                List<byte[]> list2 = SerialPortUtils.payAfter(license);
-                //485串口发送数据
-                lprDemo.SendSerialData(handle,list2);
-                //关闭设备的控制句柄
-                lprDemo.VzLPRClient_Close(handle);
-                //执行结束释放
-                lprDemo.VzLPRClient_Cleanup();
-                updateParkingRecord(findbypaystateandlicense);
+                log.info("redis有补费金额信息开闸");
+                //改变状态
+                updateState(license, parkingLotEquipment, findbypaystateandlicense, money);
                 List<ParkingRecord> list = new ArrayList<>();
                 list.add(findbypaystateandlicense);
-                String s = JSON.toJSONString(list);
-                //WebSocketService发送给前端消息
-                List<SysUser> list1 = sysUserMapper.findUserList(parkinglotequipmentid);
-                for (SysUser user : list1) {
-                    webSocketService.sendMessage(user.getUserName(),s);
-                }
+                send(parkinglotequipmentid, list);
                 updateRemainingParkingSpace(parkingLotInformation);
                 redisTemplate.delete(parkinglotequipmentid + "Overtimefee");
             }
         }
 
     }
+    //修改状态并开闸
+    private void updateState(String license, ParkingLotEquipment parkingLotEquipment, ParkingRecord findbypaystateandlicense, Long money) {
+        findbypaystateandlicense.setPayTime(new Date());
+        findbypaystateandlicense.setPaystate("1");
+        findbypaystateandlicense.setOrderstate("1");
+        findbypaystateandlicense.setMoney(findbypaystateandlicense.getMoney()+ money);
+        findbypaystateandlicense.setAmountpayable(findbypaystateandlicense.getAmountpayable()+ money);
+        //开闸处理
+        extracted(license, parkingLotEquipment);
+        updateParkingRecord(findbypaystateandlicense);
+    }
+    //websocket发送
+    private void send(Long parkinglotequipmentid, List<ParkingRecord> list) {
+        String s = JSON.toJSONString(list);
+        //WebSocketService发送给前端消息
+        List<SysUser> list1 = sysUserMapper.findUserList(parkinglotequipmentid);
+        for (SysUser user : list1) {
+            webSocketService.sendMessage(user.getUserName(), s);
+        }
+    }
+    //开闸
+    private void extracted(String license, ParkingLotEquipment parkingLotEquipment) {
+        LPRDemo lprDemo = new LPRDemo();
+        //初始化返回句柄
+        int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
+        //开闸
+        int i1 = lprDemo.switchOn(handle, 0, 500);
+        List<byte[]> list2 = SerialPortUtils.payAfter(license);
+        //485串口发送数据
+        lprDemo.SendSerialData(handle,list2);
+        //关闭设备的控制句柄
+        lprDemo.VzLPRClient_Close(handle);
+        //执行结束释放
+        lprDemo.VzLPRClient_Cleanup();
+    }
+
     //无牌车
     @Override
     public AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String openid) {
@@ -231,7 +235,10 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkinglotequipmentid);
         ParkingRecord parkingRecord = parkingRecordMapper.findByOpenid(openid, parkingLotEquipment.getParkinglotinformationid());
         if (parkingRecord==null){
+            log.info("无牌车无停车记录");
             return AjaxResult.error("无停车记录");
+
+
         }
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());
         parkingRecord.setOrderstate("2");
@@ -300,8 +307,6 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         }
         return AjaxResult.success("请五分钟内离场");
     }
-
-
     @Override
     public ParkingRecord findByLicense1(String license, Long ParkingLotInformationId) {
         return  parkingRecordMapper.findByLicense1(license,ParkingLotInformationId);
@@ -459,15 +464,13 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
 
     }
 
-
     //停车场车位数加一
     private void updateRemainingParkingSpace(ParkingLotInformation parkingLotInformation) {
         Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
         parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
         parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
+
     }
-
-
 
     //添加无牌车进场记录
     private void addParkingRecord(String license, ParkingLotEquipment parkingLotEquipment,String openid) {
@@ -484,6 +487,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         parkingRecord.setEntranceandexitname(parkingLotEquipment.getName());
         parkingRecordMapper.insertParkingRecord(parkingRecord);
     }
+
     //开闸方法
     private void SwitchOn(String ipAdress) {
         LPRDemo lprDemo = new LPRDemo();

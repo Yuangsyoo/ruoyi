@@ -171,7 +171,7 @@
 
     <el-table v-loading="loading" :data="informationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id
+      <el-table-column label="序列号
 " align="center" prop="id" />
       <el-table-column label="名称" align="center" prop="name" />
 <!--      <el-table-column label="门面照" align="center" prop="picture" />-->
@@ -324,7 +324,6 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
-<!--考虑在计费规则时添加        -->
         <el-form-item label="免费时常" prop="address">
           <el-input v-model="form.freetime" placeholder="请输入免费时常单位默认分钟" />
         </el-form-item>
@@ -372,7 +371,7 @@
             <el-radio v-model="form.temporaryvehiclerestrictions" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="平台支付" prop="platformpaymentState">
+        <el-form-item v-show="false" label="平台支付" prop="platformpaymentState">
           <template>
             <el-radio v-model="form.platformpaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.platformpaymentState" label="1">关闭</el-radio>
@@ -384,37 +383,37 @@
             <el-radio v-model="form.overtimecompensation" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="无记录离场收起步价" prop="norecorddeparture">
+        <el-form-item v-show="false" label="无记录离场收起步价" prop="norecorddeparture">
           <template>
             <el-radio v-model="form.norecorddeparture" label="0">开启</el-radio>
             <el-radio v-model="form.norecorddeparture" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="支付宝停车缴费" prop="alipaypaymentState">
+        <el-form-item v-show="false" label="支付宝停车缴费" prop="alipaypaymentState">
           <template>
             <el-radio v-model="form.alipaypaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.alipaypaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="微信停车缴费" prop="wechatpaymentState">
+        <el-form-item v-show="false" label="微信停车缴费" prop="wechatpaymentState">
           <template>
             <el-radio v-model="form.wechatpaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.wechatpaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="银联停车缴费" prop="unionpaypaymentState">
+        <el-form-item v-show="false" label="银联停车缴费" prop="unionpaypaymentState">
           <template>
             <el-radio v-model="form.unionpaypaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.unionpaypaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="ETC停车缴费" prop="etcpaymentState">
+        <el-form-item v-show="false" label="ETC停车缴费" prop="etcpaymentState">
           <template>
             <el-radio v-model="form.etcpaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.etcpaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="农信停车缴费" prop="ruralcreditpaymentState">
+        <el-form-item v-show="false" label="农信停车缴费" prop="ruralcreditpaymentState">
           <template>
             <el-radio v-model="form.ruralcreditpaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.ruralcreditpaymentState" label="1">关闭</el-radio>

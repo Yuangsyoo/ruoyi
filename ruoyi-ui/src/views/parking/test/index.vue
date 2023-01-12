@@ -79,7 +79,7 @@
 
     <div  style="margin-top:150px;">离场待缴费信息</div>
     <el-table style="margin-top: 20px;" v-loading="false" :data="tableData" @selection-change="handleSelectionChange">
-      <el-table-column v-if="false" label="id" align="center" prop="id" />
+      <el-table-column v-if="false" label="序列号" align="center" prop="id" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="订单号" align="center" prop="ordernumber" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
