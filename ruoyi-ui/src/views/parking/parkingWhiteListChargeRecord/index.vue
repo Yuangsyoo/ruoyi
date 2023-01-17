@@ -67,21 +67,21 @@
       <el-table-column label="序列号" align="center" prop="id" />
       <el-table-column label="停车场id" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="缴费时间" align="center" prop="paymenttime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.paymenttime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="缴费方式" align="center" prop="paymentmethod" />
       <el-table-column label="车牌号码" align="center" prop="license" />
       <el-table-column label="开始时间" align="center" prop="starttime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.starttime,'{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="结束时间" align="center" prop="endtime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.endtime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="实收金额" align="center" prop="money" />
       <el-table-column label="收费员" align="center" prop="operator" />

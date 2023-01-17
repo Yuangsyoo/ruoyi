@@ -2,8 +2,6 @@ package com.ruoyi.parking.utils;
 import com.ruoyi.common.utils.Hex;
 import com.ruoyi.parking.domain.ParkingLotEquipment;
 import lombok.extern.slf4j.Slf4j;
-
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -16,6 +14,22 @@ import java.util.List;
  */
 @Slf4j
 public class SerialPortUtils {
+    //出口支付后临显指令
+    public static  List<byte[]> wupaiche(String data) {
+        byte[] s4 = getStringOne("减速慢行", "040A");
+        byte[] s3 = getStringOne("一车一杆", "030A");
+        byte[] s2 = getStringOne(data, "020A");
+        byte[] s1 = getStringOne("欢迎光临","010A");
+        byte[] s5 = payAfter(data, "02");
+        List<byte[]> list = new ArrayList<>();
+        list.add(s1);
+        list.add(s2);
+        list.add(s3);
+        list.add(s4);
+        list.add(s5);
+        return list;
+
+    }
     //出口支付后临显指令
     public static  List<byte[]> payAfter(String data) {
         byte[] s4 = getStringOne("减速慢行", "040A");
@@ -524,7 +538,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("进出口临显第4行="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
@@ -554,7 +568,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("进出口临显第3行="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
@@ -584,7 +598,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss2="+s4);
+        log.info("进出口临显第2行="+s4);
         log.info(s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
@@ -616,7 +630,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("进出口临显第1行="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
@@ -646,7 +660,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("进出口临显第1行="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
@@ -814,7 +828,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("语音播放指令="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
@@ -985,7 +999,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("语音播放指令="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
@@ -1014,14 +1028,14 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("语音播放指令="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
         String base64_str = new String(base64_data);
         return base64_str+','+length1;
     }
-    //支付后语音播放进口
+    //支付后语音播放
     private static byte[] payAfter(String data,String math) {
         String test=null;
         try {
@@ -1044,7 +1058,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("支付后语音播放指令="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
@@ -1110,7 +1124,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("广告位第四行指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
@@ -1137,7 +1151,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("广告位第三行指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
@@ -1164,7 +1178,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss2="+s4);
+        log.info("广告位第二行指令集="+s4);
         log.info(s4);
         byte[] bytes2 = Hex.toByteArray(s4);
 
@@ -1193,7 +1207,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("广告位第一行指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
@@ -1207,7 +1221,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("ss="+s4);
+        log.info("音量指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         return bytes2;
     }
@@ -1222,7 +1236,7 @@ public class SerialPortUtils {
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55"+s1+crc+"AF";
-        log.info("ss="+s4);
+        log.info("心跳指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
@@ -1231,6 +1245,7 @@ public class SerialPortUtils {
     }
     //心跳
     public static String returnHeartbeat() {
+        //调用上一个方法
         String s1 = heartbeat();
         String[] split1 = s1.split(",");
         String a="{\n" +

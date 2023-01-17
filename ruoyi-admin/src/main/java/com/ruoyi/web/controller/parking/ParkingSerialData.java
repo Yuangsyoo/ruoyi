@@ -28,12 +28,13 @@ public class ParkingSerialData {
                    @RequestParam(value = "pass_wd")String password,
                    @RequestParam(value = "serialno")String serialno,
                    @RequestParam(value = "channel_num")String channelNum) {
-                    log.info(deviceName.toString());
-                    log.info(ipaddr.toString());
-                    log.info(port.toString());
-                    log.info(userName.toString());
-                    log.info(serialno.toString());
+                    log.info(deviceName);
+                    log.info(ipaddr);
+                    log.info(port);
+                    log.info(userName);
+                    log.info(serialno);
                     log.info("心跳续约正常");
+                    //可以考虑做后台向设备发送开杆指令
         String s = SerialPortUtils.returnHeartbeat();
         return s;
 

@@ -1,14 +1,17 @@
 package com.ruoyi.parking.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.zxing.WriterException;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.entity.SysUserRole;
 import com.ruoyi.common.core.mapper.SysUserRoleMapper;
+import com.ruoyi.common.utils.QRCodeGenerator;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.parking.dto.ParkingLotEquipmentDto;
 import com.ruoyi.common.core.service.ISysUserService;
@@ -83,23 +86,34 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
      */
     @Override
     @Transactional
-    public int insertParkingLotInformation(ParkingLotEquipmentDto parkingLotEquipmentDto)
-    {
+    public int insertParkingLotInformation(ParkingLotEquipmentDto parkingLotEquipmentDto) {
+
         ParkingLotInformation parkingLotInformation = new ParkingLotInformation();
         //停车场信息
         BeanUtils.copyProperties(parkingLotEquipmentDto,parkingLotInformation);
         parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getNumber());
 
         String loginPassword = parkingLotEquipmentDto.getLoginPassword();
-        parkingLotInformationMapper.insertParkingLotInformation(parkingLotInformation);
+        int i = parkingLotInformationMapper.insertParkingLotInformation(parkingLotInformation);
+        try {
+        Long id = parkingLotInformation.getId();
+        String text= "https://www.baidu.com/?parkinglotinformationid="+id+"";
+            String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
+            //场内二维码
+            parkingLotInformation.setOnSiteQRCode(s);
+            parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         SysUser user = new SysUser();
         //保存user信息
         Long i1 = creatUser(parkingLotInformation, loginPassword, user);
-        //未user添加角色默认高级角色
+        //为user添加角色默认高级角色
         creatUserRole(i1);
-        return 1;
+        return i;
     }
-
     private void creatUserRole(Long i1) {
         SysUserRole sysUserRole = new SysUserRole();
         sysUserRole.setUserId(i1);

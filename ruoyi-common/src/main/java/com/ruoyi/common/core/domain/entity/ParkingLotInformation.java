@@ -129,27 +129,27 @@ public class ParkingLotInformation extends BaseEntity
 
     /** 平台支付关联id */
     @Excel(name = "平台支付关联id")
-    private Long platformpaymentId;
+    private String platformpaymentId;
 
     /** 支付宝支付关联id */
     @Excel(name = "支付宝支付关联id")
-    private Long alipaypaymentId;
+    private String alipaypaymentId;
 
-    /** 微信支付关联id */
-    @Excel(name = "微信支付关联id")
-    private Long wechatpaymentId;
+    /** 微信支付商户号 */
+    @Excel(name = "微信支付商户号")
+    private String wechatpaymentId;
 
     /** 银联支付关联id */
     @Excel(name = "银联支付关联id")
-    private Long unionpaypaymentId;
+    private String unionpaypaymentId;
 
     /** ETC支付关联id */
     @Excel(name = "ETC支付关联id")
-    private Long etcpaymentId;
+    private String etcpaymentId;
 
-    /** 农信支付关联id */
-    @Excel(name = "农信支付关联id")
-    private Long ruralcreditpaymentId;
+    /** 农信支付商户号 */
+    @Excel(name = "农信支付商户号")
+    private String ruralcreditpaymentId;
     /** 备用字段2 */
     @Excel(name = "剩余车位")
     private Long remainingParkingSpace;
@@ -160,6 +160,8 @@ public class ParkingLotInformation extends BaseEntity
     /** 备用字段4 */
     @Excel(name = "备用字段4")
     private String numberfour;
-
+    /** 备用字段4 */
+    @Excel(name = "备用字段4")
+    private String onSiteQRCode;
 
 }

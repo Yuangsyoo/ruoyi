@@ -170,7 +170,8 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
             send(parkinglotequipmentid, list);
             updateRemainingParkingSpace(parkingLotInformation);
             log.info("无超时补费信息，门口处缴费回调开闸");
-        }else {
+        }
+        else {
             //超时补费
             ParkingRecord findbypaystateandlicense = findbypaystateandlicense(parkingLotInformationId, license);
             if (findbypaystateandlicense!=null){
@@ -237,8 +238,6 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         if (parkingRecord==null){
             log.info("无牌车无停车记录");
             return AjaxResult.error("无停车记录");
-
-
         }
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());
         parkingRecord.setOrderstate("2");
@@ -260,6 +259,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         parkingRecordVo.setParkinglotequipmentid(parkingLotEquipment.getId());
         return AjaxResult.success(parkingRecordVo);
     }
+
     //室内扫码回显支付信息
     @Override
     public AjaxResult indoor(Long parkingLotInformationId, String license) {
@@ -291,6 +291,10 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         BeanUtils.copyProperties(moneyVo,parkingRecordVo);
         return AjaxResult.success(parkingRecordVo);
     }
+
+
+
+
     //室内扫码回调
     @Override
     public AjaxResult indoorCallback(ParkingRecordVo parkingRecordVo) {
@@ -415,7 +419,9 @@ public class ParkingRecordServiceImpl implements IParkingRecordService
         int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
         //开闸
         int i1 = lprDemo.switchOn(handle, 0, 500);
-
+        List<byte[]> wupaiche = SerialPortUtils.wupaiche(license);
+        //485串口发送数据
+        lprDemo.SendSerialData(handle,wupaiche);
         //停车场车位数加一
         updateRemainingParkingSpace(parkingLotInformation);
         //添加无牌车进场记录

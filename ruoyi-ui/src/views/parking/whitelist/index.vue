@@ -119,19 +119,19 @@
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="开始时间" align="center" prop="starttime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.starttime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="结束时间" align="center" prop="endtime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.endtime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="添加时间" align="center" prop="addtime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.addtime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="姓名" align="center" prop="name" />
       <el-table-column label="手机号" align="center" prop="phone" />
@@ -191,7 +191,7 @@
           <el-date-picker clearable
             v-model="form.starttime"
             type="datetime"
-            value-format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd "
             placeholder="请选择开始时间">
           </el-date-picker>
         </el-form-item>

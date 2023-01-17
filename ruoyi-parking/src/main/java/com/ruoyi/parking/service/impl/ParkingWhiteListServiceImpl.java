@@ -87,7 +87,7 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
         if(parkingLotInformation.getMonthlycardpurchase().equals("1")){
             throw new GlobalException("请开启停车场月卡购买功能");
         }
-        LPRDemo lprDemo = new LPRDemo();
+       /* LPRDemo lprDemo = new LPRDemo();
         ParkingLotEquipment parkingLotEquipment = new ParkingLotEquipment();
         parkingLotEquipment.setParkinglotinformationid(parkingLotInformation.getId());
         List<ParkingLotEquipment> parkingLotEquipments = parkingLotEquipmentMapper.selectParkingLotEquipmentList(parkingLotEquipment);
@@ -96,7 +96,7 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
             int i = lprDemo.InitClient(lotEquipment.getIpadress());
             //设备添加白名单
             lprDemo.AddWlistPlate(i, parkingWhiteList.getLicense());
-        }
+        }*/
 
         parkingWhiteList.setAddtime(new Date());
         parkingWhiteList.setState(0);
@@ -173,7 +173,7 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
             parkingWhiteList1.setAddtime(date);
             parkingWhiteList1.setState(0);
         }
-        ParkingLotInformation parkingLotInformation=parkingLotInformationMapper.selectParkingLotInformationById(parkingWhiteList1.getParkinglotinformationid());
+       /* ParkingLotInformation parkingLotInformation=parkingLotInformationMapper.selectParkingLotInformationById(parkingWhiteList1.getParkinglotinformationid());
         LPRDemo lprDemo = new LPRDemo();
         ParkingLotEquipment parkingLotEquipment = new ParkingLotEquipment();
         parkingLotEquipment.setParkinglotinformationid(parkingLotInformation.getId());
@@ -181,7 +181,7 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
         for (ParkingLotEquipment lotEquipment : parkingLotEquipments) {
             int i = lprDemo.InitClient(lotEquipment.getIpadress());
             int i1 = lprDemo.AddWlistPlate(i, parkingWhiteList.getLicense());
-        }
+        }*/
         String username = SecurityUtils.getUsername();
         //续期缴费详情
         addParkingWhiteListChargeRecord(parkingWhiteList,username);
@@ -201,7 +201,7 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
     @Override
     public int deleteParkingWhiteListByIds(Long[] ids)
     {
-        LPRDemo lprDemo = new LPRDemo();
+      /*  LPRDemo lprDemo = new LPRDemo();
         for (Long id : ids) {
             //获取白名单信息
             ParkingWhiteList parkingWhiteList = selectParkingWhiteListById(id);
@@ -215,7 +215,7 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
                 //删除设备白名单
                 lprDemo.DeleteWlistByPlate(i,parkingWhiteList.getLicense());
             }
-        }
+        }*/
         return parkingWhiteListMapper.deleteParkingWhiteListByIds(ids);
     }
 
@@ -228,19 +228,19 @@ public class ParkingWhiteListServiceImpl implements IParkingWhiteListService
     @Override
     public int deleteParkingWhiteListById(Long id)
     {
-        LPRDemo lprDemo = new LPRDemo();
-        //获取白名单信息
+       /* //获取白名单信息
         ParkingWhiteList parkingWhiteList = selectParkingWhiteListById(id);
         //获取停车场信息
         ParkingLotInformation parkingLotInformation=parkingLotInformationMapper.selectParkingLotInformationById(parkingWhiteList.getParkinglotinformationid());
         ParkingLotEquipment parkingLotEquipment = new ParkingLotEquipment();
         parkingLotEquipment.setParkinglotinformationid(parkingLotInformation.getId());
+        LPRDemo lprDemo = new LPRDemo();
         List<ParkingLotEquipment> parkingLotEquipments = parkingLotEquipmentMapper.selectParkingLotEquipmentList(parkingLotEquipment);
         for (ParkingLotEquipment lotEquipment : parkingLotEquipments) {
             int i = lprDemo.InitClient(lotEquipment.getIpadress());
             //删除设备白名单
             lprDemo.DeleteWlistByPlate(i,parkingWhiteList.getLicense());
-        }
+        }*/
         return parkingWhiteListMapper.deleteParkingWhiteListById(id);
     }
 

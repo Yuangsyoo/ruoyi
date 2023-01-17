@@ -59,22 +59,24 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
      */
     @Override
     @Transactional
-    public int insertParkingLotEquipment(ParkingLotEquipment parkingLotEquipment)
-    {
+    public int insertParkingLotEquipment(ParkingLotEquipment parkingLotEquipment) {
         parkingLotEquipmentMapper.insertParkingLotEquipment(parkingLotEquipment);
         try {
-            // TODO: 2022/12/14 无牌车扫码进场
+            //无牌车扫码进场
             //设备id
             Long parkinglotequipmentid = parkingLotEquipment.getId();
+            //停车场id
+            Long parkinglotinformationid = parkingLotEquipment.getParkinglotinformationid();
             if (parkingLotEquipment.getDirection().equals("0")){
-                String text="https://www.baidu.com";//待修改进场口二维码页面
-                //http://192.168.63.125/ui/institution/pageQueryForAssign?name='xxx'&sex='男'
+                String text= "http://192.168.63.125/ui/institution/pageQueryForAssign?parkinglotequipmentid="+parkinglotequipmentid+"";
                 String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
                 parkingLotEquipment.setQrcode(s);
             }else {
-                String text="https://www.baidu.com";//待修改出场口二维码页面
-                //http://192.168.63.125/ui/institution/pageQueryForAssign?name='xxx'&sex='男'
+                String text= "http://192.168.63.125/ui/institution/pageQueryForAssign?parkinglotequipmentid="+parkinglotequipmentid+"&parkinglotinformationid="+parkinglotinformationid+"";
                 String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
+                String text1=  "http://192.168.63.125/ui/institution/pageQueryForAssign?parkinglotequipmentid="+parkinglotequipmentid+"";
+                String s1 = QRCodeGenerator.generateQRCodeImage(text1, 360, 360);
+                parkingLotEquipment.setNoLicensePlateCode(s1);
                 parkingLotEquipment.setQrcode(s);
             }
             LPRDemo lprDemo = new LPRDemo();

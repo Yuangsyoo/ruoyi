@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.parking;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.sdk.LPRDemo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,10 +65,9 @@ public class ParkingLotEquipmentController extends BaseController
     /**
      * 获取停车场设备管理详细信息
      */
-    @PreAuthorize("@ss.hasPermi('parking:equipment:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    @Anonymous
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(parkingLotEquipmentService.selectParkingLotEquipmentById(id));
     }
 

@@ -112,11 +112,19 @@
       <el-table-column label="二行显示" align="center" prop="twodisplay" />
       <el-table-column label="三行显示" align="center" prop="threedisplay" />
       <el-table-column label="四行显示" align="center" prop="fourdisplay" />
-      <el-table-column label="二维码" align="center" prop="qrcode" width="150px" >
+      <el-table-column  label="进出口二维码" align="center" prop="qrcode" width="150px" >
         <template slot-scope="scope">
           <el-image
             style="width: 150px; height: 150px"
             :src="scope.row.qrcode">
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="无牌车出口二维码" align="center" prop="noLicensePlateCode" width="150px" >noLicensePlateCode
+        <template slot-scope="scope" >
+          <el-image v-if="scope.row.direction==1"
+            style="width: 150px; height: 150px"
+            :src="scope.row.noLicensePlateCode">
           </el-image>
         </template>
       </el-table-column>
@@ -227,7 +235,7 @@
         <el-form-item label="四行显示" prop="fourdisplay">
           <el-input v-model="form.fourdisplay" placeholder="请输入四行显示" />
         </el-form-item>
-        <el-form-item label="二维码" prop="qrcode">
+        <el-form-item v-show="false" label="二维码" prop="qrcode">
           <el-input v-model="form.qrcode" placeholder="请输入二维码" />
         </el-form-item>
         <el-form-item label="状态" prop="state">

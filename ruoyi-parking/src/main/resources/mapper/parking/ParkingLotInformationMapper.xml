@@ -40,6 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remainingParkingSpace"    column="remainingParkingSpace"    />
         <result property="freetime"    column="freeTime"    />
         <result property="numberfour"    column="numberFour"    />
+        <result property="onSiteQRCode"    column="onSiteQRCode"    />
     </resultMap>
 
     <sql id="selectParkingLotInformationVo">
@@ -96,6 +97,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
             <if test="remainingParkingSpace != null"> and remainingParkingSpace = #{remainingParkingSpace}</if>
             <if test="numberfour != null  and numberfour != ''"> and numberFour = #{numberfour}</if>
+            <if test="onSiteQRCode != null  and onSiteQRCode != ''"> and onSiteQRCode = #{onSiteQRCode}</if>
+
         </where>
     </select>
     
@@ -138,7 +141,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unionpaypaymentId != null">unionPayPayment_id,</if>
             <if test="etcpaymentId != null">etcPayment_id,</if>
             <if test="ruralcreditpaymentId != null">ruralCreditPayment_id,</if>
-
+            <if test="onSiteQRCode != null">onSiteQRCode,</if>
             <if test="remainingParkingSpace != null">remainingParkingSpace,</if>
 
             <if test="numberfour != null">numberFour,</if>
@@ -175,7 +178,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unionpaypaymentId != null">#{unionpaypaymentId},</if>
             <if test="etcpaymentId != null">#{etcpaymentId},</if>
             <if test="ruralcreditpaymentId != null">#{ruralcreditpaymentId},</if>
-
+            <if test="onSiteQRCode != null">#{onSiteQRCode},</if>
             <if test="remainingParkingSpace != null">#{remainingParkingSpace},</if>
 
             <if test="numberfour != null">#{numberfour},</if>
@@ -219,6 +222,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="remainingParkingSpace != null">remainingParkingSpace = #{remainingParkingSpace},</if>
 
             <if test="numberfour != null">numberFour = #{numberfour},</if>
+            <if test="onSiteQRCode != null">onSiteQRCode = #{onSiteQRCode},</if>
         </trim>
         where id = #{id}
     </update>

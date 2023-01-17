@@ -75,7 +75,6 @@ public class ParkingBlackListServiceImpl implements IParkingBlackListService
         //判断是否重复添加黑名单
         ParkingBlackList parkingBlackList1 = parkingBlackListMapper.selectParkingBlackListByIdAndLicense(parkingBlackList.getParkinglotinformationid(), parkingBlackList.getLicense());
         if (parkingBlackList1!=null){
-
             throw new GlobalException("黑名单已存在");
         }
         parkingBlackList.setTime(new Date());

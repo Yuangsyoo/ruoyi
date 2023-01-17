@@ -50,7 +50,7 @@ public class ParkingManualOpening extends BaseEntity
     }
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
     @Excel(name = "操作时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date time;
 

@@ -75,9 +75,9 @@
       <el-table-column label="停车场名称" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="操作时间" align="center" prop="time" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.time, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remarks" />
       <el-table-column label="操作员" align="center" prop="operator" />

@@ -95,8 +95,6 @@ public class ParkingController extends Thread {
     public String test1(@RequestBody Total total) {
         //获取车牌号
         String license =total.getAlarmInfoPlate().getResult().getPlateResult().getLicense();
-        //车牌id
-        int plateid = total.getAlarmInfoPlate().getResult().getPlateResult().getPlateid();
         //获取出入场图片
         String imagePath = Compress.resizeImageTo40K(total.getAlarmInfoPlate().getResult().getPlateResult().getImageFile());
         //获取推送数据设备序列号
@@ -556,6 +554,14 @@ public class ParkingController extends Thread {
                 //金额
                 MoneyVo moneyVo = parkingChargingService.calculatedAmount(parkingChargingDto);
                 BeanUtils.copyProperties(moneyVo,parkingRecord);
+                if (moneyVo.getMoney()==0){
+                    parkingRecord.setPaystate("1");
+                    parkingRecord.setOrderstate("1");
+                    parkingRecordService.updateParkingRecord(parkingRecord);
+                    String s = SerialPortUtils.ExportSecondaryVolume(license);
+                    log.info("优惠卷后计算金额为0时，直接放行");
+                    return s;
+                }
                parkingRecordService.updateParkingRecord(parkingRecord);
                list.add(parkingRecord);
                String s = JSON.toJSONString(list);
@@ -565,6 +571,7 @@ public class ParkingController extends Thread {
                    webSocketService.sendMessage(user.getUserName(),s);
                }
                 ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
+
                 BeanUtils.copyProperties(parkingRecord,parkingRecordVo);
                 parkingRecordVo.setParkingLotInformationName(parkingLotInformation.getName());
                 parkingRecordVo.setParkingLotEquipmentName(parkingLotEquipment.getName());
@@ -581,10 +588,6 @@ public class ParkingController extends Thread {
         log.info("{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"程序异常，请联系管理人员\",\"is_pay\":\"true\"}}");
         return "{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"程序异常，请联系管理人员\",\"is_pay\":\"true\"}}";
     }
-
-
-
-
 
     //出场后修改停车场记录
     private void updateparkingRecord(ParkingLotEquipment parkingLotEquipment, ParkingLotInformation parkingLotInformation,Date date,String license,String imagePath) {

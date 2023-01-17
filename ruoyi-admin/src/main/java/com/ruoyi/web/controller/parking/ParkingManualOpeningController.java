@@ -70,7 +70,7 @@ public class ParkingManualOpeningController extends BaseController
     }
 
     /**
-     * 停车场手动开杆操作11111111111111111111111111111111111111111
+     * 停车场手动开杆操作
      */
     @PreAuthorize("@ss.hasPermi('parking:opening:add')")
     @Log(title = "停车场手动开杆管理", businessType = BusinessType.INSERT)

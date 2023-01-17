@@ -27,6 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="numberone"    column="numberone"    />
         <result property="numbertwo"    column="numbertwo"    />
         <result property="numberthree"    column="numberThree"    />
+        <result property="noLicensePlateCode"    column="noLicensePlateCode"    />
         <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
             <id property="id" column="iid"></id>
             <result property="name" column="iname"></result>
@@ -61,6 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="numberone != null  and numberone != ''"> and e.numberone = #{numberone}</if>
             <if test="numbertwo != null  and numbertwo != ''"> and e.numbertwo = #{numbertwo}</if>
             <if test="numberthree != null  and numberthree != ''"> and e.numberThree = #{numberthree}</if>
+            <if test="noLicensePlateCode != null  and noLicensePlateCode != ''"> and e.noLicensePlateCode = #{noLicensePlateCode}</if>
         </where>
     </select>
     
@@ -93,6 +95,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="numberone != null">numberone,</if>
             <if test="numbertwo != null">numbertwo,</if>
             <if test="numberthree != null">numberThree,</if>
+            <if test="noLicensePlateCode != null">noLicensePlateCode,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
@@ -116,6 +119,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="numberone != null">#{numberone},</if>
             <if test="numbertwo != null">#{numbertwo},</if>
             <if test="numberthree != null">#{numberthree},</if>
+            <if test="noLicensePlateCode != null">#{noLicensePlateCode},</if>
          </trim>
     </insert>
 
@@ -143,6 +147,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="numberone != null">numberone = #{numberone},</if>
             <if test="numbertwo != null">numbertwo = #{numbertwo},</if>
             <if test="numberthree != null">numberThree = #{numberthree},</if>
+            <if test="noLicensePlateCode != null">noLicensePlateCode = #{noLicensePlateCode},</if>
         </trim>
         where id = #{id}
     </update>

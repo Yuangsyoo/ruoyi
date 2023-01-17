@@ -95,7 +95,7 @@
       <el-table-column label="状态" align="center" prop="state" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.state==0">活动进行中</span>
-          <span style="color: green" v-else-if="scope.row.state==1">活动已结束</span>
+          <span style="color: #800000" v-else-if="scope.row.state==1">活动已结束</span>
         </template>
       </el-table-column>
       <el-table-column label="二维码" align="center" prop="qrcode">

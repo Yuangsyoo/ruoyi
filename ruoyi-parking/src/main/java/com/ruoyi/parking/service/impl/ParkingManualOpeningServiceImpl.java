@@ -87,8 +87,7 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
      * @return 结果
      */
     @Override
-    public int updateParkingManualOpening(ParkingManualOpening parkingManualOpening)
-    {
+    public int updateParkingManualOpening(ParkingManualOpening parkingManualOpening) {
 
         return parkingManualOpeningMapper.updateParkingManualOpening(parkingManualOpening);
     }
@@ -100,8 +99,7 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
      * @return 结果
      */
     @Override
-    public int deleteParkingManualOpeningByIds(Long[] ids)
-    {
+    public int deleteParkingManualOpeningByIds(Long[] ids) {
         return parkingManualOpeningMapper.deleteParkingManualOpeningByIds(ids);
     }
 
@@ -112,8 +110,7 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
      * @return 结果
      */
     @Override
-    public int deleteParkingManualOpeningById(Long id)
-    {
+    public int deleteParkingManualOpeningById(Long id) {
         return parkingManualOpeningMapper.deleteParkingManualOpeningById(id);
     }
 }

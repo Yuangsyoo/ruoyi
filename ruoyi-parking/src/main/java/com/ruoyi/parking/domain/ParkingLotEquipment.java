@@ -103,6 +103,16 @@ public class ParkingLotEquipment extends BaseEntity
     /** 预留字段3 */
     @Excel(name = "预留字段3")
     private String numberthree;
+    //无牌车二维码
+    private String noLicensePlateCode;
+
+    public String getNoLicensePlateCode() {
+        return noLicensePlateCode;
+    }
+
+    public void setNoLicensePlateCode(String noLicensePlateCode) {
+        this.noLicensePlateCode = noLicensePlateCode;
+    }
 
     public ParkingLotInformation getParkingLotInformation() {
         return parkingLotInformation;

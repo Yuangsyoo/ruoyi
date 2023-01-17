@@ -103,7 +103,7 @@ public class ParkingWhiteListController extends BaseController
         return toAjax(parkingWhiteListService.updateParkingWhiteList1(parkingWhiteList));
     }
     @PreAuthorize("@ss.hasPermi('parking:whitelist:renewal')")
-    @Log(title = "停车场白名单续约", businessType = BusinessType.UPDATE)
+    @Log(title = "停车场白名单续约")
     @PutMapping("/renewal")
     public AjaxResult renewal(@RequestBody ParkingWhiteList parkingWhiteList)
     {

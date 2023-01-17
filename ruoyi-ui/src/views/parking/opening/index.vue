@@ -91,9 +91,9 @@
       <el-table-column label="设备" align="center" prop="parkingLotEquipment.name" />
       <el-table-column label="操作员" align="center" prop="operator" />
       <el-table-column label="操作时间" align="center" prop="time" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remarks" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">

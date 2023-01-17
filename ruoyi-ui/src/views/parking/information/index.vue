@@ -224,6 +224,14 @@
           <span style="color: red" v-else-if="scope.row.temporaryvehiclerestrictions==1">关闭</span>
         </template>
       </el-table-column>
+      <el-table-column label="场内收费二维码" align="center" prop="onSiteQRCode" width="150px" >
+        <template slot-scope="scope">
+          <el-image
+            style="width: 150px; height: 150px"
+            :src="scope.row.onSiteQRCode">
+          </el-image>
+        </template>
+      </el-table-column>
 <!--      <el-table-column label="平台支付" align="center" prop="platformpaymentState" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.platformpaymentState==0">开启</span>
@@ -395,12 +403,18 @@
             <el-radio v-model="form.alipaypaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item v-show="false" label="微信停车缴费" prop="wechatpaymentState">
+        <el-form-item  label="微信停车缴费" prop="wechatpaymentState">
           <template>
             <el-radio v-model="form.wechatpaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.wechatpaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
+        <div v-show="this.form.wechatpaymentState==0">
+          <el-form-item   label="微信支付商户号" prop="wechatpaymentId">
+            <el-input v-model="form.wechatpaymentId" placeholder="请输入微信支付关联id" />
+          </el-form-item>
+        </div>
+
         <el-form-item v-show="false" label="银联停车缴费" prop="unionpaypaymentState">
           <template>
             <el-radio v-model="form.unionpaypaymentState" label="0">开启</el-radio>
@@ -413,31 +427,30 @@
             <el-radio v-model="form.etcpaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item v-show="false" label="农信停车缴费" prop="ruralcreditpaymentState">
+        <el-form-item  label="农信停车缴费" prop="ruralcreditpaymentState">
           <template>
             <el-radio v-model="form.ruralcreditpaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.ruralcreditpaymentState" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-<!--        <el-form-item label="平台支付关联id" prop="platformpaymentId">
+        <div v-show="this.form.ruralcreditpaymentState==0">
+          <el-form-item label="农信支付商户号" prop="ruralcreditpaymentId">
+            <el-input v-model="form.ruralcreditpaymentId" placeholder="请输入农信支付关联id" />
+          </el-form-item>
+        </div>
+      <!--        <el-form-item label="平台支付关联id" prop="platformpaymentId">
           <el-input v-model="form.platformpaymentId" placeholder="请输入平台支付关联id" />
         </el-form-item>
         <el-form-item label="支付宝支付关联id" prop="alipaypaymentId">
           <el-input v-model="form.alipaypaymentId" placeholder="请输入支付宝支付关联id" />
         </el-form-item>
-        <el-form-item label="微信支付关联id" prop="wechatpaymentId">
-          <el-input v-model="form.wechatpaymentId" placeholder="请输入微信支付关联id" />
-        </el-form-item>
+
         <el-form-item label="银联支付关联id" prop="unionpaypaymentId">
           <el-input v-model="form.unionpaypaymentId" placeholder="请输入银联支付关联id" />
         </el-form-item>
         <el-form-item label="ETC支付关联id" prop="etcpaymentId">
           <el-input v-model="form.etcpaymentId" placeholder="请输入ETC支付关联id" />
         </el-form-item>
-        <el-form-item label="农信支付关联id" prop="ruralcreditpaymentId">
-          <el-input v-model="form.ruralcreditpaymentId" placeholder="请输入农信支付关联id" />
-        </el-form-item>
-
         <el-form-item label="备用字段4" prop="numberfour">
           <el-input v-model="form.numberfour" placeholder="请输入备用字段4" />
         </el-form-item>-->

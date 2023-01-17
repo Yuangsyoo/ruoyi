@@ -58,14 +58,14 @@
       <el-table-column label="车牌号" align="center" prop="license" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
       <el-table-column label="入场时间" align="center" prop="admissiontime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.admissiontime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="出场时间" align="center" prop="exittime" width="180">
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.exittime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="车牌颜色" align="center" prop="licensepllatecolor">
         <template slot-scope="scope">

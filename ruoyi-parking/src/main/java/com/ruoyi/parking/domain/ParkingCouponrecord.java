@@ -38,7 +38,7 @@ public class ParkingCouponrecord extends BaseEntity
     private String ordernumber;
 
     /** 领取时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
     @Excel(name = "领取时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date time;
 

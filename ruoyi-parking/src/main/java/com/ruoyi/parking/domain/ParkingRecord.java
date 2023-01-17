@@ -41,13 +41,11 @@ public class ParkingRecord extends BaseEntity
     /** 入场时间 */
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
-    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     @Excel(name = "入场时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date admissiontime;
 
     /** 出场时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
-    @DateTimeFormat(pattern ="yyyy-MM-dd HH:mm:ss")
     @Excel(name = "出场时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date exittime;
 
@@ -82,11 +80,11 @@ public class ParkingRecord extends BaseEntity
 
     /** 预留字段2 */
 
-    @Excel(name = "预留字段2")
+    @Excel(name = "进场图片")
     private String numbertwo;
 
     /** 预留字段3 */
-    @Excel(name = "预留字段3")
+    @Excel(name = "出场图片")
     private String numberthree;
     /*优惠金额*/
     @Excel(name = "优惠金额")
