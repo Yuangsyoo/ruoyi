@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingRechargeMapper">
+    
+    <resultMap type="ParkingRecharge" id="ParkingRechargeResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="license"    column="license"    />
+        <result property="balance"    column="balance"    />
+        <result property="name"    column="name"    />
+        <result property="address"    column="address"    />
+        <result property="remarks"    column="remarks"    />
+        <result property="addtime"    column="addTime"    />
+        <result property="money"    column="money"    />
+        <result property="phone"    column="phone"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
+    </resultMap>
+
+    <sql id="selectParkingRechargeVo">
+        select * from parking_recharge
+    </sql>
+
+    <select id="selectParkingRechargeList" parameterType="ParkingRecharge" resultMap="ParkingRechargeResult">
+        select p.*,l.id lid,l.name lname from parking_recharge p left join parking_lot_information l on p.parkinglotinformationid=l.id
+        <where>  
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0 "> and p.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and p.license = #{license}</if>
+            <if test="balance != null "> and p.balance = #{balance}</if>
+            <if test="name != null  and name != ''"> and p.name like concat('%', #{name}, '%')</if>
+            <if test="address != null  and address != ''"> and p.address = #{address}</if>
+            <if test="remarks != null  and remarks != ''"> and p.remarks = #{remarks}</if>
+            <if test="addtime != null "> and p.addTime = #{addtime}</if>
+            <if test="money != null "> and p.money = #{money}</if>
+            <if test="phone != null "> and p.phone = #{phone}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingRechargeById" parameterType="Long" resultMap="ParkingRechargeResult">
+        <include refid="selectParkingRechargeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingRecharge" parameterType="ParkingRecharge">
+        insert into parking_recharge
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="license != null and license != ''">license,</if>
+            <if test="balance != null">balance,</if>
+            <if test="name != null">name,</if>
+            <if test="address != null">address,</if>
+            <if test="remarks != null">remarks,</if>
+            <if test="addtime != null">addTime,</if>
+            <if test="money != null">money,</if>
+            <if test="phone != null">phone,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">#{license},</if>
+            <if test="balance != null">#{balance},</if>
+            <if test="name != null">#{name},</if>
+            <if test="address != null">#{address},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="money != null">#{money},</if>
+            <if test="phone != null">#{phone},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingRecharge" parameterType="ParkingRecharge">
+        update parking_recharge
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="license != null and license != ''">license = #{license},</if>
+            <if test="balance != null">balance = #{balance},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="addtime != null">addTime = #{addtime},</if>
+            <if test="money != null">money = #{money},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingRechargeById" parameterType="Long">
+        delete from parking_recharge where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingRechargeByIds" parameterType="String">
+        delete from parking_recharge where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--
+    ParkingRecharge findBy(@Param("parkinglotinformationid") Long id,@Param("license") String license);-->
+    <select id="findBy" resultType="com.ruoyi.parking.domain.ParkingRecharge">
+        select * from parking_recharge where parkingLotInformationId=#{parkinglotinformationid} and license=#{license}
+    </select>
+</mapper>

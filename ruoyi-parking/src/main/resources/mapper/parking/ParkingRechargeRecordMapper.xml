@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingRechargeRecordMapper">
+    
+    <resultMap type="ParkingRechargeRecord" id="ParkingRechargeRecordResult">
+        <result property="id"    column="id"    />
+        <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
+        <result property="license"    column="license"    />
+        <result property="operationtime"    column="operationTime"    />
+        <result property="operationtype"    column="operationType"    />
+        <result property="money"    column="money"    />
+        <result property="operation"    column="operation"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <id property="id" column="lid"></id>
+            <result property="name" column="lname"></result>
+        </association>
+    </resultMap>
+
+    <sql id="selectParkingRechargeRecordVo">
+        select id, parkingLotInformationId, license, operationTime, operationType, money, operation from parking_recharge_record
+    </sql>
+
+    <select id="selectParkingRechargeRecordList" parameterType="ParkingRechargeRecord" resultMap="ParkingRechargeRecordResult">
+        select p.*,l.id lid,l.name lname from parking_recharge_record p left join parking_lot_information l on p.parkinglotinformationid=l.id
+        <where>  
+            <if test="parkinglotinformationid != null "> and p.parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="license != null  and license != ''"> and p.license = #{license}</if>
+            <if test="operationtime != null "> and p.operationTime = #{operationtime}</if>
+            <if test="operationtype != null  and operationtype != ''"> and p.operationType = #{operationtype}</if>
+            <if test="money != null  and money != ''"> and p.money = #{money}</if>
+            <if test="operation != null  and operation != ''"> and p.operation = #{operation}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingRechargeRecordById" parameterType="Long" resultMap="ParkingRechargeRecordResult">
+        <include refid="selectParkingRechargeRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingRechargeRecord" parameterType="ParkingRechargeRecord">
+        insert into parking_recharge_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
+            <if test="license != null">license,</if>
+            <if test="operationtime != null">operationTime,</if>
+            <if test="operationtype != null">operationType,</if>
+            <if test="money != null">money,</if>
+            <if test="operation != null">operation,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
+            <if test="license != null">#{license},</if>
+            <if test="operationtime != null">#{operationtime},</if>
+            <if test="operationtype != null">#{operationtype},</if>
+            <if test="money != null">#{money},</if>
+            <if test="operation != null">#{operation},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingRechargeRecord" parameterType="ParkingRechargeRecord">
+        update parking_recharge_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
+            <if test="license != null">license = #{license},</if>
+            <if test="operationtime != null">operationTime = #{operationtime},</if>
+            <if test="operationtype != null">operationType = #{operationtype},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="operation != null">operation = #{operation},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingRechargeRecordById" parameterType="Long">
+        delete from parking_recharge_record where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingRechargeRecordByIds" parameterType="String">
+        delete from parking_recharge_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
