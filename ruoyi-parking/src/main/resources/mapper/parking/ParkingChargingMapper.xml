@@ -12,6 +12,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="superiorlimit"    column="superiorLimit"    />
         <result property="parkinglotinformationid"    column="parkingLotInformationId"    />
         <result property="type"    column="type"    />
+        <result property="freeTimeState"    column="freeTimeState"    />
+        <result property="startingpriceState"    column="startingpriceState"    />
+        <result property="distinguish"    column="distinguish"    />
+        <result property="freetime"    column="freetime"    />
         <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
             <id property="id" column="lid"></id>
             <result property="name" column="lname"></result>
@@ -30,31 +34,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="startingprice"    column="sub_startingPrice"    />
         <result property="startingtime"    column="sub_startingTime"    />
         <result property="type"    column="sub_type"    />
-        <result property="repea"    column="sub_repea"    />
         <result property="minutecharge"    column="sub_minuteCharge"    />
         <result property="superiorlimit"    column="sub_superiorLimit"    />
+        <result property="distinguish"    column="sub_distinguish"    />
 
     </resultMap>
 
     <sql id="selectParkingChargingVo">
-        select id, startingPrice, startingPriceDuration, increaseIncome, superiorLimit, parkingLotInformationId, type from parking_charging
+        select * from parking_charging
     </sql>
 
     <select id="selectParkingChargingList" parameterType="ParkingCharging" resultMap="ParkingChargingResult">
         select c.*,l.id lid,l.name lname from parking_charging c left join parking_lot_information l on c.parkinglotinformationid=l.id
-        <where>  
-            <if test="startingprice != null "> and c.startingPrice = #{startingprice}</if>
-            <if test="startingpriceduration != null "> and c.startingPriceDuration = #{startingpriceduration}</if>
-            <if test="increaseincome != null "> and c.increaseIncome = #{increaseincome}</if>
-            <if test="superiorlimit != null "> and c.superiorLimit = #{superiorlimit}</if>
+        <where>
+
             <if test="parkinglotinformationid != null "> and c.parkingLotInformationId = #{parkinglotinformationid}</if>
-            <if test="type != null "> and c.type = #{type}</if>
+            <if test="distinguish != null "> and c.distinguish = #{distinguish}</if>
         </where>
     </select>
     
     <select id="selectParkingChargingById" parameterType="Long" resultMap="ParkingChargingParkingBillingPeriodResult">
-        select a.id, a.startingPrice, a.startingPriceDuration, a.increaseIncome, a.superiorLimit, a.parkingLotInformationId, a.type,
-               b.parkingChargingId as sub_parkingChargingId, b.minutecharge as sub_minuteCharge,b.superiorlimit as sub_superiorLimit,b.starTime as sub_starTime, b.endTime as sub_endTime, b.addMoney as sub_addMoney, b.startingPrice as sub_startingPrice, b.startingTime as sub_startingTime, b.type as sub_type, b.repea as sub_repea
+        select a.id,a.freetime, a.startingPrice,a.distinguish, a.startingPriceDuration, a.increaseIncome,  a.freeTimeState,a.startingpriceState, a.superiorLimit, a.parkingLotInformationId, a.type,
+               b.parkingChargingId as sub_parkingChargingId, b.minutecharge as sub_minuteCharge,b.superiorlimit as sub_superiorLimit,b.starTime as sub_starTime, b.endTime as sub_endTime, b.addMoney as sub_addMoney, b.startingPrice as sub_startingPrice, b.startingTime as sub_startingTime, b.type as sub_type
         from parking_charging a
         left join parking_billing_period b on b.parkingChargingId = a.id
         where a.id = #{id}
@@ -66,17 +67,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="startingprice != null">startingPrice,</if>
             <if test="startingpriceduration != null">startingPriceDuration,</if>
             <if test="increaseincome != null">increaseIncome,</if>
+            <if test="freeTimeState != null">freeTimeState,</if>
+            <if test="startingpriceState != null">startingpriceState,</if>
             <if test="superiorlimit != null">superiorLimit,</if>
             <if test="parkinglotinformationid != null">parkingLotInformationId,</if>
             <if test="type != null">type,</if>
+            <if test="distinguish != null">distinguish,</if>
+            <if test="freetime != null">freetime,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="startingprice != null">#{startingprice},</if>
             <if test="startingpriceduration != null">#{startingpriceduration},</if>
             <if test="increaseincome != null">#{increaseincome},</if>
+            <if test="freeTimeState != null">#{freeTimeState},</if>
+            <if test="startingpriceState != null">#{startingpriceState},</if>
             <if test="superiorlimit != null">#{superiorlimit},</if>
             <if test="parkinglotinformationid != null">#{parkinglotinformationid},</if>
             <if test="type != null">#{type},</if>
+            <if test="distinguish != null">#{distinguish},</if>
+            <if test="freetime != null">#{freetime},</if>
          </trim>
     </insert>
 
@@ -86,9 +95,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="startingprice != null">startingPrice = #{startingprice},</if>
             <if test="startingpriceduration != null">startingPriceDuration = #{startingpriceduration},</if>
             <if test="increaseincome != null">increaseIncome = #{increaseincome},</if>
+            <if test="freeTimeState != null">freeTimeState = #{freeTimeState},</if>
+            <if test="startingpriceState != null">startingpriceState = #{startingpriceState},</if>
             <if test="superiorlimit != null">superiorLimit = #{superiorlimit},</if>
             <if test="parkinglotinformationid != null">parkingLotInformationId = #{parkinglotinformationid},</if>
             <if test="type != null">type = #{type},</if>
+            <if test="distinguish != null">distinguish = #{distinguish},</if>
+            <if test="freetime != null">freetime = #{freetime},</if>
         </trim>
         where id = #{id}
     </update>
@@ -116,17 +129,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <insert id="batchParkingBillingPeriod">
-        insert into parking_billing_period( parkingChargingId, starTime, endTime, addMoney, startingPrice, startingTime, type, repea,minuteCharge,superiorLimit) values
+        insert into parking_billing_period( parkingChargingId, starTime, endTime, addMoney, startingPrice, startingTime, type, minuteCharge,superiorLimit) values
 		<foreach item="item" index="index" collection="list" separator=",">
-            ( #{item.parkingchargingid}, #{item.startime}, #{item.endtime}, #{item.addmoney}, #{item.startingprice}, #{item.startingtime}, #{item.type}, #{item.repea}, #{item.minutecharge}, #{item.superiorlimit})
+            ( #{item.parkingchargingid}, #{item.startime}, #{item.endtime}, #{item.addmoney}, #{item.startingprice}, #{item.startingtime}, #{item.type}, #{item.minutecharge}, #{item.superiorlimit})
         </foreach>
     </insert>
-<!--        ParkingCharging findByParkinglotinformationid(Long parkinglotinformationid);-->
+<!--        ParkingCharging findByParkinglotinformationid(Long parkinglotinformationid，Long distinguish);-->
     <select id="findByParkinglotinformationid" resultMap="ParkingChargingParkingBillingPeriodResult">
-        select a.id, a.startingPrice, a.startingPriceDuration, a.increaseIncome, a.superiorLimit, a.parkingLotInformationId, a.type,
-              b.parkingChargingId as sub_parkingChargingId, b.minutecharge as sub_minuteCharge,b.superiorlimit as sub_superiorLimit,b.starTime as sub_starTime, b.endTime as sub_endTime, b.addMoney as sub_addMoney, b.startingPrice as sub_startingPrice, b.startingTime as sub_startingTime, b.type as sub_type, b.repea as sub_repea
+        select a.*,
+              b.parkingChargingId as sub_parkingChargingId, b.minutecharge as sub_minuteCharge,b.superiorlimit as sub_superiorLimit,b.starTime as sub_starTime, b.endTime as sub_endTime, b.addMoney as sub_addMoney, b.startingPrice as sub_startingPrice, b.startingTime as sub_startingTime, b.type as sub_type
         from parking_charging a
                  left join parking_billing_period b on b.parkingChargingId = a.id
-        where a.parkingLotInformationId = #{parkinglotinformationid}
+        where a.parkingLotInformationId = #{parkinglotinformationid} and a.distinguish=#{distinguish}
     </select>
 </mapper>

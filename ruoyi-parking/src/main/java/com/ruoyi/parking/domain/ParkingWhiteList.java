@@ -58,7 +58,7 @@ public class ParkingWhiteList extends BaseEntity
     /** 手机号 */
     @Excel(name = "电话")
     //手机号码也用个性化提示，使用正则表达式进行匹配，非空时不验证
-    @Pattern(regexp="^1(3|4|5|7|8)\\d{9}$",message="手机号码格式错误！")
+    /*@Pattern(regexp="^1(3|4|5|7|8)\\d{9}$",message="手机号码格式错误！")*/
     private String phone;
     /** 地址 */
     @Excel(name = "地址")

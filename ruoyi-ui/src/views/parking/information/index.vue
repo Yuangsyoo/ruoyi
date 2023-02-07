@@ -224,6 +224,12 @@
           <span style="color: red" v-else-if="scope.row.temporaryvehiclerestrictions==1">关闭</span>
         </template>
       </el-table-column>
+      <el-table-column label="无记录离场收起步价" align="center" prop="norecorddeparture" >
+        <template scope="scope">
+          <span style="color: green" v-if="scope.row.norecorddeparture==0">开启</span>
+          <span style="color: red" v-else-if="scope.row.norecorddeparture==1">关闭</span>
+        </template>
+      </el-table-column>
       <el-table-column label="场内收费二维码" align="center" prop="onSiteQRCode" width="150px" >
         <template slot-scope="scope">
           <el-image
@@ -232,6 +238,7 @@
           </el-image>
         </template>
       </el-table-column>
+
 <!--      <el-table-column label="平台支付" align="center" prop="platformpaymentState" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.platformpaymentState==0">开启</span>
@@ -244,12 +251,7 @@
           <span style="color: red" v-else-if="scope.row.overtimecompensation==1">关闭</span>
         </template>
       </el-table-column>
-      <el-table-column label="无记录离场收起步价" align="center" prop="norecorddeparture" >
-        <template scope="scope">
-          <span style="color: green" v-if="scope.row.norecorddeparture==0">开启</span>
-          <span style="color: red" v-else-if="scope.row.norecorddeparture==1">关闭</span>
-        </template>
-      </el-table-column>
+
       <el-table-column label="支付宝停车缴费" align="center" prop="alipaypaymentState" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.alipaypaymentState==0">开启</span>
@@ -332,9 +334,7 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="免费时常" prop="address">
-          <el-input v-model="form.freetime" placeholder="请输入免费时常单位默认分钟" />
-        </el-form-item>
+
         <el-form-item label="状态" prop="state">
             <template>
               <el-radio v-model="form.state" label="0">启用</el-radio>
@@ -391,7 +391,7 @@
             <el-radio v-model="form.overtimecompensation" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item v-show="false" label="无记录离场收起步价" prop="norecorddeparture">
+        <el-form-item  label="无记录离场" prop="norecorddeparture">
           <template>
             <el-radio v-model="form.norecorddeparture" label="0">开启</el-radio>
             <el-radio v-model="form.norecorddeparture" label="1">关闭</el-radio>
@@ -464,7 +464,7 @@
 </template>
 
 <script>
-import { listInformation, getInformation, delInformation, addInformation, updateInformation } from "@/api/parking/information";
+import { listInformation, getInformation, delInformation, addInformation, updateInformation1 } from "@/api/parking/information";
 
 export default {
   name: "Information",
@@ -663,7 +663,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateInformation(this.form).then(response => {
+            updateInformation1(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();

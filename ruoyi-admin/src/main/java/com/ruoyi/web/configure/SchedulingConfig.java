@@ -3,7 +3,7 @@ package com.ruoyi.web.configure;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.parking.domain.ParkingCoupon;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 
 import com.ruoyi.parking.domain.ParkingWhiteList;
 import com.ruoyi.parking.mapper.ParkingCouponMapper;
@@ -42,7 +42,9 @@ public class SchedulingConfig {
        LPRDemo lprDemo = new LPRDemo();
         System.out.println(1);
         //定时任务白名单业务逻辑
-       List<ParkingWhiteList> list = parkingWhiteListService.selectParkingWhiteListList(null);
+        ParkingWhiteList parkingWhiteList1 = new ParkingWhiteList();
+        parkingWhiteList1.setState(0);
+        List<ParkingWhiteList> list = parkingWhiteListService.selectParkingWhiteListList(parkingWhiteList1);
          for (ParkingWhiteList parkingWhiteList : list) {
            //  System.out.println(parkingWhiteList);
             if (date.getTime()>parkingWhiteList.getEndtime().getTime()){
@@ -61,12 +63,6 @@ public class SchedulingConfig {
             }
         }
       }
-
-
-
-
-
-
     private void deleteWhiteLis(LPRDemo lprDemo, ParkingWhiteList parkingWhiteList) {
         System.out.println(2);
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingWhiteList.getParkinglotinformationid());

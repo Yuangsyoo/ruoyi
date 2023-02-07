@@ -27,15 +27,7 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="手机号码" prop="phonenumber">
-            <el-input
-              v-model="queryParams.phonenumber"
-              placeholder="请输入手机号码"
-              clearable
-              style="width: 240px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
+
           <el-form-item label="状态" prop="status">
             <el-select
               v-model="queryParams.status"
@@ -131,7 +123,7 @@
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
           <el-table-column prop="parkingLotInformation.name" label="所属停车场" width="120" sortable/>
           <el-table-column prop="sysRole.roleName" label="角色" width="120" sortable/>
-          <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
+          <el-table-column label="出口" align="center" prop="parkingLotEquipment.name"  />
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
               <el-switch
@@ -217,8 +209,16 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
-              <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
+            <el-form-item label="出口" >
+<!--              <el-input v-model="form.phonenumber" placeholder="绑定出口" maxlength="11" />-->
+              <el-select v-model="form.phonenumber" placeholder="绑定出口">
+                <el-option
+                  v-for="dict in parkinglotequipments"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -327,7 +327,18 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser,getarkinglotinformations, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from "@/api/system/user";
+import {
+  listUser,
+  getUser,
+  delUser,
+  getarkinglotinformations,
+  addUser,
+  updateUser,
+  resetUserPwd,
+  changeUserStatus,
+  deptTreeSelect,
+  getEquipment1
+} from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -338,6 +349,7 @@ export default {
   components: { Treeselect },
   data() {
     return {
+      parkinglotequipments:'',
       parkinglotinformations:[],
       // 遮罩层
       loading: true,
@@ -395,7 +407,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         userName: undefined,
-        phonenumber: undefined,
+
         status: undefined,
         deptId: undefined
       },
@@ -405,7 +417,7 @@ export default {
         { key: 1, label: `用户名称`, visible: true },
         { key: 2, label: `用户昵称`, visible: true },
         { key: 3, label: `部门`, visible: true },
-        { key: 4, label: `手机号码`, visible: true },
+        { key: 4, label: `出口`, visible: true },
         { key: 5, label: `状态`, visible: true },
         { key: 6, label: `创建时间`, visible: true }
       ],
@@ -429,13 +441,7 @@ export default {
             trigger: ["blur", "change"]
           }
         ],
-        phonenumber: [
-          {
-            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-            message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
+
       }
     };
   },
@@ -451,6 +457,11 @@ export default {
     });
   },
   methods: {
+    getEquipment(parkinglotinformationid){
+      this.parkinglotequipments=[];
+      getEquipment1(parkinglotinformationid).then(res=>{
+        this.parkinglotequipments=res.data
+      })},
     /** 查询用户列表 */
     getList() {
       this.loading = true;
@@ -566,7 +577,8 @@ export default {
     handleUpdate(row) {
 
       this.reset();
-
+      var a=localStorage.getItem("uu")
+      this.getEquipment(a);
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
 

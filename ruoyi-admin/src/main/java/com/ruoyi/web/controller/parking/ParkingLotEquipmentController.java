@@ -4,7 +4,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.Anonymous;
-import com.ruoyi.common.sdk.LPRDemo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +18,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 import com.ruoyi.parking.service.IParkingLotEquipmentService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -75,6 +74,12 @@ public class ParkingLotEquipmentController extends BaseController
     public AjaxResult byParkinglotinformationid(@PathVariable("parkinglotinformationid") Long parkinglotinformationid)
     {
        List<ParkingLotEquipment> list=parkingLotEquipmentService.byParkinglotinformationid(parkinglotinformationid);
+        return AjaxResult.success(list);
+    }
+    @GetMapping(value = "/ByParkinglotinformationid1/{parkinglotinformationid}")
+    public AjaxResult byParkinglotinformationid1(@PathVariable("parkinglotinformationid") Long parkinglotinformationid)
+    {
+        List<ParkingLotEquipment> list=parkingLotEquipmentService.byParkinglotinformationid1(parkinglotinformationid);
         return AjaxResult.success(list);
     }
     /**

@@ -15,7 +15,7 @@ import java.util.Date;
 public class DateTime {
 
     public static Date combineTime2(int y,int m,int d,int h,int m2,int s) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         Date date =null;
         try {

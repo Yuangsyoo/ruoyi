@@ -187,7 +187,16 @@
             <artifactId>thumbnailator</artifactId>
             <version>0.4.8</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <!--<dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-parking</artifactId>
+            <version>3.8.4</version>
+            <scope>compile</scope>
+        </dependency>-->
 
     </dependencies>
 

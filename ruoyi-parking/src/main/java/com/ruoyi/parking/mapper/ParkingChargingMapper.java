@@ -3,6 +3,7 @@ package com.ruoyi.parking.mapper;
 import java.util.List;
 import com.ruoyi.parking.domain.ParkingCharging;
 import com.ruoyi.parking.domain.ParkingBillingPeriod;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 计费规则Mapper接口
@@ -85,5 +86,5 @@ public interface ParkingChargingMapper
      */
     public int deleteParkingBillingPeriodByParkingChargingId(Long id);
 
-    ParkingCharging findByParkinglotinformationid(Long parkinglotinformationid);
+    ParkingCharging findByParkinglotinformationid(@Param("parkinglotinformationid") Long parkinglotinformationid, @Param("distinguish") Long distinguish);
 }

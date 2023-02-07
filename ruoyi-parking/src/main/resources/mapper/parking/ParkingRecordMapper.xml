@@ -23,6 +23,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="amountpayable"    column="amountPayable"    />
         <result property="paymentmethod"    column="paymentMethod"    />
         <result property="openid"    column="openid"    />
+        <result property="indoorPayment"    column="indoorPayment"    />
+        <result property="parkinglotequipmentid"    column="parkinglotequipmentid"    />
+        <result property="flee"    column="flee"    />
+        <result property="supplementaryfee"    column="supplementaryfee"    />
+        <result property="wxorder"    column="wxorder"    />
+        <result property="parkingeqid"    column="parkingeqid"    />
+
         <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
             <id property="id" column="lid"></id>
             <result property="name" column="lname"></result>
@@ -35,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectParkingRecordList" parameterType="ParkingRecord" resultMap="ParkingRecordResult">
         select p.*,l.id lid,l.name lname from parking_record p left join parking_lot_information l on p.parkinglotinformationid=l.id
-        <where>  
+        <where>
             <if test="license != null  and license != ''"> and p.license = #{license}</if>
             <if test="parkinglotinformationid != null and parkinglotinformationid != 0"> and p.parkingLotInformationId = #{parkinglotinformationid}</if>
             <if test="admissiontime != null "> and p.admissionTime  = #{admissiontime}</if>
@@ -50,7 +57,55 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="numbertwo != null  and numbertwo != ''"> and p.numberTwo = #{numbertwo}</if>
             <if test="numberthree != null  and numberthree != ''"> and p.numberThree = #{numberthree}</if>
             <if test="openid != null "> and p.openid = #{openid}</if>
+            <if test="indoorPayment != null "> and p.indoorPayment = #{indoorPayment}</if>
+            <if test="parkinglotequipmentid != null "> and p.parkinglotequipmentid = #{parkinglotequipmentid}</if>
+            <if test="flee != null "> and p.flee = #{flee}</if>
+            <if test="parkingeqid != null "> and p.parkingeqid = #{parkingeqid}</if>
+            <if test="supplementaryfee != null "> and p.supplementaryfee = #{supplementaryfee}</if>
+            <if test="wxorder != null "> and p.wxorder = #{wxorder}</if>
+            <if test="paymentmethod != null "> and p.paymentMethod = #{paymentmethod}</if>
+            <if test="starttime != null " >
+                and p.admissionTime <![CDATA[ >= ]]> CAST(CONCAT(#{starttime},' 00:00:00') AS datetime)
+            </if>
+            <if test="endtime != null " >
+                and p.admissionTime <![CDATA[ <= ]]> CAST(CONCAT(#{endtime},' 23:59:59') AS datetime)
+            </if>
+
         </where>
+        order by p.admissionTime desc
+    </select>
+    <select id="selectParkingRecordList1" parameterType="ParkingRecord" resultType="Long">
+        select sum(money)from parking_record
+        <where>
+            <if test="license != null  and license != ''"> and license = #{license}</if>
+            <if test="parkinglotinformationid != null and parkinglotinformationid != 0"> and parkingLotInformationId = #{parkinglotinformationid}</if>
+            <if test="admissiontime != null "> and admissionTime  = #{admissiontime}</if>
+            <if test="exittime != null "> and exitTime  = #{exittime}</if>
+            <if test="licensepllatecolor != null  and licensepllatecolor != ''"> and licensePllateColor = #{licensepllatecolor}</if>
+            <if test="ordernumber != null  and ordernumber != ''"> and orderNumber = #{ordernumber}</if>
+            <if test="orderstate != null  and orderstate != ''"> and orderState = #{orderstate}</if>
+            <if test="orderstate != null  and orderstate != ''"> and orderState = #{orderstate}</if>
+            <if test="parkingeqid != null "> and  parkingeqid = #{parkingeqid}</if>
+            <if test="entranceandexitname != null  and entranceandexitname != ''"> and entranceAndExitName like concat('%', #{entranceandexitname}, '%')</if>
+
+            <if test="numbertwo != null  and numbertwo != ''"> and numberTwo = #{numbertwo}</if>
+            <if test="numberthree != null  and numberthree != ''"> and numberThree = #{numberthree}</if>
+            <if test="openid != null "> and openid = #{openid}</if>
+            <if test="indoorPayment != null "> and indoorPayment = #{indoorPayment}</if>
+            <if test="parkinglotequipmentid != null "> and parkinglotequipmentid = #{parkinglotequipmentid}</if>
+            <if test="flee != null "> and flee = #{flee}</if>
+            <if test="supplementaryfee != null "> and supplementaryfee = #{supplementaryfee}</if>
+            <if test="wxorder != null "> and wxorder = #{wxorder}</if>
+            <if test="paymentmethod != null "> and paymentMethod = #{paymentmethod}</if>
+            <if test="starttime != null " >
+                and admissionTime <![CDATA[ >= ]]> CAST(CONCAT(#{starttime},' 00:00:00') AS datetime)
+            </if>
+            <if test="endtime != null " >
+                and admissionTime <![CDATA[ <= ]]> CAST(CONCAT(#{endtime},' 23:59:59') AS datetime)
+            </if>
+            and payState=1
+        </where>
+
     </select>
     
     <select id="selectParkingRecordById" parameterType="Long" resultMap="ParkingRecordResult">
@@ -79,6 +134,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="amountpayable != null">amountPayable,</if>
             <if test="paymentmethod != null">paymentMethod ,</if>
             <if test="openid != null">openid ,</if>
+            <if test="indoorPayment != null">indoorPayment ,</if>
+            <if test="parkinglotequipmentid != null">parkinglotequipmentid ,</if>
+            <if test="flee != null">flee ,</if>
+            <if test="supplementaryfee != null">supplementaryfee ,</if>
+            <if test="wxorder != null">wxorder ,</if>
+            <if test="parkingeqid != null">parkingeqid ,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -99,6 +160,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="amountpayable != null"> #{amountpayable},</if>
             <if test="paymentmethod != null"> #{paymentmethod},</if>
             <if test="openid != null">#{openid},</if>
+            <if test="indoorPayment != null">#{indoorPayment},</if>
+            <if test="parkinglotequipmentid != null">#{parkinglotequipmentid},</if>
+            <if test="flee != null">#{flee},</if>
+            <if test="supplementaryfee != null">#{supplementaryfee},</if>
+            <if test="wxorder != null">#{wxorder},</if>
+            <if test="parkingeqid != null">#{parkingeqid},</if>
          </trim>
     </insert>
 
@@ -122,6 +189,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="amountpayable != null">amountPayable = #{amountpayable},</if>
             <if test="paymentmethod != null">paymentMethod = #{paymentmethod},</if>
             <if test="openid != null">openid = #{openid},</if>
+            <if test="indoorPayment != null">indoorPayment = #{indoorPayment},</if>
+            <if test="parkinglotequipmentid != null">parkinglotequipmentid = #{parkinglotequipmentid},</if>
+            <if test="flee != null">flee = #{flee},</if>
+            <if test="supplementaryfee != null">supplementaryfee = #{supplementaryfee},</if>
+            <if test="wxorder != null">wxorder = #{wxorder},</if>
+            <if test="parkingeqid != null">parkingeqid = #{parkingeqid},</if>
         </trim>
         where id = #{id}
     </update>
@@ -199,5 +272,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <!--ParkingRecord findbypaystateandlicense(@Param("parkingLotInformationId")Long parkinglotinformationid, @Param("license")String license);-->
     <select id="findbypaystateandlicense" resultMap="ParkingRecordResult">
         select * from parking_record where  parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and payState=2
+    </select>
+   <!-- List<ParkingRecord> getByOpend(String openid);-->
+   <select id="getByOpend" resultMap="ParkingRecordResult">
+       select  distinct license from parking_record where openid=#{openid} and parkingLotInformationId=#{parkingLotInformationId}
+   </select>
+    <!-- ParkingRecord todo(@Param("parkingLotInformationId")Long parkinglotinformationid,  @Param("license")String license)-->
+    <select id="todo" resultMap="ParkingRecordResult">
+        select  * from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and indoorPayment='1'
+    </select>
+    <!--
+    List<ParkingRecord> findByFlee();-->
+    <select id="findByFlee" resultType="com.ruoyi.parking.domain.ParkingRecord">
+        select  * from parking_record where orderState=2
+    </select>
+<!--
+        ParkingRecord findByLicenseAndIndoorPayment(Long parkinglotinformationid,String license1);-->
+    <select id="findByLicenseAndIndoorPayment" resultMap="ParkingRecordResult">
+        select  * from parking_record where parkingLotInformationId=#{parkingLotInformationId} and license=#{license} and indoorPayment='1' and payState!='2'
+    </select>
+
+    <!--List<ParkingRecord> selectParkingRecordListOne(Long parkinglotinformationid);-->
+    <select id="selectParkingRecordListOne" resultType="com.ruoyi.parking.domain.ParkingRecord">
+        select * from parking_record  where parkingLotInformationId=#{parkinglotinformationid} ORDER BY exitTime desc limit 0,10
+    </select>
+<!--   AjaxResult getPayRecord1(@Param("parkingLotInformationId")Long parkinglotinformationid, @Param("parkingeqid")Long parkingeqid);-->
+    <select id="getPayRecord1" resultMap="ParkingRecordResult">
+        select p.*,l.id lid,l.name lname from parking_record p left join parking_lot_information l on p.parkinglotinformationid=l.id where p.parkingLotInformationId=#{parkingLotInformationId} and  p.payState=1 and p.parkingeqid=#{parkingeqid} order by  p.payTime desc
     </select>
 </mapper>

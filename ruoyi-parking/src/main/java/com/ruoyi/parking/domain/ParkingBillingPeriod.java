@@ -46,10 +46,6 @@ public class ParkingBillingPeriod extends BaseEntity
     /** 按时记或者一口价 */
     @Excel(name = "按时记或者一口价")
     private Integer type;
-
-    /** 是否重复收取起步价 */
-    @Excel(name = "是否重复收取起步价")
-    private Integer repea;
     @Excel(name = "分钟计费")
     private Long minutecharge;
     @Excel(name = "单日上现")

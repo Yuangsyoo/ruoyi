@@ -1,4 +1,4 @@
-package com.ruoyi.parking.domain;
+package com.ruoyi.common.core.domain.entity;
 
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -105,6 +105,8 @@ public class ParkingLotEquipment extends BaseEntity
     private String numberthree;
     //无牌车二维码
     private String noLicensePlateCode;
+
+
 
     public String getNoLicensePlateCode() {
         return noLicensePlateCode;

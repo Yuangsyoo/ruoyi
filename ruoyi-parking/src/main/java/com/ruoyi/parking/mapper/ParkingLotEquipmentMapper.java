@@ -3,7 +3,7 @@ package com.ruoyi.parking.mapper;
 import java.util.List;
 
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 
 
 /**
@@ -68,4 +68,7 @@ public interface ParkingLotEquipmentMapper
 
     List<ParkingLotEquipment> byParkinglotinformationid(Long parkinglotinformationid);
 
+    ParkingLotEquipment selectParkingLotEquipmentFromId(Long parkinglotequipmentid);
+
+    List<ParkingLotEquipment> byParkinglotinformationid1(Long parkinglotinformationid);
 }

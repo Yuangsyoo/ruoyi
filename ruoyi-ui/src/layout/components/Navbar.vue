@@ -112,7 +112,9 @@ export default {
     getuser(name){
       getUserByName(name).then(res=>{
        if (res){
-         localStorage.setItem("uu",res.data)
+         console.log(res.data.phonenumber)
+        // localStorage.setItem("uu",res.data.name)
+         localStorage.setItem("aa",res.data.phonenumber)
        }
       })
     },
@@ -126,6 +128,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
+
           localStorage.removeItem("name")
           localStorage.removeItem("uu")
           location.href = '/index';
@@ -134,6 +137,7 @@ export default {
     }
   },created() {
      this.name=localStorage.getItem("name")
+    this.getuser(localStorage.getItem("name"));
   }
 }
 </script>

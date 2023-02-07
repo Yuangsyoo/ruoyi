@@ -1,15 +1,9 @@
 package com.ruoyi.web.controller.parking;
-
-import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
-
 import com.ruoyi.common.annotation.Anonymous;
-import com.ruoyi.parking.domain.ParkingCoupon;
-import com.ruoyi.parking.service.IParkingCouponService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -19,12 +13,7 @@ import com.ruoyi.parking.domain.ParkingCouponrecord;
 import com.ruoyi.parking.service.IParkingCouponrecordService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
-
-import static sun.misc.VM.getState;
-
-/**
- * 停车场优惠卷记录Controller
- * 
+/**停车场优惠卷记录Controller
  * @author ruoyi
  * @date 2022-12-12
  */
@@ -34,8 +23,6 @@ public class ParkingCouponrecordController extends BaseController
 {
     @Autowired
     private IParkingCouponrecordService parkingCouponrecordService;
-
-
     /**
      * 查询停车场优惠卷记录列表
      */
@@ -79,22 +66,26 @@ public class ParkingCouponrecordController extends BaseController
     //@Log(title = "停车场优惠卷记录", businessType = BusinessType.INSERT)
     @GetMapping("/add")
     @Anonymous
-    public AjaxResult add(@RequestParam Long parkingLotInformationId,
+    public AjaxResult add(@RequestParam  Long parkingLotInformationId,
                           @RequestParam Long parkingCouponId,
                           @RequestParam String license)
+
     {
         ParkingCouponrecord parkingCouponrecord = new ParkingCouponrecord();
         parkingCouponrecord.setParkinglotinformationid(parkingLotInformationId);
         parkingCouponrecord.setLicense(license);
         parkingCouponrecord.setState("0");
         List<ParkingCouponrecord> list = parkingCouponrecordService.selectParkingCouponrecordList(parkingCouponrecord);
-        if (list.size()!=0){
-            return AjaxResult.error("请勿多次领取优惠");
+        String replace = license.replace(" ", "");
+        if (replace.length()<7){
+            return AjaxResult.error("请检查车牌");
         }
-        return   parkingCouponrecordService.add(parkingLotInformationId,parkingCouponId,license);
-
+        String trim = license.trim();
+        if (list.size()!=0){
+            return AjaxResult.error("请勿多次领取");
+        }
+        return   parkingCouponrecordService.add(parkingLotInformationId,parkingCouponId,trim);
     }
-
     /**
      * 修改停车场优惠卷记录
      */
@@ -105,7 +96,6 @@ public class ParkingCouponrecordController extends BaseController
     {
         return toAjax(parkingCouponrecordService.updateParkingCouponrecord(parkingCouponrecord));
     }
-
     /**
      * 删除停车场优惠卷记录
      */
@@ -116,4 +106,10 @@ public class ParkingCouponrecordController extends BaseController
     {
         return toAjax(parkingCouponrecordService.deleteParkingCouponrecordByIds(ids));
     }
+    public static void main(String[] args) {
+        String a=" sf sdsa sd";
+        String replace = a.replace(" ", "");
+        System.out.println(replace);
+    }
+
 }

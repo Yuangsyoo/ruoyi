@@ -9,30 +9,50 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-<!--      <el-form-item label="进场时间" prop="admissiontime">
+      <el-form-item label="逃费车辆" prop="flee">
+        <el-select v-model="queryParams.flee" clearable  placeholder="请选择">
+          <el-option
+            v-for="item in flees"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="开始时间" prop="admissiontime">
 
         <el-date-picker clearable
-                        v-model="queryParams.admissiontime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
+                        v-model="queryParams.starttime"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
                         placeholder="请选择入场时间">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="离场时间" prop="exittime">
+      <el-form-item label="结束时间" prop="exittime">
         <el-date-picker clearable
-                        v-model="queryParams.exittime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
+                        v-model="queryParams.endtime"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
                         placeholder="请选择操作时间">
         </el-date-picker>
-      </el-form-item>-->
-      <el-form-item label="支付状态" prop="paystate">
+      </el-form-item>
+      <el-form-item label="停车状态" prop="paystate">
         <el-select v-model="queryParams.paystate" clearable  placeholder="请选择">
           <el-option
             v-for="item in paystates"
             :key="item.id"
             :label="item.name"
             :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="支付方式" prop="paymentmethod">
+        <el-select v-model="queryParams.paymentmethod" clearable  placeholder="请选择">
+          <el-option
+            v-for="item in paymentmethods"
+            :key="item.name"
+            :label="item.name"
+            :value="item.name">
           </el-option>
         </el-select>
       </el-form-item>
@@ -85,6 +105,12 @@
           v-hasPermi="['parking:record:export']"
         >导出</el-button>
       </el-col>
+
+
+
+
+     <div style="margin-top:50px;size: A3;">总收入金额:{{count}}元</div>
+
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -110,50 +136,59 @@
         <span style="color: yellow" v-if="scope.row.licensepllatecolor==2">黄色</span>
         <span style="color: black" v-if="scope.row.licensepllatecolor==3">白色</span>
         <span style="color: green" v-if="scope.row.licensepllatecolor==4">黑色</span>
-        <span style="color: green"  v-else-if="scope.row.licensepllatecolor===5">绿色</span>
+        <span style="color: green"  v-if="scope.row.licensepllatecolor==5">绿色</span>
         </template>
       </el-table-column>
       <el-table-column label="订单编号" align="center" prop="ordernumber" />
       <el-table-column label="订单状态" align="center" prop="orderstate">
         <template scope="scope">
-          <span style="color: green" v-if="scope.row.orderstate==1">已支付</span>
-          <span style="color: red" v-else-if="scope.row.orderstate==0">未支付</span>
-          <span style="color: red" v-else-if="scope.row.orderstate==2">订单进行中</span>
+          <span style="color: green" v-if="scope.row.orderstate==1">已完成</span>
+          <span style="color: red" v-else-if="scope.row.orderstate==0">进行中</span>
+          <span style="color: red" v-else-if="scope.row.orderstate==2">订单支付中</span>
         </template>
       </el-table-column>
-      <el-table-column label="支付状态" align="center" prop="paystate" >
+      <el-table-column label="停车状态" align="center" prop="paystate" >
         <template scope="scope">
-          <span style="color: red"   v-if="scope.row.paystate==0">未支付</span>
-          <span style="color: green" v-else-if="scope.row.paystate==1">已支付</span>
+          <span style="color: red"   v-if="scope.row.paystate==0">进行中</span>
+          <span style="color: green" v-else-if="scope.row.paystate==1">已出场</span>
           <span style="color: red"   v-else-if="scope.row.paystate==2">超时补费</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="逃费车辆" align="center" prop="flee" >
+        <template scope="scope">
+          <span style="color: green"   v-if="scope.row.flee==0">否</span>
+          <span style="color: red" v-else-if="scope.row.flee==1">是</span>
         </template>
       </el-table-column>
       <el-table-column label="应付金额" align="center" prop="amountpayable" />
       <el-table-column label="优惠金额" align="center" prop="discountamount" />
       <el-table-column label="实付金额" align="center" prop="money" />
+      <el-table-column label="超时补费金额" align="center" prop="supplementaryfee" />
+      <el-table-column label="交易单号" align="center" prop="wxorder" />
       <el-table-column label="支付方式" align="center" prop="paymentmethod" />
       <el-table-column label="出入口名称" align="center" prop="entranceandexitname" />
-<!--      <el-table-column label="进口照片" align="center" prop="numbertwo">
+      <el-table-column label="进口照片" align="center" prop="numbertwo">
         <template slot-scope="scope">
-          <el-image
+          <el-image v-if="scope.row.numbertwo!=null"
             style="width: 100px; height: 100px"
-            :src="scope.row.numbertwo">
+            :src="scope.row.numbertwo"
+                    :preview-src-list="[scope.row.numbertwo]">
           </el-image>
         </template>
       </el-table-column>
       <el-table-column label="出口照片" align="center" prop="numberthree" >
-          <template slot-scope="scope">
-            <el-image
+          <template slot-scope="scope" >
+            <el-image v-if="scope.row.numberthree!=null"
               style="width: 100px; height: 100px"
               :src="scope.row.numberthree"
-              :preview-src-list="scope.row.numberthree"
+                      :preview-src-list="[scope.row.numberthree]"
             ></el-image>
           </template>
-      </el-table-column>-->
+      </el-table-column>
       <el-table-column label="支付时间" align="center" prop="payTime" >
-        <template slot-scope="scope">
+<!--        <template slot-scope="scope">
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
-        </template>
+        </template>-->
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -163,7 +198,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['parking:record:edit']"
-          >修改</el-button>
+          >操作</el-button>
           <el-button
             size="mini"
             type="text"
@@ -223,15 +258,15 @@
         </el-form-item>
         <el-form-item label="订单状态" prop="orderstate">
           <template>
-            <el-radio v-model="form.orderstate" label="0">未支付</el-radio>
-            <el-radio v-model="form.orderstate" label="1">已支付</el-radio>
-            <el-radio v-model="form.orderstate" label="2">进行中</el-radio>
+            <el-radio v-model="form.orderstate" label="0">进行中</el-radio>
+            <el-radio v-model="form.orderstate" label="1">已完成</el-radio>
+            <el-radio v-model="form.orderstate" label="2">订单支付中</el-radio>
           </template>
         </el-form-item>
-        <el-form-item label="支付状态" prop="paystate">
+        <el-form-item label="停车状态" prop="paystate">
           <template>
-            <el-radio v-model="form.paystate" label="0">未支付</el-radio>
-            <el-radio v-model="form.paystate" label="1">已支付</el-radio>
+            <el-radio v-model="form.paystate" label="0">进行中</el-radio>
+            <el-radio v-model="form.paystate" label="1">已出场</el-radio>
             <el-radio v-model="form.paystate" label="2">超时补费</el-radio>
           </template>
         </el-form-item>
@@ -241,6 +276,10 @@
         <el-form-item label="出入口名称" prop="entranceandexitname">
           <el-input v-model="form.entranceandexitname" placeholder="请输入出入口名称" />
         </el-form-item>
+        <el-form-item label="交易单号" prop="wxorder">
+          <el-input v-model="form.wxorder" placeholder="" />
+        </el-form-item>
+
         <el-form-item label="支付时间" prop="payTime">
           <el-date-picker clearable
                           v-model="form.payTime"
@@ -261,22 +300,53 @@
 </template>
 
 <script>
-import { listRecord, getRecord, delRecord, addRecord, updateRecord } from "@/api/parking/record";
+import { listRecord, getRecord1, delRecord, addRecord, updateRecord } from "@/api/parking/record";
 import {getarkinglotinformations} from "@/api/system/user";
 
 export default {
   name: "Record",
   data() {
     return {
-      paystates:[{
+      paymentmethods:[{
+        id: '农信',
+        name: '农信'
+      }, {
+        id: '微信',
+        name: '微信'
+      }, {
+        id: '支付宝',
+        name: '支付宝'
+      }, {
+        id: '免费',
+        name: '免费'
+      }, {
+        id: '优惠卷（次卷）',
+        name: '优惠卷（次卷）'
+      }, {
+        id: '白名单',
+        name: '白名单'
+      }],
+      count:null,
+      srcList: [
+        'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+        'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+      ],
+      flees:[{
         id: '0',
-        name: '未支付'
+        name: '否'
       }, {
         id: '1',
-        name: '已支付'
+        name: '是'
+      }],
+      paystates:[{
+        id: '0',
+        name: '进行中'
+      }, {
+        id: '1',
+        name: '已出场'
       }, {
         id: '2',
-        name: '订单进行中'
+        name: '超时补费'
       }],
       parkinglotinformations:[],
       // 遮罩层
@@ -299,6 +369,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        paymentmethod:null,
         pageNum: 1,
         pageSize: 10,
         license: null,
@@ -313,7 +384,10 @@ export default {
         entranceandexitname: null,
         payTime: null,
         numbertwo: null,
-        numberthree: null
+        numberthree: null,
+        flee:null,
+        starttime:null,
+        endtime:null
       },
       // 表单参数
       form: {},
@@ -340,9 +414,15 @@ export default {
       this.loading = true;
       this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       listRecord(this.queryParams).then(response => {
-        this.recordList = response.rows;
+        this.recordList = response.dataTable.rows;
+        this.total = response.dataTable.total;
+        if (response.count!=null){
+          this.count=response.count
+        }else {
+          this.count=0
+        }
 
-        this.total = response.total;
+
         this.loading = false;
       });
     },
@@ -397,7 +477,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getRecord(id).then(response => {
+      getRecord1(id).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改停车记录";

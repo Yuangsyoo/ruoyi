@@ -154,8 +154,7 @@ public class ParkingLotInformation extends BaseEntity
     @Excel(name = "剩余车位")
     private Long remainingParkingSpace;
 
-    @Excel(name = "免费时常")
-    private Long freetime;
+
 
     /** 备用字段4 */
     @Excel(name = "备用字段4")
@@ -163,5 +162,6 @@ public class ParkingLotInformation extends BaseEntity
     /** 备用字段4 */
     @Excel(name = "备用字段4")
     private String onSiteQRCode;
+
 
 }

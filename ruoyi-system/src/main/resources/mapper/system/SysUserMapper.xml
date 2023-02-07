@@ -27,6 +27,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<id property="id" column="pid"></id>
 			<result property="name" column="pname"></result>
 		</association>
+		<association property="parkingLotEquipment" javaType="com.ruoyi.common.core.domain.entity.ParkingLotEquipment">
+			<id property="id" column="eid"></id>
+			<result property="name" column="ename"></result>
+		</association>
 		<association property="sysRole" javaType="com.ruoyi.common.core.domain.entity.SysRole">
 			<id property="roleId" column="rid"></id>
 			<result property="roleName" column="rname"></result>
@@ -54,10 +58,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select * from sys_user where parkinglotinformationId=#{parkinglotinformationId}
 	</select>
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult" >
-		select u.*,p.id pid,p.name pname,r.role_id rid,r.role_name rname from sys_user u
+		select u.*,p.id pid,p.name pname,r.role_id rid,r.role_name rname,e.id eid ,e.name ename from sys_user u
 		    left join parking_lot_information p on u.parkinglotinformationId=p.id
 			left join sys_user_role s on u.user_id=s.user_id
 			left join sys_role r on s.role_id=r.role_id
+			left join parking_lot_equipment e on u.phonenumber=e.id
 		where u.del_flag = '0'
 		<if test="parkinglotinformationId != null and parkinglotinformationId != 0  ">
 			AND u.parkinglotinformationId = #{parkinglotinformationId}
@@ -219,6 +224,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  	</delete>
 	<!--SysUser getUserByName(String name);-->
 	<select id="getUserByName" resultMap="SysUserResult">
-		select parkinglotinformationId from sys_user where user_name=#{name}
+		select parkinglotinformationId,phonenumber from sys_user where user_name=#{name}
 	</select>
 </mapper> 

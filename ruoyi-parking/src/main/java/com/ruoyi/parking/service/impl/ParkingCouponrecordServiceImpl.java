@@ -112,12 +112,6 @@ public class ParkingCouponrecordServiceImpl implements IParkingCouponrecordServi
         if (parkingCoupon.getCount()==parkingCoupon.getReceiveccount()){
             return AjaxResult.error("优惠卷领取数量不足");
         }
-       ParkingCouponrecord Couponrecord=parkingCouponrecordMapper.findParkingCouponrecord(parkingLotInformationId,parkingCouponId,license);
-        if (Couponrecord!=null){
-            return AjaxResult.error("该优惠还有未使用优惠卷，请勿重复领取");
-        }
-
-
         //修改优惠卷领取数量
         parkingCoupon.setReceiveccount(parkingCoupon.getReceiveccount()+1);
         parkingCouponService.updateParkingCoupon(parkingCoupon);

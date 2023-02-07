@@ -43,7 +43,9 @@
               <template slot-scope="scope">
                 <el-image
                   style="width: 200px; height: 200px"
-                  :src="scope.row.numbertwo">
+                  :src="scope.row.numbertwo"
+                  :preview-src-list="[scope.row.numbertwo]"
+                >
                 </el-image>
               </template>
             </el-table-column>
@@ -52,7 +54,7 @@
                   <el-image
                     style="width: 200px; height: 200px"
                     :src="scope.row.numberthree"
-                    :preview-src-list="scope.row.numberthree"
+                    :preview-src-list="[scope.row.numberthree]"
                   ></el-image>
                 </template>
             </el-table-column>
@@ -109,14 +111,14 @@
                       size="mini"
                       type="text"
                       icon="el-icon-edit"
-                      @click="handleUpdate(scope.row)"
+                      @click="handleUpdate1(scope.row)"
                       v-hasPermi="['parking:record:edit']"
                     >现金</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
-            @click="updateToRecordFromCoupon(scope.row)"
+            @click="updateToRecordFromCoupon1(scope.row)"
           >优惠卷</el-button>
         </template>
       </el-table-column>
@@ -128,13 +130,17 @@
 <script>
 import {
   listRecord,
+  listRecord1,
   getRecord,
   getPayRecord,
+  getPayRecord1,
   delRecord,
   addRecord,
   updateRecord,
   updateToRecord,
-  updateToRecordFromCoupon
+  updateToRecordFromCoupon,
+  updateToRecord1,
+  updateToRecordFromCoupon1
 } from "@/api/parking/record";
 import {getarkinglotinformations} from "@/api/system/user";
 
@@ -185,7 +191,8 @@ export default {
         entranceandexitname: null,
         payTime: null,
         numbertwo: null,
-        numberthree: null
+        numberthree: null,
+        parkingeqid:null
       },
       // 表单参数
       form: {},
@@ -202,9 +209,9 @@ export default {
     // 初始化websocket
     this.initWebSocket();
 
-    this.getPayRecord(localStorage.getItem("uu"));
+   //this.getPayRecord(localStorage.getItem("uu"));
     this.setInterval1();
-
+    this.getPayRecord1();
   },
   destroyed() {
     //销毁
@@ -212,7 +219,13 @@ export default {
   },
 
   methods: {
-
+    //查询前10条信息
+    getList(){
+      this.queryParams.parkinglotinformationid= localStorage.getItem("uu")
+      listRecord1(this.queryParams).then(res=>{
+        this.count=res.data.rows
+      })
+    },
     setInterval1(){
        setInterval(()=>{
          console.log(1)
@@ -223,7 +236,7 @@ export default {
       this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       this.queryParams.orderstate=2
       listRecord(this.queryParams).then(res=>{
-        this.tableData=res.rows
+        this.tableData=res.dataTable.rows
       })
     },
 
@@ -231,13 +244,16 @@ export default {
 
       //建立websocket连接
       if ("WebSocket" in window){
-        //连接服务端访问的url
-        let ws ="ws://203.25.215.64:7399/websocket/"+localStorage.getItem("name")
-        this.websock = new WebSocket(ws);
-        this.websock.onopen = this.websocketonopen;
-        this.websock.onerror = this.websocketonerror;
-        this.websock.onmessage = this.websocketonmessage;
-        this.websock.onclose = this.websocketclose;
+        if (localStorage.getItem("aa")!=null){
+          //连接服务端访问的url203.25.215.64
+          let ws ="ws://203.25.215.64:7399/websocket/"+localStorage.getItem("aa")
+          this.websock = new WebSocket(ws);
+          this.websock.onopen = this.websocketonopen;
+          this.websock.onerror = this.websocketonerror;
+          this.websock.onmessage = this.websocketonmessage;
+          this.websock.onclose = this.websocketclose;
+        }
+
       }
     },
     //重新连接
@@ -296,7 +312,7 @@ export default {
       this.reconnect();
     },
     websocketonmessage: function (e) {//JSON.parse(e.data); //这个是收到后端主动推送的值
-      console.log("服务端消息的内容",e.data)
+      console.log("服务端消息的内容111",e.data)
       if (e){
         let parse = JSON.parse(e.data) //将json字符串转为对象
         this.recordList=parse
@@ -367,8 +383,14 @@ export default {
       })
     },
     /** 查询停车记录列表 */
-    getPayRecord(id){
-      getPayRecord(id).then(res=>{
+    getPayRecord1(){
+      getPayRecord1(localStorage.getItem("uu"),localStorage.getItem("aa")).then(res=>{
+
+        this.recordList=res.data;
+      })
+    },
+    getPayRecord(){
+      getPayRecord(localStorage.getItem("uu")).then(res=>{
 
         this.recordList=res.data;
       })
@@ -403,10 +425,26 @@ export default {
         this.getPayRecord(localStorage.getItem("uu"));
       })
     },
+    /**现金按钮操作 */
+    handleUpdate1(row) {
+      console.log(row.id)
+      updateToRecord1(row.id).then(res=>{
+        this.recordList=this.getPayRecordOrder();
+        this.getPayRecord(localStorage.getItem("uu"));
+      })
+    },
     /** 优惠卷按钮 */
     updateToRecordFromCoupon(row) {
       console.log(row.id)
       updateToRecordFromCoupon(row.id).then(res=>{
+        this.getPayRecord(localStorage.getItem("uu"));
+        this.recordList=this.getPayRecordOrder();
+      })
+    },
+    /** 优惠卷按钮 */
+    updateToRecordFromCoupon1(row) {
+      console.log(row.id)
+      updateToRecordFromCoupon1(row.id).then(res=>{
         this.getPayRecord(localStorage.getItem("uu"));
         this.recordList=this.getPayRecordOrder();
       })

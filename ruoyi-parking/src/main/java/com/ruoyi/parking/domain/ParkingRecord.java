@@ -97,5 +97,19 @@ public class ParkingRecord extends BaseEntity
     private  String paymentmethod;
     private ParkingLotInformation parkingLotInformation;
     private String openid;
+    /** 是否是室内支付 */
+    private String indoorPayment;
+    //最近离场停车设备id
+    private Long parkinglotequipmentid;
+    //是否逃费
+    private Long flee;
+    //超时补费
+    private Long  supplementaryfee;
 
+    private String wxorder;
+
+    private Date starttime;
+    private Date endtime;
+    //最近离场停车设备id
+    private Long parkingeqid;
 }

@@ -46,7 +46,7 @@ public interface IParkingLotInformationService
      * @return 结果
      */
     public int updateParkingLotInformation(ParkingLotInformation parkingLotInformation);
-
+    public int updateParkingLotInformation1(ParkingLotInformation parkingLotInformation);
     /**
      * 批量删除停车场管理
      * 
@@ -68,4 +68,7 @@ public interface IParkingLotInformationService
     AjaxResult getParkingLots(Long id);
     // 查询所有不同的停车场停的车辆数
     public AjaxResult getNumberOfCarParks(Long id);
+
+    List<ParkingLotInformation> selectParkingLotInformationListOne();
+
 }

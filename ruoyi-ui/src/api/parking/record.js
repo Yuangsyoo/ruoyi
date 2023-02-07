@@ -8,15 +8,28 @@ export function listRecord(query) {
     params: query
   })
 }
-
+// 查询停车记录列表
+export function listRecord1(query) {
+  return request({
+    url: '/parking/record/list1',
+    method: 'get',
+    params: query
+  })
+}
 // 查询停车记录详细
 export function getRecord(id) {
   return request({
-    url: '/parking/record/' + id,
+    url: '/parking/record' + id,
     method: 'get'
   })
 }
-
+// 查询停车记录详细
+export function getRecord1(id) {
+  return request({
+    url: '/parking/record/moneyOne/' + id,
+    method: 'get'
+  })
+}
 // 新增停车记录
 export function addRecord(data) {
   return request({
@@ -49,6 +62,13 @@ export function getPayRecord(id) {
     method: 'get'
   })
 }
+export function getPayRecord1(id,id1) {
+  return request({
+    url: '/parking/record/getPayRecord1?parkingLotInformationId='+id+"&parkingeqid="+id1,
+    method: 'get',
+
+  })
+}
 //修改停车记录（现金）
 export function updateToRecord(id) {
   return request({
@@ -56,10 +76,25 @@ export function updateToRecord(id) {
     method: 'get',
   })
 }
+//修改停车记录（现金）
+export function updateToRecord1(id) {
+  return request({
+    url: '/parking/record/updateToRecordOne/'+id,
+    method: 'get',
+  })
+}
 //修改停车记录(优惠卷)
 export function updateToRecordFromCoupon(id) {
   return request({
     url: '/parking/record/updateToRecordFromCoupon/'+id,
+    method: 'get',
+  })
+}
+
+//修改停车记录(优惠卷)
+export function updateToRecordFromCoupon1(id) {
+  return request({
+    url: '/parking/record/updateToRecordFromCouponOne/'+id,
     method: 'get',
   })
 }

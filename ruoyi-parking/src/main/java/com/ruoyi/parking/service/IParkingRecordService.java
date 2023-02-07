@@ -21,7 +21,7 @@ public interface IParkingRecordService
      * @return 停车记录
      */
     public ParkingRecord selectParkingRecordById(Long id);
-
+    public ParkingRecord selectParkingRecordById1(Long id);
     /**
      * 查询停车记录列表
      * 
@@ -82,11 +82,11 @@ public interface IParkingRecordService
 
     AjaxResult noLicensePlate(Long parkinglotequipmentid, String license,String openid);
 
-    void editPayState(Long parkingLotInformationId, String license, Long parkinglotequipmentid,String paymentMethod);
+    AjaxResult editPayState(ParkingRecordVo parkingRecordVo);
 
-    AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String openid);
+    AjaxResult echoInformationToLicense(Long parkinglotequipmentid, String openid,String license);
 
-    AjaxResult indoor(Long parkingLotInformationId, String license);
+    AjaxResult indoor(Long parkingLotInformationId, String license,String openid);
 
 
     AjaxResult indoorCallback(ParkingRecordVo parkingRecordVo);
@@ -96,4 +96,24 @@ public interface IParkingRecordService
     AjaxResult getDailyInformation(Long id);
 
     ParkingRecord findbypaystateandlicense(Long parkinglotinformationid, String license);
+
+    AjaxResult getByOpend(String openid,Long parkingLotInformationId);
+
+    ParkingRecord todo(Long parkinglotinformationid, String license);
+
+    List<ParkingRecord> findByFlee();
+
+    ParkingRecord findByLicenseAndIndoorPayment(Long parkinglotinformationid,String license1);
+
+    AjaxResult updateToRecordOne(Long id);
+
+    AjaxResult updateToRecordFromCouponOne(Long id);
+
+    AjaxResult editPayStateOne(ParkingRecordVo parkingRecordVo);
+
+    Long selectParkingRecordList1(ParkingRecord parkingRecord);
+
+    List<ParkingRecord> selectParkingRecordListOne(Long parkinglotinformationid);
+
+    List<ParkingRecord> getPayRecord1(ParkingRecord parkingRecord);
 }

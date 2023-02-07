@@ -129,11 +129,6 @@ public class SysUserController extends BaseController
         {
             return error("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
         }
-        else if (StringUtils.isNotEmpty(user.getPhonenumber())
-                && UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
-        {
-            return error("新增用户'" + user.getUserName() + "'失败，手机号码已存在");
-        }
         else if (StringUtils.isNotEmpty(user.getEmail())
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
         {
@@ -158,11 +153,7 @@ public class SysUserController extends BaseController
         {
             return error("修改用户'" + user.getUserName() + "'失败，登录账号已存在");
         }
-        else if (StringUtils.isNotEmpty(user.getPhonenumber())
-                && UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
-        {
-            return error("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
-        }
+
         else if (StringUtils.isNotEmpty(user.getEmail())
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
         {
@@ -261,7 +252,7 @@ public class SysUserController extends BaseController
     {
         try {
             SysUser user=userService.getUserByName(name);
-            return AjaxResult.success(user.getParkinglotinformationId());
+            return AjaxResult.success(user);
         } catch (Exception e) {
             return AjaxResult.success();
         }

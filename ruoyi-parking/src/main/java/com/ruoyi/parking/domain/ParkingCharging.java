@@ -40,16 +40,55 @@ public class ParkingCharging extends BaseEntity
     /** 停车场id */
     @Excel(name = "停车场id")
     private Long parkinglotinformationid;
-
+    @Excel(name = "免费时常")
+    private Long freetime;
     /** 类型 */
     @Excel(name = "类型")
     private Long type;
+
+    private int freeTimeState;
+    //是否重复收取起步价
+    private int startingpriceState;
     private ParkingLotInformation parkingLotInformation;
+    //区分是普通计费 还是充值车计费
+    private Long distinguish;
+
+    public Long getFreetime() {
+        return freetime;
+    }
+
+    public void setFreetime(Long freetime) {
+        this.freetime = freetime;
+    }
 
     /** 计费时间段信息 */
     private List<ParkingBillingPeriod> parkingBillingPeriodList;
 
-    public void setId(Long id) 
+    public Long getDistinguish() {
+        return distinguish;
+    }
+
+    public void setDistinguish(Long distinguish) {
+        this.distinguish = distinguish;
+    }
+
+    public int getStartingpriceState() {
+        return startingpriceState;
+    }
+
+    public void setStartingpriceState(int startingpriceState) {
+        this.startingpriceState = startingpriceState;
+    }
+
+    public int getFreeTimeState() {
+        return freeTimeState;
+    }
+
+    public void setFreeTimeState(int freeTimeState) {
+        this.freeTimeState = freeTimeState;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

@@ -54,7 +54,7 @@ public class Compress {
     public static String resizeImageTo40K(String base64Img) {
         try {
             BufferedImage src = base64String2BufferedImage(base64Img);
-            BufferedImage output = Thumbnails.of(src).size(src.getWidth()/6, src.getHeight()/6).asBufferedImage();
+            BufferedImage output = Thumbnails.of(src).size(src.getWidth()/4, src.getHeight()/4).asBufferedImage();
             String base64 = imageToBase64(output);
             if (base64.length() - base64.length() / 8 * 2 > 40000) {
                 output = Thumbnails.of(output).scale(1/(base64.length()/40000)).asBufferedImage();

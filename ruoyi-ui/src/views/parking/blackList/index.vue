@@ -102,12 +102,8 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="id" />
       <el-table-column label="停车场" align="center" prop="parkingLotInformation.name" />
-      <el-table-column label="车牌号" align="center" prop="license" />
-      <el-table-column label="添加时间" align="center" prop="time" width="180">
-<!--        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
-        </template>-->
-      </el-table-column>
+      <el-table-column label="车牌号" align="center"  prop="license" />
+      <el-table-column label="添加时间" align="center" prop="time" width="180"/>
       <el-table-column label="车主姓名" align="center" prop="name" />
       <el-table-column label="电话" align="center" prop="phone" />
       <el-table-column label="地址" align="center" prop="address" />

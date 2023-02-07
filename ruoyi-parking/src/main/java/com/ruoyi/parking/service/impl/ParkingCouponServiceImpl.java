@@ -1,7 +1,5 @@
 package com.ruoyi.parking.service.impl;
-
 import java.util.List;
-
 import com.ruoyi.common.exception.GlobalException;
 import com.ruoyi.common.utils.QRCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,9 +63,9 @@ public class ParkingCouponServiceImpl implements IParkingCouponService
 
             Long parkinglotinformationid = parkingCoupon.getParkinglotinformationid();
             Long parkingCouponId = parkingCoupon.getId();
-            //    http://192.168.63.125/ui/institution/pageQueryForAssign?name='xxx'&sex='男'
-            String text="https://www.baidu.com";//待修改
-            String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
+         String a= "http://tct.ycwl.work/#/pages/stopCar/couponsCar?parkinglotinformationid="+parkinglotinformationid+"&parkingCouponId="+parkingCouponId+"";
+
+            String s = QRCodeGenerator.generateQRCodeImage(a, 360, 360);
             parkingCoupon.setQrcode(s);
             updateParkingCoupon(parkingCoupon);
             return i;

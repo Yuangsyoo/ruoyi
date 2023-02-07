@@ -1,6 +1,4 @@
 package com.ruoyi.web.controller.parking;
-
-import java.math.BigDecimal;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,7 +44,6 @@ public class ParkingChargingController extends BaseController
         List<ParkingCharging> list = parkingChargingService.selectParkingChargingList(parkingCharging);
         return getDataTable(list);
     }
-
     /**
      * 导出计费规则列表
      */
@@ -59,50 +56,39 @@ public class ParkingChargingController extends BaseController
         ExcelUtil<ParkingCharging> util = new ExcelUtil<ParkingCharging>(ParkingCharging.class);
         util.exportExcel(response, list, "计费规则数据");
     }
-
     /**
      * 获取计费规则详细信息
      */
     @PreAuthorize("@ss.hasPermi('parking:charging:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(parkingChargingService.selectParkingChargingById(id));
     }
-
     /**
      * 新增计费规则
      */
     @PreAuthorize("@ss.hasPermi('parking:charging:add')")
     @Log(title = "计费规则", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody ParkingCharging parkingCharging)
-    {
+    public AjaxResult add(@RequestBody ParkingCharging parkingCharging) {
         return toAjax(parkingChargingService.insertParkingCharging(parkingCharging));
     }
-
     /**
      * 修改计费规则
      */
     @PreAuthorize("@ss.hasPermi('parking:charging:edit')")
     @Log(title = "计费规则", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody ParkingCharging parkingCharging)
-    {
+    public AjaxResult edit(@RequestBody ParkingCharging parkingCharging) {
         return toAjax(parkingChargingService.updateParkingCharging(parkingCharging));
     }
-
     /**
      * 删除计费规则
      */
     @PreAuthorize("@ss.hasPermi('parking:charging:remove')")
     @Log(title = "计费规则", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    public AjaxResult remove(@PathVariable Long[] ids){
         return toAjax(parkingChargingService.deleteParkingChargingByIds(ids));
     }
-
-
-
 }

@@ -2,6 +2,7 @@ package com.ruoyi.parking.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

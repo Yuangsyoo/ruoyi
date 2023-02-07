@@ -97,7 +97,7 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
         int i = parkingLotInformationMapper.insertParkingLotInformation(parkingLotInformation);
         try {
         Long id = parkingLotInformation.getId();
-        String text= "https://www.baidu.com/?parkinglotinformationid="+id+"";
+        String text= "http://tct.ycwl.work?parkinglotinformationid="+id+"";
             String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
             //场内二维码
             parkingLotInformation.setOnSiteQRCode(s);
@@ -145,6 +145,23 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
     @Override
     public int updateParkingLotInformation(ParkingLotInformation parkingLotInformation)
     {
+
+
+        return parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+    }
+    @Override
+    public int updateParkingLotInformation1(ParkingLotInformation parkingLotInformation)
+    {
+        Long id = parkingLotInformation.getId();
+        ParkingLotInformation parkingLotInformation1 = selectParkingLotInformationById(id);
+        //原车位数
+        Long number = parkingLotInformation1.getNumber();
+        //原剩余车位数
+        Long remainingParkingSpace = parkingLotInformation1.getRemainingParkingSpace();
+        //停车场内停车数量
+        long l = number - remainingParkingSpace;
+        parkingLotInformation.setRemainingParkingSpace(parkingLotInformation.getNumber()-l);
+
         return parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
     }
 
@@ -230,5 +247,10 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
                 numberOfCarParksVo.getName().add(name);
             }
             return AjaxResult.success(numberOfCarParksVo);
+    }
+
+    @Override
+    public List<ParkingLotInformation> selectParkingLotInformationListOne() {
+        return parkingLotInformationMapper.selectParkingLotInformationListOne();
     }
 }

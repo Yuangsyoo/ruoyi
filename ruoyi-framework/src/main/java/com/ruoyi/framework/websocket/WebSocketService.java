@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 //ServerEncoder 是为了解决编码异常，如果不需要使用sendObject()方法，这个可以忽略，只写value即可
-@ServerEndpoint(value = "/websocket/{userName}",encoders = {ServerEncoder.class})
+@ServerEndpoint(value = "/websocket/{parkinglotequipmentid}",encoders = {ServerEncoder.class})
 @Component
 public class WebSocketService {
     @Autowired
@@ -42,18 +42,18 @@ public class WebSocketService {
     /**与某个客户端的连接会话，需要通过它来给客户端发送数据*/
     private Session session;
     /**接收userName 用来区别不同的用户*/
-    private String userName="";
+    private String parkinglotequipmentid="";
     /**
      * 连接建立成功调用的方法 可根据自己的业务需求做不同的处理*/
     @OnOpen
-    public void onOpen(Session session, @PathParam("userName") String userName) {
+    public void onOpen(Session session, @PathParam("parkinglotequipmentid") String userName) {
 
         if(!webSocketMap.containsKey(userName))
         {
             addOnlineCount(); // 在线数 +1
         }
         this.session = session;
-        this.userName= userName;
+        this.parkinglotequipmentid= parkinglotequipmentid;
         WebSocketClient client = new WebSocketClient();
         client.setSession(session);
         client.setUri(session.getRequestURI().toString());
@@ -66,15 +66,15 @@ public class WebSocketService {
      */
     @OnClose
     public void onClose() {
-        if(webSocketMap.containsKey(userName)){
-            webSocketMap.remove(userName);
+        if(webSocketMap.containsKey(parkinglotequipmentid)){
+            webSocketMap.remove(parkinglotequipmentid);
             if(webSocketMap.size()>0)
             {
                 //从set中删除
                 subOnlineCount();
             }
         }
-        log.info(userName+"用户退出,当前在线人数为:" + getOnlineCount());
+        log.info(parkinglotequipmentid+"用户退出,当前在线人数为:" + getOnlineCount());
     }
 
     /**
@@ -83,7 +83,7 @@ public class WebSocketService {
      * @param message 客户端发送过来的消息*/
     @OnMessage
     public void onMessage(String message, Session session) {
-        log.info("收到用户消息:"+userName+",报文:"+message);
+        log.info("收到用户消息:"+parkinglotequipmentid+",报文:"+message);
     }
 
     /**
@@ -93,7 +93,7 @@ public class WebSocketService {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("用户错误:"+this.userName+",原因:"+error.getMessage());
+        log.error("用户错误:"+this.parkinglotequipmentid+",原因:"+error.getMessage());
 
         error.printStackTrace();
     }
@@ -154,11 +154,11 @@ public class WebSocketService {
     }
 
     public String getUserName() {
-        return userName;
+        return parkinglotequipmentid;
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.parkinglotequipmentid = userName;
     }
 
 

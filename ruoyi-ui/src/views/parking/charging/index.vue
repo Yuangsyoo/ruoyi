@@ -109,23 +109,38 @@
           </template>
         </el-form-item>
 
-        <el-form-item label="起步价" prop="startingprice">
+        <el-form-item  label="起步价" prop="startingprice">
           <el-input v-model="form.startingprice"  placeholder=""/>元
         </el-form-item>
-        <el-form-item  label="起步价时长" prop="startingpriceduration">
+        <el-form-item label="起步价时长" prop="startingpriceduration">
           <el-input v-model="form.startingpriceduration" placeholder="请输入起步价时长" />分钟
           <div style="color:#F00">注意: 必须是60的倍数，最大不超过1440分钟</div>
         </el-form-item>
-        <el-form-item label="每超过1小时加收" prop="increaseincome">
+        <el-form-item  label="免费时常" prop="freetime">
+          <el-input v-model="form.freetime"  placeholder=""/>分钟
+        </el-form-item>
+        <el-form-item  label="每超过1小时加收" prop="increaseincome">
           <el-input v-model="form.increaseincome" placeholder="请输入每超过1小时加收" />元
         </el-form-item>
-        <el-form-item v-if="this.form.type!=1" label="单日收费上限" prop="superiorlimit">
-          <el-input v-model="form.superiorlimit" placeholder="请输入单日收费上限" />元
+        <el-form-item v-if="this.form.type!=1 && this.form.type!=2" label="24小时收费上限" prop="superiorlimit">
+          <el-input v-model="form.superiorlimit" placeholder="请输入24小时收费上限" />元
         </el-form-item>
         <div v-show="this.form.type!=0 ">
           <el-divider content-position="center">计费时间段信息</el-divider>
         </div>
+        <el-form-item  v-show="this.form.type==1 " label="是否重复计算免费时长" prop="freeTimeState">
+          <template>
+            <el-radio v-model="form.freeTimeState" :label="0">重复计算</el-radio>
+            <el-radio v-model="form.freeTimeState" :label="1">不重复计算</el-radio>
+          </template>
+        </el-form-item>
 
+        <el-form-item  v-show="false " label="是否重复收取起步价" prop="startingpriceState">
+          <template>
+            <el-radio v-model="form.startingpriceState" :label="0">重复计算</el-radio>
+            <el-radio v-model="form.startingpriceState" :label="1">不重复计算</el-radio>
+          </template>
+        </el-form-item>
         <el-row :gutter="10" class="mb8"v-if="this.form.type!=0" >
           <el-col :span="1.5" >
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddParkingBillingPeriod">添加</el-button>
@@ -183,14 +198,7 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column  v-if="this.form.type==3" label="是否重复收取起步价" prop="repea" width="150">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.repea" placeholder="">
-                <el-option label="重复收取起步价" value="0" />
-                <el-option label="不重复收取" value="1" />
-              </el-select>
-            </template>
-          </el-table-column>
+
         </el-table>
         <span v-if="this.form.type==0">
           <div style="color:#F00" >注意正确的时间格式 例:07:00:00，时间段从低到高。最多可添加24个时间段,时段计费优先其他计费</div>
@@ -258,7 +266,8 @@ export default {
         increaseincome: null,
         superiorlimit: null,
         parkinglotinformationid: null,
-        type: null
+        type: null,
+        distinguish:null
       },
       // 表单参数
       form: {},
@@ -296,6 +305,7 @@ export default {
     getList() {
       this.loading = true;
       this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
+      this.queryParams.distinguish=0
       listCharging(this.queryParams).then(response => {
         this.chargingList = response.rows;
         this.total = response.total;
@@ -368,6 +378,8 @@ export default {
               this.getList();
             });
           } else {
+            //0代表普通计费规则
+            this.form.distinguish=0;
             addCharging(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

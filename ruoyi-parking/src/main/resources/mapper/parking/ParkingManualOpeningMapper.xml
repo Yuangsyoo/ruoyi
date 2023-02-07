@@ -15,7 +15,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <id property="id" column="iid"></id>
             <result property="name" column="iname"></result>
         </association>
-        <association property="parkingLotEquipment" javaType="com.ruoyi.parking.domain.ParkingLotEquipment">
+        <association property="parkingLotEquipment" javaType="com.ruoyi.common.core.domain.entity.ParkingLotEquipment">
             <id property="id" column="eid"></id>
             <result property="name" column="ename"></result>
         </association>

@@ -118,7 +118,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                         ,"/api/pushMessage/**"
                         ,"/websocket/**"
                         ,"/parking/getPayRecord/**"
-                        ,"/parking/coupon/add"
                         ,"/parking/record/editPayState/**"
                         ,"/parking/record/noLicensePlate/**"
                         ,"/parking/record/echoInformation/**"
@@ -127,7 +126,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                         ,"/parking/record/indoorCallback"
                         ,"/parking/information/getMerchantNumber/**"
                         ,"/parking/equipment/**"
-
+                        ,"/parking/record/getByOpend"
+                        ,"/parking/record/obtain"
+                        ,"parking/couponrecord/add"
+                        ,"/parking/information/getInfoOne"
                        
                 ).permitAll()
                 // 静态资源，可匿名访问

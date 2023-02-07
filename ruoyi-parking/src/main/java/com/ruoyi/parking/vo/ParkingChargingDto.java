@@ -21,4 +21,6 @@ public class ParkingChargingDto {
     private Date startTime;
     private Date endTime;
     private String license;
+    private Long distinguish;
+
 }

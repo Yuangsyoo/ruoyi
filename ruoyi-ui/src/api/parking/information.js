@@ -34,7 +34,14 @@ export function updateInformation(data) {
     data: data
   })
 }
-
+// 修改停车场管理
+export function updateInformation1(data) {
+  return request({
+    url: '/parking/information/edit1',
+    method: 'put',
+    data: data
+  })
+}
 // 删除停车场管理
 export function delInformation(id) {
   return request({

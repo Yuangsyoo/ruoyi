@@ -19,6 +19,7 @@ import com.ruoyi.parking.service.IParkingCouponService;
 import com.ruoyi.parking.service.IParkingCouponrecordService;
 import com.ruoyi.parking.service.IParkingLotInformationService;
 import com.ruoyi.parking.vo.ResultVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import com.ruoyi.parking.service.IParkingChargingService;
  * @author ruoyi
  * @date 2022-12-19
  */
+@Slf4j
 @Service
 public class ParkingChargingServiceImpl implements IParkingChargingService 
 {
@@ -80,18 +82,18 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
     @Transactional
     @Override
     public int insertParkingCharging(ParkingCharging parkingCharging) {
-        ParkingCharging parkingCharging1=findByParkinglotinformationid(parkingCharging.getParkinglotinformationid());
+        ParkingCharging parkingCharging1=findByParkinglotinformationid(parkingCharging.getParkinglotinformationid(),parkingCharging.getDistinguish());
         if (parkingCharging1!=null){
             throw  new RuntimeException("停车场已添加计费规则,请勿重复添加");
         }
-        parkingCharging.setStartingpriceduration(60L);
+        //parkingCharging.setStartingpriceduration(60L);
         int rows = parkingChargingMapper.insertParkingCharging(parkingCharging);
         insertParkingBillingPeriod(parkingCharging);
         return rows;
     }
 
-    private ParkingCharging findByParkinglotinformationid(Long parkinglotinformationid) {
-     return parkingChargingMapper.findByParkinglotinformationid(parkinglotinformationid);
+    private ParkingCharging findByParkinglotinformationid(Long parkinglotinformationid,Long distinguish) {
+     return parkingChargingMapper.findByParkinglotinformationid(parkinglotinformationid,distinguish);
     }
 
     /**
@@ -106,7 +108,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
 
         parkingChargingMapper.deleteParkingBillingPeriodByParkingChargingId(parkingCharging.getId());
         insertParkingBillingPeriod(parkingCharging);
-        parkingCharging.setStartingpriceduration(60L);
+
         return parkingChargingMapper.updateParkingCharging(parkingCharging);
     }
 
@@ -151,7 +153,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         //停车超时几小时
         Long aLong = totalDuration(l);
         //停车场计费规则
-        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(id);
+        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(id,parkingChargingDto.getDistinguish());
         //没超过一小时加收好多
         Long increaseincome = parkingCharging.getIncreaseincome();
         //超时总费用
@@ -200,35 +202,39 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
      */
     public MoneyVo calculatedAmount(ParkingChargingDto parkingChargingDto) {
 
-        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid());
+        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid(),parkingChargingDto.getDistinguish());
         //常规+时段
         if (parkingCharging.getType()==0){
-
-            return ruleOne(parkingChargingDto);
+            MoneyVo moneyVo = ruleOne(parkingChargingDto);
+            log.info("计费规则一 车牌【"+parkingChargingDto.getLicense()+"】支付金额"+moneyVo.getMoney()+"元");
+            return moneyVo;
         }
         //时长叠加
         if (parkingCharging.getType()==1){
-            return MoneyVoTwo(parkingChargingDto);
+            MoneyVo moneyVo = MoneyVoTwo(parkingChargingDto);
+            log.info("计费规则二 车牌【"+parkingChargingDto.getLicense()+"】支付金额"+moneyVo.getMoney()+"元");
+            return moneyVo;
         }
         //分时段不同计费规则
         if (parkingCharging.getType()==2){
-            return ruleThree(parkingChargingDto);
+            MoneyVo moneyVo = ruleThree(parkingChargingDto);
+            log.info("计费规则三 车牌【"+parkingChargingDto.getLicense()+"】支付金额"+moneyVo.getMoney()+"元");
+            return moneyVo;
         }
-
             return null;
     }
-    //计费规则一
+    //计费规则一%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     public MoneyVo ruleOne(ParkingChargingDto parkingChargingDto) {
         Long parkinglotinformationid = parkingChargingDto.getParkinglotinformationid();
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkinglotinformationid);
         //计费规则
-        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid());
+        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid(),parkingChargingDto.getDistinguish());
         List<ParkingBillingPeriod> list = parkingCharging.getParkingBillingPeriodList();
         //查询优惠卷 停车场id,车牌号码，状态为0
         ParkingCouponrecord parkingCouponrecord = parkingCouponrecordService.findByParkingLotInformationIdAndLicenseAndState(parkinglotinformationid, parkingChargingDto.getLicense());
 
         //免费时长
-        Long freetime = parkingLotInformation.getFreetime();
+        Long freetime = parkingCharging.getFreetime();
         //停车时长分钟
         long time = DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime());
         //起步时长（单位分钟）
@@ -250,84 +256,10 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
             return moneyVo;
         }
         //如果有计费时间段
-        if (list.size()>0){
-          /*  if (parkingCouponrecord==null) {
-                //没超过起步时长
-                if (time<=startingpriceduration){
-                    return getMoneyVo(parkingCharging.getStartingprice(),0L,0L,null);
-                }
-                if (aLong<24){
-                    //停车开始时间
-                    Date startTime = parkingChargingDto.getStartTime();
-                    //停车结束时间
-                    Date endTime = parkingChargingDto.getEndTime();
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(startTime);
-                    Calendar instance = Calendar.getInstance();
-                    instance.setTime(endTime);
-                    int i = calendar.get(Calendar.DATE);
-                    int i1 = instance.get(Calendar.DATE);
-                    //判断是哪个时间段上
-                    int start=0;
-                    Long type=null;
-                    int end=0;
-                    Long type1=null;
-                      //同一天
-                      if (i==i1){
-                          //判断在哪个时间段内
-                        for (int b=0;b<list.size();b++){
-                            ParkingBillingPeriod parkingBillingPeriod = list.get(b);
-                            //时间段开始时间
-                            String startime = parkingBillingPeriod.getStartime();
-                            //时间段结束时间
-                            String endtime = parkingBillingPeriod.getEndtime();
-                            //判断是否在时间段内
-                            ResultVo judge = judge(startTime, startime, endtime);
-                            if (judge.getState()){
-                                start=b;
-                                type=judge.getType();
-                                for(int b1 = 0; b1< list.size(); b1++) {
-                                    ParkingBillingPeriod parkingBillingPeriod1 = list.get(b1);
-                                    ResultVo judge1 = judge(endTime, parkingBillingPeriod1.getStartime(), parkingBillingPeriod1.getEndtime());
-                                    if (judge1.getState()){
-                                        end=b1;
-                                        type1=judge1.getType();
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        //如果是同一个时段
-                          if (start==end ){
-                              if (start==0 && type1==0){
-                                  //没在计费时间段内
-                                  MoneyVo moneyVo = addMoneyVo(parkingCharging, startingpriceduration, startingprice, superiorlimit, aLong);
-                                  return moneyVo;
-                              }
-                              //在时段开始时间前
-                              if (type==0){
-                                  //停车结束时间在时段结束时间前
-                                  if (type1==0){
-
-                                  }
-                                  //停车结束时间在时段结束时间后
-                                  if (type1==1){
-
-                                  }
-                              }
-
-                          }
-
-
-
-                      }
-                }
-
-            }*/
-        }
+      /*  if (list.size()>0){
+        }*/
         //如果没有计费时间段
-        if (list.size()==0){
+    /*    if (list.size()==0){*/
 
             //判断停车时长小于等于起步时间 小于等于直接返回起步价
             if (time<=startingpriceduration){
@@ -553,50 +485,27 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
                 return getMoneyVo(l2,l2,0L,null);
             }
 
-        }
+      // }
 
         return new MoneyVo();
     }
-    //计费规则二
-    private MoneyVo MoneyVoTwo(ParkingChargingDto parkingChargingDto) {
-        MoneyVo moneyVo = ruleTwo(parkingChargingDto);
-        //查询优惠卷 停车场id,车牌号码，状态部位1且不为2
-        ParkingCouponrecord parkingCouponrecord = parkingCouponrecordService.findByParkingLotInformationIdAndLicenseAndState(parkingChargingDto.getParkinglotinformationid(), parkingChargingDto.getLicense());
-        if (parkingCouponrecord!=null){
-            //次卷
-            if (parkingCouponrecord.getParkingCoupon().getType()==0){
-                return getMoneyVo(0L,moneyVo.getMoney(),moneyVo.getMoney(),"次卷抵扣");
-            }
-            // 2是金额卷
-            if (parkingCouponrecord.getParkingCoupon().getType()==2){
-                long l =moneyVo.getMoney()- parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue();
-                if(l<=0){
-                    return getMoneyVo(0L,moneyVo.getMoney(),moneyVo.getMoney(),"金额卷抵扣");
-                }
-                //为0就是金额卷抵扣完 不为0就是比如：微信加金额卷
-                return getMoneyVo(l,moneyVo.getMoney(),Long.valueOf(parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue()),"金额卷抵扣");
-            }
-            //小时卷
-            if (parkingCouponrecord.getParkingCoupon().getType()==1){
-                //优惠卷优惠时间
-                long l = parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue()*60;
-                // 起步时长（60倍数）小于优惠时长
-                if (DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime())<=l){
-                    return getMoneyVo(0L,moneyVo.getMoney(),moneyVo.getMoney(),"小时卷抵扣");
-                }
-                else {
-                    Date endTime = parkingChargingDto.getEndTime();
-                    long l1 = endTime.getTime() - l * 60 * 1000;
-                    Date date = new Date(l1);
-                    parkingChargingDto.setEndTime(date);
-                    MoneyVo three1 = ruleTwo(parkingChargingDto);
-                    return getMoneyVo(three1.getMoney(),moneyVo.getMoney(),moneyVo.getMoney()-three1.getMoney(),"小时卷抵扣");
-                }
-            }
+    //计费方式一时长小于24小时 金额
+    private MoneyVo addMoneyVo(ParkingCharging parkingCharging, Long startingpriceduration, Long startingprice, Long superiorlimit, Long aLong) {
+        //减去起步时长
+        long l = aLong - startingpriceduration / 60; //(小时)
+        //加收金额
+        long l1 = parkingCharging.getIncreaseincome() * l;
+        //总金额
+        long l2 = startingprice + l1;
+        //判断单日收费上限
+        if (l2< superiorlimit){
+            return getMoneyVo(l2,l2,0L,null);
+        }else {
+            return getMoneyVo(superiorlimit, superiorlimit,0L,null);
         }
-        return moneyVo;
     }
-    //计费规则三
+
+    //计费规则三%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     private MoneyVo ruleThree(ParkingChargingDto parkingChargingDto) {
         long time = DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime());
         MoneyVo three = Three(parkingChargingDto);
@@ -638,36 +547,15 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         }
         return three;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private MoneyVo Three(ParkingChargingDto parkingChargingDto) {
         Long parkinglotinformationid = parkingChargingDto.getParkinglotinformationid();
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkinglotinformationid);
         //计费规则
-        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid());
+        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid(),parkingChargingDto.getDistinguish());
         List<ParkingBillingPeriod> list = parkingCharging.getParkingBillingPeriodList();
 
         //免费时长
-        Long freetime = parkingLotInformation.getFreetime();
+        Long freetime = parkingCharging.getFreetime();
 
         //停车时长分钟
         long time = DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime());
@@ -716,7 +604,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
                 String endtime = parkingBillingPeriod.getEndtime();
                 Long aLong1 = Long.valueOf(startime.split(":")[0]);
                 Long aLong2 = Long.valueOf(endtime.split(":")[0]);
-                long l = ((aLong2 - aLong1) - parkingBillingPeriod.getStartingtime() / 60) * parkingBillingPeriod.getAddmoney() + parkingBillingPeriod.getStartingprice();
+                long l = ((aLong2 - aLong1) - (parkingBillingPeriod.getStartingtime())/60) * parkingBillingPeriod.getAddmoney() + parkingBillingPeriod.getStartingprice();
                 if (l>=parkingBillingPeriod.getSuperiorlimit()){
                     l=parkingBillingPeriod.getSuperiorlimit();
                 }
@@ -740,16 +628,11 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
 
                 return getMoneyVo(l1+money.getMoney(),l1+money.getMoney(),0L,null);
             }
-
-
-
         }
-
-
+        log.info("规则三出现bug");
         return null;
     }
-
-    //同一天业务逻辑
+    //规则三同一天业务逻辑
     private MoneyVo getMoney(List<ParkingBillingPeriod> list, Long aLong, Date startTime, Date endTime) {
         //判断是哪个时间段上
         int start=0;
@@ -798,6 +681,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
                 //没在计费时间段内
                 return getMoneyVo(0L,0L,0L,"免费");
             }
+
             ParkingBillingPeriod parkingBillingPeriod = list.get(start);
             //时段开始时间
             String startime = parkingBillingPeriod.getStartime();
@@ -1008,7 +892,215 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
 
                 return getMoneyVo(count,count,0L,null);
     }
+    //规则三工具类
+    private ResultVo judge(Date time,String startTime,String endTime) {
+        //需要判断的时间
+        Calendar date = Calendar.getInstance();
+        date.setTime(time);
+        System.out.println(date.getTime());
+        //开始时间
+        Calendar begin = Calendar.getInstance();
+        // begin.add(Calendar.DATE, 1);
+        String[] split = startTime.split(":");
+        System.out.println(split);
+        begin.setTime(time);
+        begin.set(Calendar.HOUR_OF_DAY, Integer.valueOf(split[0]));
 
+        begin.set(Calendar.MINUTE, 0);
+
+        begin.set(Calendar.SECOND, 0);
+
+        begin.set(Calendar.MILLISECOND, 0);
+        Date time1 = begin.getTime();
+        System.out.println(time1);
+
+        //结束时间
+        Calendar end = Calendar.getInstance();
+        end.setTime(time);
+        String[] split1 = endTime.split(":");
+        end.set(Calendar.HOUR_OF_DAY, Integer.valueOf(split1[0]));
+
+        end.set(Calendar.MINUTE, 0);
+
+        end.set(Calendar.SECOND, 0);
+
+        end.set(Calendar.MILLISECOND, 0);
+
+        boolean flag = date.before(begin);
+        if (flag){
+            return new ResultVo(true,0L);
+        }
+        boolean before = date.before(end);
+        if (before){
+            return new ResultVo(true,1L);
+        }
+
+        return new ResultVo(true,2L);
+    }
+
+    //计费规则二&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    private MoneyVo MoneyVoTwo(ParkingChargingDto parkingChargingDto) {
+        MoneyVo moneyVo = ruleTwo(parkingChargingDto);
+        //查询优惠卷 停车场id,车牌号码，状态部位1且不为2
+        ParkingCouponrecord parkingCouponrecord = parkingCouponrecordService.findByParkingLotInformationIdAndLicenseAndState(parkingChargingDto.getParkinglotinformationid(), parkingChargingDto.getLicense());
+        if (parkingCouponrecord!=null){
+            //次卷
+            if (parkingCouponrecord.getParkingCoupon().getType()==0){
+                return getMoneyVo(0L,moneyVo.getMoney(),moneyVo.getMoney(),"次卷抵扣");
+            }
+            // 2是金额卷
+            if (parkingCouponrecord.getParkingCoupon().getType()==2){
+                long l =moneyVo.getMoney()- parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue();
+                if(l<=0){
+                    return getMoneyVo(0L,moneyVo.getMoney(),moneyVo.getMoney(),"金额卷抵扣");
+                }
+                //为0就是金额卷抵扣完 不为0就是比如：微信加金额卷
+                return getMoneyVo(l,moneyVo.getMoney(),Long.valueOf(parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue()),"金额卷抵扣");
+            }
+            //小时卷
+            if (parkingCouponrecord.getParkingCoupon().getType()==1){
+                //优惠卷优惠时间
+                long l = parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue()*60;
+                // 起步时长（60倍数）小于优惠时长
+                if (DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime())<=l){
+                    return getMoneyVo(0L,moneyVo.getMoney(),moneyVo.getMoney(),"小时卷抵扣");
+                }
+                else {
+                    Date endTime = parkingChargingDto.getEndTime();
+                    long l1 = endTime.getTime() - l * 60 * 1000;
+                    Date date = new Date(l1);
+                    parkingChargingDto.setEndTime(date);
+                    MoneyVo three1 = ruleTwo(parkingChargingDto);
+                    return getMoneyVo(three1.getMoney(),moneyVo.getMoney(),moneyVo.getMoney()-three1.getMoney(),"小时卷抵扣");
+                }
+            }
+        }
+        return moneyVo;
+    }
+    private MoneyVo ruleTwo(ParkingChargingDto parkingChargingDto) {
+        Long parkinglotinformationid = parkingChargingDto.getParkinglotinformationid();
+        ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkinglotinformationid);
+        //计费规则
+        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid(),parkingChargingDto.getDistinguish());
+        List<ParkingBillingPeriod> list = parkingCharging.getParkingBillingPeriodList();
+        //查询优惠卷 停车场id,车牌号码，状态部位1且不为2
+        ParkingCouponrecord parkingCouponrecord = parkingCouponrecordService.findByParkingLotInformationIdAndLicenseAndState(parkinglotinformationid, parkingChargingDto.getLicense());
+        //免费时长
+        Long freetime = parkingCharging.getFreetime();
+        //停车时长分钟
+        long time = DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime());
+        //起步时长（单位分钟）
+        Long startingpriceduration = parkingCharging.getStartingpriceduration();
+        //起步价
+        Long startingprice = parkingCharging.getStartingprice();
+        //每小时加收
+        Long increaseincome = parkingCharging.getIncreaseincome();
+        //停车总时长小时
+        Long aLong = totalDuration(time);
+        //判断免费时长
+        if(freetime>time){
+            //金额为0
+            MoneyVo moneyVo = getMoneyVo(0L,0L,0L,"免费");
+            return moneyVo;
+        }
+        //没有附加收费时间段
+        if (list.size() == 0) {
+            return getTwo(parkingCharging, time, startingpriceduration, startingprice, aLong);
+        }
+        if (list.size() != 0) {
+            if (aLong<=24){
+            return getMoneyTwoVo(list, time, increaseincome);
+            }
+            if (aLong>24){
+                int freeTimeState = parkingCharging.getFreeTimeState();
+                //计算停车几天
+                long l1 = aLong / 24;
+                //扣除几天后还剩下好多分钟
+                long l = time % (24 * 60);
+                /* ***********************计算一天内收取费用*********************************************/
+                //分段计费最大值
+                ParkingBillingPeriod parkingBill = list.get(list.size() - 1);
+                //减去分段计费最大值计算剩余多少分钟
+                long l2 = 24 * 60 - parkingBill.getMinutecharge();
+                Long aLong1 = totalDuration(l2);
+                //停车几天总金额
+                long l3 = (parkingBill.getAddmoney() + aLong1 * increaseincome)*l1;
+                if (l==0){
+                    return getMoneyVo(l3,l3,0L,null);
+                }
+                //重复计算免费时长
+                if (freeTimeState==0){
+                    //判断剩余分钟是否大于免费时长
+                    if (l<=freetime){
+                        return getMoneyVo(l3,l3,0L,null);
+                    }
+                }
+                MoneyVo moneyTwoVo = getMoneyTwoVo(list, l, increaseincome);
+                return getMoneyVo(l3 + moneyTwoVo.getMoney(), l3 + moneyTwoVo.getMoney(), 0L, null);
+            }
+        }
+        log.info("计费规则二时段计费出现bug");
+      return null;
+    }
+    private MoneyVo getMoneyTwoVo(List<ParkingBillingPeriod> list, long time, Long increaseincome) {
+        //循环计费时间段
+        for (ParkingBillingPeriod parkingBillingPeriod : list) {
+            //如果小于等于某个分钟时间段
+            if (time <=parkingBillingPeriod.getMinutecharge()){
+                //总价
+                MoneyVo moneyVo = getMoneyVo(parkingBillingPeriod.getAddmoney(), parkingBillingPeriod.getAddmoney(), 0L, null);
+                //返回没有优惠的总价
+                return moneyVo;
+            }
+        }
+        //如果超过分段计费最大值
+        ParkingBillingPeriod parkingBill = list.get(list.size() - 1);
+        //分钟
+        long l = time - parkingBill.getMinutecharge();
+        //小时
+        Long aLong1 = totalDuration(l);
+        //总金额
+        long l1 = parkingBill.getAddmoney() + aLong1 * increaseincome;
+
+        return getMoneyVo(l1,l1,0L,null);
+    }
+    //计费方式二叠加总 金额
+    private MoneyVo getTwo(ParkingCharging parkingCharging, long time, Long startingpriceduration, Long startingprice, Long aLong) {
+        //判断停车时长小于等于起步时间 小于等于直接返回起步价
+        if (time <= startingpriceduration){
+            return getMoneyVo(parkingCharging.getStartingprice(),0L,0L,null);
+        }
+        //没有优惠卷总返回值
+        MoneyVo moneyVo = addMoneyVoTwo(parkingCharging, startingpriceduration, startingprice, aLong);
+        return moneyVo;
+    }
+    private MoneyVo addMoneyVoTwo(ParkingCharging parkingCharging, Long startingpriceduration, Long startingprice, Long aLong) {
+        //减去起步时长
+        long l = aLong - startingpriceduration / 60; //(小时)
+        //加收金额
+        long l1 = parkingCharging.getIncreaseincome() * l;
+        //总金额
+        long l2 = startingprice + l1;
+
+        return new MoneyVo(0L, l2,l2,null);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************************计算规则工具类*****************************************************/
     private Date getDate2(Date date1,String time){
         Calendar begin = Calendar.getInstance();
         // begin.add(Calendar.DATE, 1);
@@ -1058,165 +1150,6 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         Date time1 = begin.getTime();
         return time1;
     }
-    //规则三工具类
-    private ResultVo judge(Date time,String startTime,String endTime) {
-        //需要判断的时间
-        Calendar date = Calendar.getInstance();
-        date.setTime(time);
-        System.out.println(date.getTime());
-        //开始时间
-        Calendar begin = Calendar.getInstance();
-       // begin.add(Calendar.DATE, 1);
-        String[] split = startTime.split(":");
-        System.out.println(split);
-        begin.setTime(time);
-        begin.set(Calendar.HOUR_OF_DAY, Integer.valueOf(split[0]));
-
-        begin.set(Calendar.MINUTE, 0);
-
-        begin.set(Calendar.SECOND, 0);
-
-        begin.set(Calendar.MILLISECOND, 0);
-        Date time1 = begin.getTime();
-        System.out.println(time1);
-
-        //结束时间
-        Calendar end = Calendar.getInstance();
-        end.setTime(time);
-        String[] split1 = endTime.split(":");
-        end.set(Calendar.HOUR_OF_DAY, Integer.valueOf(split1[0]));
-
-        end.set(Calendar.MINUTE, 0);
-
-        end.set(Calendar.SECOND, 0);
-
-        end.set(Calendar.MILLISECOND, 0);
-
-        boolean flag = date.before(begin);
-        if (flag){
-            return new ResultVo(true,0L);
-        }
-        boolean before = date.before(end);
-        if (before){
-            return new ResultVo(true,1L);
-        }
-
-        return new ResultVo(true,2L);
-    }
-
-    private MoneyVo getTwo(ParkingCharging parkingCharging, ParkingCouponrecord parkingCouponrecord, long time, Long startingpriceduration, Long startingprice, Long aLong) {
-        //判断停车时长小于等于起步时间 小于等于直接返回起步价
-        if (time <= startingpriceduration){
-            //有优惠卷
-            if (parkingCouponrecord.getParkingCoupon()!=null){
-                //判断是优惠卷 0是次卷
-                if (parkingCouponrecord.getParkingCoupon()!=null){
-                    if (parkingCouponrecord.getParkingCoupon().getType()==0){
-                        return getMoneyVo(0L, parkingCharging.getStartingprice(), parkingCharging.getStartingprice(),"次卷抵扣");
-                    }
-                }
-                //判断是优惠卷 1是小时卷  如果停车时间和优惠卷时间相等或者小于 直接免费
-                if (parkingCouponrecord.getParkingCoupon().getType()==1){
-                    //优惠卷优惠时间
-                    long l = parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue()*60;
-                    // 起步时长（60倍数）小于优惠时长
-                    if (time <=l){
-                        return getMoneyVo(0L, parkingCharging.getStartingprice(), parkingCharging.getStartingprice(),"小时卷抵扣");
-                    }
-                    // 起步时长（60倍数）大于优惠时长 直接算起步价
-                    else {
-                        //起步价
-                        Long price = parkingCharging.getStartingprice();
-                        return getMoneyVo(price,price,0L,"小时卷抵扣");
-                    }
-                }
-                // 2是金额卷
-                if (parkingCouponrecord.getParkingCoupon().getType()==2){
-                    //起步价和金额优惠卷面值差值
-                    long l = parkingCharging.getStartingprice() - parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue();
-                    if(l<=0){
-                        return getMoneyVo(0L, parkingCharging.getStartingprice(), parkingCharging.getStartingprice(),"金额卷抵扣");
-                    }
-                    //为0就是金额卷抵扣完 不为0就是比如：微信加金额卷
-                    return getMoneyVo(l, parkingCharging.getStartingprice(),Long.valueOf(parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue()),"金额卷抵扣");
-                }
-            }
-            return getMoneyVo(parkingCharging.getStartingprice(),0L,0L,null);
-        }
-        //没有优惠卷总返回值
-        MoneyVo moneyVo = addMoneyVoTwo(parkingCharging, startingpriceduration, startingprice, aLong);
-        if (parkingCouponrecord !=null){
-            //判断是优惠卷 0是次卷
-            if (parkingCouponrecord.getParkingCoupon()!=null){
-                if (parkingCouponrecord.getParkingCoupon().getType()==0){
-                    return getMoneyVo(0L, parkingCharging.getStartingprice(), parkingCharging.getStartingprice(),"次卷抵扣");
-                }
-            }
-            if (parkingCouponrecord.getParkingCoupon().getType()==1){
-                //优惠卷优惠时间  判断优惠后时长小于等于停车时长 （小时）
-                long l = parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue();
-                //减去优惠后的时间 负数或者0  大于0小于等于起步时间  大于起步时间
-                long l1 = aLong - l;
-
-                if (l1<=0){
-                    return getMoneyVo(0L, moneyVo.getAmountpayable(),0L,"小时卷");
-                }
-                // 大于0小于等于起步时间
-                long l2 = startingpriceduration / 60;
-                if (0 < l1 && l1<= l2){
-                    return getMoneyVo(startingprice, moneyVo.getAmountpayable(),moneyVo.getAmountpayable()- startingprice,"小时卷");
-                }
-                if (l1>l2){
-                    //减去起步时长
-                    long l11 = l1 -l2; //(小时)
-                    //加收金额
-                    long l22= parkingCharging.getIncreaseincome() * l11;
-                    //总金额
-                    long l3 = startingprice + l22;
-
-                    return getMoneyVo(l3,moneyVo.getMoney(),moneyVo.getMoney()-l3,"小时卷");
-                }
-            }
-            // 2是金额卷
-            if (parkingCouponrecord.getParkingCoupon().getType()==2){
-                long l =moneyVo.getMoney()- parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue();
-                if(l<=0){
-                    return getMoneyVo(0L,moneyVo.getMoney(),moneyVo.getMoney(),"金额卷抵扣");
-                }
-                //为0就是金额卷抵扣完 不为0就是比如：微信加金额卷
-                return getMoneyVo(l,moneyVo.getMoney(),Long.valueOf(parkingCouponrecord.getParkingCoupon().getPreferentialfacevalue()),"金额卷抵扣");
-            }
-        }
-        return moneyVo;
-    }
-
-    //计费方式二叠加总 金额
-    private MoneyVo addMoneyVoTwo(ParkingCharging parkingCharging, Long startingpriceduration, Long startingprice, Long aLong) {
-        //减去起步时长
-        long l = aLong - startingpriceduration / 60; //(小时)
-        //加收金额
-        long l1 = parkingCharging.getIncreaseincome() * l;
-        //总金额
-        long l2 = startingprice + l1;
-
-        return new MoneyVo(0L, l2,l2,null);
-    }
-
-    //计费方式一时长小于24小时 金额
-    private MoneyVo addMoneyVo(ParkingCharging parkingCharging, Long startingpriceduration, Long startingprice, Long superiorlimit, Long aLong) {
-        //减去起步时长
-        long l = aLong - startingpriceduration / 60; //(小时)
-        //加收金额
-        long l1 = parkingCharging.getIncreaseincome() * l;
-        //总金额
-        long l2 = startingprice + l1;
-        //判断单日收费上限
-        if (l2< superiorlimit){
-            return getMoneyVo(l2,l2,0L,null);
-        }else {
-            return getMoneyVo(superiorlimit, superiorlimit,0L,null);
-        }
-    }
 
     //停车总时长
     private Long totalDuration(long time) {
@@ -1239,97 +1172,12 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         //实际支付好多
         moneyVo.setMoney(money);
         //应交金额
-        moneyVo.setAmountpayable(amountpayable);
+        moneyVo.setAmountpayable(money);
         //优惠金额
         moneyVo.setDiscountamount(discountamount);
         //
         moneyVo.setPaymentmethod(paymentmethod);
         return moneyVo;
-    }
-
-    private MoneyVo ruleTwo(ParkingChargingDto parkingChargingDto) {
-        Long parkinglotinformationid = parkingChargingDto.getParkinglotinformationid();
-        ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkinglotinformationid);
-        //计费规则
-        ParkingCharging parkingCharging = parkingChargingMapper.findByParkinglotinformationid(parkingChargingDto.getParkinglotinformationid());
-        List<ParkingBillingPeriod> list = parkingCharging.getParkingBillingPeriodList();
-        //查询优惠卷 停车场id,车牌号码，状态部位1且不为2
-        ParkingCouponrecord parkingCouponrecord = parkingCouponrecordService.findByParkingLotInformationIdAndLicenseAndState(parkinglotinformationid, parkingChargingDto.getLicense());
-        //免费时长
-        Long freetime = parkingLotInformation.getFreetime();
-        //停车时长分钟
-        long time = DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime());
-        //起步时长（单位分钟）
-        Long startingpriceduration = parkingCharging.getStartingpriceduration();
-        //起步价
-        Long startingprice = parkingCharging.getStartingprice();
-        //每小时加收
-        Long increaseincome = parkingCharging.getIncreaseincome();
-        //停车总时长小时
-        Long aLong = totalDuration(time);
-        Date startTime = parkingChargingDto.getStartTime();
-        Date endTime = parkingChargingDto.getEndTime();
-             //判断免费时长
-            if(freetime>time){
-            //金额为0
-            MoneyVo moneyVo = getMoneyVo(0L,0L,0L,"免费");
-            return moneyVo;
-        }
-            //没有附加收费时间段
-            if (list.size() == 0) {
-                return getTwo(parkingCharging, parkingCouponrecord, time, startingpriceduration, startingprice, aLong);
-            } else {
-                    //判断是否跨天
-                    boolean sameDate = isSameDate(startTime, endTime);
-                    if (sameDate) {
-                        return getMoneyTwoVo(list, time, increaseincome);
-                    }
-                        //第一天
-
-                        long secondsNextEarlyMorning = get(startTime);
-
-                        MoneyVo moneyTwoVo = getMoneyTwoVo(list, secondsNextEarlyMorning, increaseincome);
-                        //最后一天
-                        long l = (24 * 60) - get(endTime);
-                        MoneyVo moneyTwoVo1 = getMoneyTwoVo(list, l, increaseincome);
-                        //中间天数
-                        long l2 = (time - secondsNextEarlyMorning - l) / (24 * 60);
-
-                        Long minutecharge = list.get(list.size() - 1).getMinutecharge();
-                        //好多小时
-                        long l3 = (24 * 60 - minutecharge) / 60;
-                        if ((24 * 60 - minutecharge) % 60 != 0) {
-                            l3 = l3 + 1;
-                        }
-                        //中间天数金额
-                        long l4 = l2*(l3 * increaseincome + list.get(list.size() - 1).getAddmoney());
-                        long l1 = moneyTwoVo.getMoney() + moneyTwoVo1.getMoney() + l4;
-                        return getMoneyVo(l1, l1, 0L, null);
-            }
-
-    }
-
-    private MoneyVo getMoneyTwoVo(List<ParkingBillingPeriod> list, long time, Long increaseincome) {
-        //循环计费时间段
-        for (ParkingBillingPeriod parkingBillingPeriod : list) {
-            //如果小于等于某个分钟时间段
-            if (time <=parkingBillingPeriod.getMinutecharge()){
-                //总价
-                MoneyVo moneyVo = getMoneyVo(parkingBillingPeriod.getAddmoney(), parkingBillingPeriod.getAddmoney(), 0L, null);
-                //返回没有优惠的总价
-                return moneyVo;
-            }
-        }
-        //如果超过分段计费最大值
-        ParkingBillingPeriod parkingBill = list.get(list.size() - 1);
-        //分钟
-        long l = time - parkingBill.getMinutecharge();
-        //小时
-        Long aLong1 = totalDuration(l);
-        //总金额
-        long l1 = parkingBill.getAddmoney() + aLong1 * increaseincome;
-
-        return getMoneyVo(l1,l1,0L,null);
     }
 
     //判断是否同一天
@@ -1358,6 +1206,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         cal.set(Calendar.MILLISECOND, 0);
         return (cal.getTimeInMillis() - date.getTime()) / (1000*60);
     }
+
     public static long get(Date date) {
         // 明天00:00
         LocalDateTime midnight = LocalDateTime.ofInstant(date.toInstant(),

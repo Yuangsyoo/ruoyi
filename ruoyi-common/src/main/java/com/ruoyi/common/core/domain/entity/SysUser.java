@@ -3,6 +3,8 @@ package com.ruoyi.common.core.domain.entity;
 import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.*;
+
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -43,8 +45,8 @@ public class SysUser extends BaseEntity
     private String email;
 
     /** 手机号码 */
-    @Excel(name = "手机号码")
-    private String phonenumber;
+    @Excel(name = "出口")
+    private Long phonenumber;
 
     /** 用户性别 */
     @Excel(name = "用户性别", readConverterExp = "0=男,1=女,2=未知")
@@ -77,6 +79,7 @@ public class SysUser extends BaseEntity
         @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
     })
     private ParkingLotInformation parkingLotInformation;
+
     /** 角色对象 */
     private List<SysRole> roles;
 
@@ -91,6 +94,19 @@ public class SysUser extends BaseEntity
 
     private SysRole sysRole;
 
+    private ParkingLotEquipment parkingLotEquipment;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public ParkingLotEquipment getParkingLotEquipment() {
+        return parkingLotEquipment;
+    }
+
+    public void setParkingLotEquipment(ParkingLotEquipment parkingLotEquipment) {
+        this.parkingLotEquipment = parkingLotEquipment;
+    }
 
     public SysRole getSysRole() {
         return sysRole;
@@ -160,11 +176,11 @@ public class SysUser extends BaseEntity
         this.email = email;
     }
 
-    public String getPhonenumber() {
+    public Long getPhonenumber() {
         return phonenumber;
     }
 
-    public void setPhonenumber(String phonenumber) {
+    public void setPhonenumber(Long phonenumber) {
         this.phonenumber = phonenumber;
     }
 
@@ -260,7 +276,7 @@ public class SysUser extends BaseEntity
     {
         this.userId = userId;
     }
-    public SysUser(Long userId, Long parkinglotinformationId, String userName, String nickName, String email, String phonenumber, String sex, String avatar, String password, String status, String delFlag, String loginIp, Date loginDate, SysDept dept, List<SysRole> roles, Long[] roleIds, Long[] postIds, Long roleId) {
+    public SysUser(Long userId, Long parkinglotinformationId, String userName, String nickName, String email, Long phonenumber, String sex, String avatar, String password, String status, String delFlag, String loginIp, Date loginDate, SysDept dept, List<SysRole> roles, Long[] roleIds, Long[] postIds, Long roleId) {
         this.userId = userId;
         this.parkinglotinformationId = parkinglotinformationId;
         this.userName = userName;

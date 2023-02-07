@@ -1,17 +1,18 @@
 package com.ruoyi.parking.service.impl;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
 import com.ruoyi.common.exception.GlobalException;
-import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.QRCodeGenerator;
 import com.ruoyi.parking.utils.SerialPortUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 import com.ruoyi.parking.service.IParkingLotEquipmentService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
 {
     @Autowired
     private ParkingLotEquipmentMapper parkingLotEquipmentMapper;
+    @Autowired
+    private RedisTemplate<Object,Object>redisTemplate;
 
     /**
      * 查询停车场设备管理
@@ -68,26 +71,22 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
             //停车场id
             Long parkinglotinformationid = parkingLotEquipment.getParkinglotinformationid();
             if (parkingLotEquipment.getDirection().equals("0")){
-                String text= "http://192.168.63.125/ui/institution/pageQueryForAssign?parkinglotequipmentid="+parkinglotequipmentid+"";
+                String text= "http://wp.ycwl.work?parkinglotequipmentid="+parkinglotequipmentid+"&type=0";
                 String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
                 parkingLotEquipment.setQrcode(s);
             }else {
-                String text= "http://192.168.63.125/ui/institution/pageQueryForAssign?parkinglotequipmentid="+parkinglotequipmentid+"&parkinglotinformationid="+parkinglotinformationid+"";
+                //有牌
+                String text= "http://wp.ycwl.work?parkinglotequipmentid="+parkinglotequipmentid+"&parkinglotinformationid="+parkinglotinformationid+"&type=1";
                 String s = QRCodeGenerator.generateQRCodeImage(text, 360, 360);
-                String text1=  "http://192.168.63.125/ui/institution/pageQueryForAssign?parkinglotequipmentid="+parkinglotequipmentid+"";
+                //无牌
+                String text1=  "http://wp.ycwl.work?parkinglotequipmentid="+parkinglotequipmentid+"&type=2";
                 String s1 = QRCodeGenerator.generateQRCodeImage(text1, 360, 360);
                 parkingLotEquipment.setNoLicensePlateCode(s1);
                 parkingLotEquipment.setQrcode(s);
             }
-            LPRDemo lprDemo = new LPRDemo();
-            int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
-            List<byte[]> list = SerialPortUtils.advertisement(parkingLotEquipment);
-            //485串口发送数据
-            lprDemo.SendSerialData(handle,list);
-            //关闭设备的控制句柄
-            lprDemo.VzLPRClient_Close(handle);
-            //执行结束释放
-            lprDemo.VzLPRClient_Cleanup();
+            String advertisement = SerialPortUtils.advertisement(parkingLotEquipment);
+            redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber()+"revise",advertisement,30, TimeUnit.SECONDS);
+
             return parkingLotEquipmentMapper.updateParkingLotEquipment(parkingLotEquipment);
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,15 +104,8 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     @Override
     public int updateParkingLotEquipment(ParkingLotEquipment parkingLotEquipment)
     {
-        LPRDemo lprDemo = new LPRDemo();
-        int handle = lprDemo.InitClient(parkingLotEquipment.getIpadress());
-        List<byte[]> list = SerialPortUtils.advertisement(parkingLotEquipment);
-        //485串口发送数据
-        lprDemo.SendSerialData(handle,list);
-        //关闭设备的控制句柄
-        lprDemo.VzLPRClient_Close(handle);
-        //执行结束释放
-        lprDemo.VzLPRClient_Cleanup();
+        String advertisement = SerialPortUtils.advertisement(parkingLotEquipment);
+        redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber()+"revise",advertisement,30, TimeUnit.SECONDS);
 
         return parkingLotEquipmentMapper.updateParkingLotEquipment(parkingLotEquipment);
     }
@@ -155,5 +147,15 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     @Override
     public List<ParkingLotEquipment> byParkinglotinformationid(Long parkinglotinformationid) {
         return parkingLotEquipmentMapper.byParkinglotinformationid(parkinglotinformationid);
+    }
+
+    @Override
+    public ParkingLotEquipment selectParkingLotEquipmentFromId(Long parkinglotequipmentid) {
+        return parkingLotEquipmentMapper.selectParkingLotEquipmentFromId(parkinglotequipmentid);
+    }
+
+    @Override
+    public List<ParkingLotEquipment> byParkinglotinformationid1(Long parkinglotinformationid) {
+        return parkingLotEquipmentMapper.byParkinglotinformationid1(parkinglotinformationid);
     }
 }

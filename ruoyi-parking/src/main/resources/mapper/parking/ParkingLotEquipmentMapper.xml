@@ -31,6 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
             <id property="id" column="iid"></id>
             <result property="name" column="iname"></result>
+
         </association>
     </resultMap>
 
@@ -175,7 +176,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 </select>
 
    <!-- List<ParkingLotEquipment> byParkinglotinformationid(Long parkinglotinformationid);-->
-    <select id="byParkinglotinformationid" resultType="com.ruoyi.parking.domain.ParkingLotEquipment">
-        select id,name from parking_lot_equipment where parkingLotInformationId=#{parkinglotinformationid}
+    <select id="byParkinglotinformationid" resultType="com.ruoyi.common.core.domain.entity.ParkingLotEquipment">
+        select * from parking_lot_equipment where parkingLotInformationId=#{parkinglotinformationid}
+    </select>
+
+
+   <!-- ParkingLotEquipment selectParkingLotEquipmentFromId(Long parkinglotequipmentid);-->
+    <select id="selectParkingLotEquipmentFromId" resultMap="ParkingLotEquipmentResultOne">
+        select e.name ename ,l.name lname,l.number lnumber,l.remainingParkingSpace lremainingParkingSpace  from parking_lot_equipment e left join parking_lot_information l on e.parkinglotinformationid=l.id where e.id=#{parkinglotequipmentid}
+    </select>
+    <resultMap type="ParkingLotEquipment" id="ParkingLotEquipmentResultOne">
+        <result property="name"    column="ename"    />
+        <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
+            <result property="name" column="lname"></result>
+            <result property="number" column="lnumber"></result>
+            <result property="remainingParkingSpace" column="lremainingParkingSpace"></result>
+
+        </association>
+    </resultMap>
+    <select id="byParkinglotinformationid1" resultType="com.ruoyi.common.core.domain.entity.ParkingLotEquipment">
+        select *  from parking_lot_equipment  where parkingLotInformationId=#{parkinglotinformationid} and direction='1'
     </select>
 </mapper>

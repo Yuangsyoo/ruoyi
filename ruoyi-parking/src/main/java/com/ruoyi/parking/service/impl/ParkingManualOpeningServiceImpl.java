@@ -2,14 +2,15 @@ package com.ruoyi.parking.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import com.ruoyi.common.sdk.LPRDemo;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 
 import com.ruoyi.parking.mapper.ParkingLotEquipmentMapper;
 import com.ruoyi.parking.mapper.ParkingLotInformationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import com.ruoyi.parking.mapper.ParkingManualOpeningMapper;
 import com.ruoyi.parking.domain.ParkingManualOpening;
@@ -30,6 +31,8 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
     private ParkingLotInformationMapper parkingLotInformationMapper;
     @Autowired
     private ParkingLotEquipmentMapper parkingLotEquipmentMapper;
+    @Autowired
+    private RedisTemplate<Object,Object>redisTemplate;
 
     /**
      * 查询停车场手动开杆管理
@@ -69,14 +72,17 @@ public class ParkingManualOpeningServiceImpl implements IParkingManualOpeningSer
         parkingManualOpening.setOperator(username);
         ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentMapper.selectParkingLotEquipmentById(parkingManualOpening.getParkinglotequipmentid());
 
-
-        LPRDemo lprDemo = new LPRDemo();
+        String instructions="{\"Response_AlarmInfoPlate\":{\"info\":\"ok\",\"content\":\"...\",\"is_pay\":\"true\"}}";
+        redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber(),instructions,30, TimeUnit.SECONDS);
+      /*  LPRDemo lprDemo = new LPRDemo();
         int i = lprDemo.InitClient(parkingLotEquipment.getIpadress());
         lprDemo.switchOn(i,0,500);
         //关闭设备的控制句柄
         lprDemo.VzLPRClient_Close(i);
         //执行结束释放
-        lprDemo.VzLPRClient_Cleanup();
+        lprDemo.VzLPRClient_Cleanup();*/
+
+
         return parkingManualOpeningMapper.insertParkingManualOpening(parkingManualOpening);
     }
 

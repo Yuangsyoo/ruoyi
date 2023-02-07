@@ -1,6 +1,8 @@
 package com.ruoyi.parking.mapper;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.parking.domain.ParkingRecord;
 import com.ruoyi.parking.dto.MoneyDto;
 import org.apache.ibatis.annotations.Param;
@@ -12,6 +14,9 @@ import org.apache.ibatis.annotations.Param;
  * @date 2022-11-24
  */
 public interface ParkingRecordMapper {
+
+
+   public  Long selectParkingRecordList1(ParkingRecord parkingRecord) ;
 
     /**
      * 查询停车记录
@@ -63,6 +68,8 @@ public interface ParkingRecordMapper {
 
     //通过停车场id，车牌号查询有无未支付订单
     ParkingRecord findByLicense(@Param("license") String license,@Param("parkingLotInformationId") Long parkingLotInformationId);
+
+
     ParkingRecord findByLicense1(@Param("license") String license,@Param("parkingLotInformationId") Long parkingLotInformationId);
    /* //通过车牌号，未支付状态查询出来修改状态
     ParkingRecord editPayState(String license);*/
@@ -86,4 +93,17 @@ public interface ParkingRecordMapper {
     Long getDailyInformations(@Param("parkingLotInformationId")Long id);
 
     ParkingRecord findbypaystateandlicense(@Param("parkingLotInformationId")Long parkinglotinformationid, @Param("license")String license);
+
+    List<ParkingRecord> getByOpend(@Param("openid")String openid,@Param("parkingLotInformationId") Long parkinglotinformationid);
+
+    ParkingRecord todo(@Param("parkingLotInformationId")Long parkinglotinformationid,  @Param("license")String license);
+
+    List<ParkingRecord> findByFlee();
+
+    ParkingRecord findByLicenseAndIndoorPayment(@Param("parkingLotInformationId")Long parkinglotinformationid,@Param("license")String license1);
+
+    List<ParkingRecord> selectParkingRecordListOne(Long parkinglotinformationid);
+
+    List<ParkingRecord> getPayRecord1(@Param("parkingLotInformationId")Long parkinglotinformationid, @Param("parkingeqid")Long parkingeqid);
+
 }

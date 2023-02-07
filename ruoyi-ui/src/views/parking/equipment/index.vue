@@ -122,7 +122,7 @@
       </el-table-column>
       <el-table-column label="无牌车出口二维码" align="center" prop="noLicensePlateCode" width="150px" >noLicensePlateCode
         <template slot-scope="scope" >
-          <el-image v-if="scope.row.direction==1"
+          <el-image v-if="scope.row.noLicensePlateCode!=null"
             style="width: 150px; height: 150px"
             :src="scope.row.noLicensePlateCode">
           </el-image>
@@ -130,17 +130,17 @@
       </el-table-column>
       <el-table-column label="状态" align="center" prop="state">
         <template scope="scope">
-          <span style="color: red" v-if="scope.row.state==1">异常</span>
-          <span style="color: green" v-else-if="scope.row.state==0">正常</span>
+          <span style="color: red" v-if="scope.row.state==1">离线</span>
+          <span style="color: green" v-else-if="scope.row.state==0">在线</span>
         </template>
       </el-table-column>
       <el-table-column label="ip地址" align="center" prop="ipadress" />
-      <el-table-column label="无记录离场" align="center" prop="departurewithoutrecords" >
+<!--      <el-table-column label="无记录离场" align="center" prop="departurewithoutrecords" >
         <template scope="scope">
           <span style="color: red" v-if="scope.row.departurewithoutrecords==1">关闭</span>
           <span style="color: green" v-else-if="scope.row.departurewithoutrecords==0">开启</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="车牌防伪" align="center" prop="licenseplatanticounterfeiting">
         <template scope="scope">
           <span style="color: red" v-if="scope.row.licenseplatanticounterfeiting==1">关闭</span>
@@ -240,19 +240,19 @@
         </el-form-item>
         <el-form-item label="状态" prop="state">
           <template>
-            <el-radio v-model="form.state" label="0">启用</el-radio>
-            <el-radio v-model="form.state" label="1">禁用</el-radio>
+            <el-radio v-model="form.state" label="0">在线</el-radio>
+            <el-radio v-model="form.state" label="1">离线</el-radio>
           </template>
         </el-form-item>
         <el-form-item label="ip地址" prop="ipadress">
           <el-input v-model="form.ipadress" placeholder="请输入ip地址" />
         </el-form-item>
-        <el-form-item label="无记录离场" prop="departurewithoutrecords">
+<!--        <el-form-item label="无记录离场" prop="departurewithoutrecords">
           <template>
             <el-radio v-model="form.departurewithoutrecords" label="0">启用</el-radio>
             <el-radio v-model="form.departurewithoutrecords" label="1">禁用</el-radio>
           </template>
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="车牌防伪" prop="licenseplatanticounterfeiting">
           <template>
             <el-radio v-model="form.licenseplatanticounterfeiting" label="0">启用</el-radio>

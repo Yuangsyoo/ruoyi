@@ -1,10 +1,9 @@
 package com.ruoyi.parking.utils;
 import com.ruoyi.common.utils.Hex;
-import com.ruoyi.parking.domain.ParkingLotEquipment;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 import lombok.extern.slf4j.Slf4j;
-import java.util.ArrayList;
+
 import java.util.Base64;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,36 +13,105 @@ import java.util.List;
  */
 @Slf4j
 public class SerialPortUtils {
-    //出口支付后临显指令
-    public static  List<byte[]> wupaiche(String data) {
-        byte[] s4 = getStringOne("减速慢行", "040A");
-        byte[] s3 = getStringOne("一车一杆", "030A");
-        byte[] s2 = getStringOne(data, "020A");
-        byte[] s1 = getStringOne("欢迎光临","010A");
-        byte[] s5 = payAfter(data, "02");
-        List<byte[]> list = new ArrayList<>();
-        list.add(s1);
-        list.add(s2);
-        list.add(s3);
-        list.add(s4);
-        list.add(s5);
-        return list;
+    //无牌车进场临显指令
+    public static  String wupaiche(String data) {
+        String s4 = getStringOne("减速慢行", "040A");
+        String s3 =  getStringOne("一车一杆", "030A");
+        String s2 =  getStringOne(data, "020A");
+        String s1 =  getStringOne("欢迎光临","010A");
+        String s5 = voicePlayback(data,"01");
+        String[] split2 = s2.split(",");
+        String[] split1 = s1.split(",");
+        String[] split3 = s3.split(",");
+        String[] split4 = s4.split(",");
+        String[] split5 = s5.split(",");
+        String a="{\n" +
+                "\"Response_AlarmInfoPlate\": {\n" +
+                "\"info\":\"ok\",\n" +
+                "\"channelNum\" : 0, \n" +
+                "\"manualTrigger\" : \"no\",\n" +
+                "\"is_pay\":\"false\",\n" +
+                "\"serialData\" :[\n" +
+                "{\n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split1[0]+"\",\n" +
+                "\"dataLen\" : "+split1[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split3[0]+"\",\n" +
+                "\"dataLen\" : "+split3[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split5[0]+"\",\n" +
+                "\"dataLen\" : "+split5[1]+"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "}";
+        return a;
 
     }
     //出口支付后临显指令
-    public static  List<byte[]> payAfter(String data) {
-        byte[] s4 = getStringOne("减速慢行", "040A");
-        byte[] s3 = getStringOne("一车一杆", "030A");
-        byte[] s2 = getStringOne(data, "020A");
-        byte[] s1 = getStringOne("一路顺风","010A");
-        byte[] s5 = payAfter(data, "02");
-        List<byte[]> list = new ArrayList<>();
-        list.add(s1);
-        list.add(s2);
-        list.add(s3);
-        list.add(s4);
-        list.add(s5);
-        return list;
+    public static  String payAfter(String data) {
+        String s4 = getStringOne("减速慢行", "040A");
+        String s3 =  getStringOne("一车一杆", "030A");
+        String s2 =   getStringOne(data, "020A");
+        String s1 = getStringOne("一路顺风","010A");
+        String s5 =  payAfter(data, "02");
+        String[] split2 = s2.split(",");
+        String[] split1 = s1.split(",");
+        String[] split3 = s3.split(",");
+        String[] split4 = s4.split(",");
+        String[] split5 = s5.split(",");
+        String a="{\n" +
+                "\"Response_AlarmInfoPlate\": {\n" +
+                "\"info\":\"ok\",\n" +
+                "\"channelNum\" : 0, \n" +
+                "\"manualTrigger\" : \"no\",\n" +
+                "\"is_pay\":\"false\",\n" +
+                "\"serialData\" :[\n" +
+                "{\n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split1[0]+"\",\n" +
+                "\"dataLen\" : "+split1[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split3[0]+"\",\n" +
+                "\"dataLen\" : "+split3[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split5[0]+"\",\n" +
+                "\"dataLen\" : "+split5[1]+"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "}";
+        return a;
+
 
     }
     //出口待缴费临显指令
@@ -140,6 +208,49 @@ public class SerialPortUtils {
                 "\"serialChannel\":0,\n" +
                 "\"data\" : \""+split3[0]+"\",\n" +
                 "\"dataLen\" : "+split3[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split5[0]+"\",\n" +
+                "\"dataLen\" : "+split5[1]+"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "}";
+        return a;
+    }
+    public static String Exit1(String data) {
+
+        String s4 = getString4("减速慢行");
+        String s2 = getString2(data);
+        String s1 = getString1("一路顺风");
+        String[] split2 = s2.split(",");
+        String[] split1 = s1.split(",");
+
+        String[] split4 = s4.split(",");
+        String s5 = voicePlayback(data, "02");
+        String[] split5 = s5.split(",");
+        String a="{\n" +
+                "\"Response_AlarmInfoPlate\": {\n" +
+                "\"info\":\"ok\",\n" +
+                "\"channelNum\" : 0, \n" +
+                "\"manualTrigger\" : \"no\",\n" +
+                "\"is_pay\":\"false\",\n" +
+                "\"serialData\" :[\n" +
+                "{\n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split1[0]+"\",\n" +
+                "\"dataLen\" : "+split1[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
                 "},\n" +
                 "{ \n" +
                 "\"serialChannel\":0,\n" +
@@ -272,6 +383,7 @@ public class SerialPortUtils {
         String[] split1 = s1.split(",");
         String s5 = voicePlayback(data, "02");
         String[] split5 = s5.split(",");
+
         String a="{\n" +
                 "\"Response_AlarmInfoPlate\": {\n" +
                 "\"info\":\"ok\",\n" +
@@ -429,14 +541,14 @@ public class SerialPortUtils {
     //黑名单拒绝进入
     public static String blacklist(String data) {
         String s2 = getString2(data);
-        String s1 = getString1("黑名单车辆拒绝进入");
+        String s1 = getString1("黑名单车辆");
         String[] split2 = s2.split(",");
         String[] split1 = s1.split(",");
         String s4 = getString4("减速慢行");
         String s3 = getString3("一车一杆");
         String[] split3 = s3.split(",");
         String[] split4 = s4.split(",");
-        String s5 = voicePlayback(data, "09");
+        String s5 = voicePlayback("禁止进入", "09");
         String[] split5 = s5.split(",");
         String a="{\n" +
                 "\"Response_AlarmInfoPlate\": {\n" +
@@ -638,7 +750,7 @@ public class SerialPortUtils {
         return base64_str+','+length1;
     }
 
-    private static byte[] getStringOne(String data,String math) {
+    private static String getStringOne(String data,String math) {
         String test=null;
         try {
             test = Hex.test( data);
@@ -662,7 +774,11 @@ public class SerialPortUtils {
         String s4 = "AA55" + s1 + crc + "AF";
         log.info("进出口临显第1行="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
-        return bytes2;
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
+
     }
     //语音播放进口
     private static String voicePlayback2(Long l,Long l1,Long l2,String data,String math,Long money) {
@@ -1036,7 +1152,7 @@ public class SerialPortUtils {
         return base64_str+','+length1;
     }
     //支付后语音播放
-    private static byte[] payAfter(String data,String math) {
+    private static String payAfter(String data,String math) {
         String test=null;
         try {
             test = Hex.test( data);
@@ -1060,7 +1176,11 @@ public class SerialPortUtils {
         String s4 = "AA55" + s1 + crc + "AF";
         log.info("支付后语音播放指令="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
-        return bytes2;
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
+
     }
     //需要使用2字节表示b
     public static String numToHex16(int b) {
@@ -1074,34 +1194,61 @@ public class SerialPortUtils {
         //addSerialPort("ss");
         //getString2("23天15小时56分");
     }
-    public static List<byte[]> advertisement(ParkingLotEquipment parkingLotEquipment) {
-        ArrayList<byte[]> list = new ArrayList<>();
+    public static String advertisement(ParkingLotEquipment parkingLotEquipment) {
         String onedisplay = parkingLotEquipment.getOnedisplay();
-        if (onedisplay!=null||!onedisplay.equals("")){
-            byte[] bytes = advertisement1(onedisplay);
-            list.add(bytes);
-        }
+        String s1 = advertisement1(onedisplay);
         String twodisplay = parkingLotEquipment.getTwodisplay();
-        if (twodisplay!=null||!twodisplay.equals("")){
-            byte[] bytes1 = advertisement2(twodisplay);
-            list.add(bytes1);
-        }
+        String s2 = advertisement2(twodisplay);
         String threedisplay = parkingLotEquipment.getThreedisplay();
-        if (threedisplay!=null||!threedisplay.equals("")){
-            byte[] bytes2 = advertisement3(threedisplay);
-            list.add(bytes2);
-        }
+        String s3 = advertisement3(threedisplay);
         String fourdisplay = parkingLotEquipment.getFourdisplay();
-        if (fourdisplay!=null||!fourdisplay.equals("")){
-            byte[] bytes3 = advertisement4(fourdisplay);
-            list.add(bytes3);
-        }
-        byte[] bytes4 = advertisement5(String.valueOf(parkingLotEquipment.getVolume()));
-        list.add(bytes4);
-        return list;
+        String s4 = advertisement4(fourdisplay);
+        String s5 = advertisement5(String.valueOf(parkingLotEquipment.getVolume()));
+        String[] split1 = s1.split(",");
+        String[] split2 = s2.split(",");
+        String[] split3 = s3.split(",");
+        String[] split4 = s4.split(",");
+        String[] split5 = s5.split(",");
+
+        String a="{\n" +
+                "\"Response_AlarmInfoPlate\": {\n" +
+                "\"info\":\"no\",\n" +
+                "\"channelNum\" : 0, \n" +
+                "\"manualTrigger\" : \"no\",\n" +
+                "\"is_pay\":\"false\",\n" +
+                "\"serialData\" :[\n" +
+                "{\n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split1[0]+"\",\n" +
+                "\"dataLen\" : "+split1[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split3[0]+"\",\n" +
+                "\"dataLen\" : "+split3[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split5[0]+"\",\n" +
+                "\"dataLen\" : "+split5[1]+"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "}";
+        return a;
     }
     //广告位第4行
-    private static byte[] advertisement4(String data) {
+    private static String advertisement4(String data) {
         String test=null;
         try {
             test = Hex.test( data);
@@ -1126,10 +1273,13 @@ public class SerialPortUtils {
         String s4 = "AA55" + s1 + crc + "AF";
         log.info("广告位第四行指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
-        return bytes2;
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
     }
     //广告位第3行
-    private static byte[] advertisement3(String data) {
+    private static String advertisement3(String data) {
         String test=null;
         try {
             test = Hex.test( data);
@@ -1153,10 +1303,13 @@ public class SerialPortUtils {
         String s4 = "AA55" + s1 + crc + "AF";
         log.info("广告位第三行指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
-        return bytes2;
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
     }
     //广告位第2行
-    private static byte[] advertisement2(String data) {
+    private static String advertisement2(String data) {
         String test=null;
         try {
             test = Hex.test( data);
@@ -1181,11 +1334,13 @@ public class SerialPortUtils {
         log.info("广告位第二行指令集="+s4);
         log.info(s4);
         byte[] bytes2 = Hex.toByteArray(s4);
-
-        return bytes2;
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
     }
     //广告位第1行
-    private static byte[] advertisement1(String data) {
+    private static String advertisement1(String data) {
         String test=null;
         try {
             test = Hex.test( data);
@@ -1209,10 +1364,13 @@ public class SerialPortUtils {
         String s4 = "AA55" + s1 + crc + "AF";
         log.info("广告位第一行指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
-        return bytes2;
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
     }
     //设置音量
-    private static byte[] advertisement5(String data) {
+    private static String advertisement5(String data) {
         String s = "006400F000010"+data+"0000";
         log.info(s);
         String s1 = "006400F000010"+data;
@@ -1223,7 +1381,10 @@ public class SerialPortUtils {
         String s4 = "AA55" + s1 + crc + "AF";
         log.info("音量指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
-        return bytes2;
+        int length1 = bytes2.length;
+        byte base64_data[] = Base64.getEncoder().encode(bytes2);
+        String base64_str = new String(base64_data);
+        return base64_str+','+length1;
     }
     //心跳
     private static String heartbeat() {

@@ -5,7 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
+import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 import com.ruoyi.parking.dto.ParkingLotEquipmentDto;
+import com.ruoyi.parking.service.IParkingLotEquipmentService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,8 @@ public class ParkingLotInformationController extends BaseController
 {
     @Autowired
     private IParkingLotInformationService parkingLotInformationService;
+    @Autowired
+    private IParkingLotEquipmentService parkingLotEquipmentService;
 
     /**
      * 查询停车场管理列表
@@ -68,6 +72,7 @@ public class ParkingLotInformationController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('parking:information:query')")
     @GetMapping(value = "/{id}")
+
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
         return success(parkingLotInformationService.selectParkingLotInformationById(id));
@@ -93,6 +98,13 @@ public class ParkingLotInformationController extends BaseController
     public AjaxResult edit(@RequestBody ParkingLotInformation parkingLotInformation)
     {
         return toAjax(parkingLotInformationService.updateParkingLotInformation(parkingLotInformation));
+    }
+
+    @Log(title = "停车场管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/edit1")
+    public AjaxResult edit1(@RequestBody ParkingLotInformation parkingLotInformation)
+    {
+        return toAjax(parkingLotInformationService.updateParkingLotInformation1(parkingLotInformation));
     }
 
     /**
@@ -121,11 +133,16 @@ public class ParkingLotInformationController extends BaseController
         return parkingLotInformationService.getNumberOfCarParks(id);
     }
 
-    // 返回商务号信息
+//返回停车场信息  设备信息
     @GetMapping("/getMerchantNumber")
     @Anonymous
-    public ParkingLotInformation getMerchantNumber(@RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid){
-        return parkingLotInformationService.selectParkingLotInformationById(parkinglotequipmentid);
+    public ParkingLotEquipment getMerchantNumber(@RequestParam(value ="parkinglotequipmentid") Long parkinglotequipmentid){
+        return parkingLotEquipmentService.selectParkingLotEquipmentFromId(parkinglotequipmentid);
+    }
+    @Anonymous
+    @GetMapping(value = "/getInfoOne}")
+    public AjaxResult getInfo1(@RequestParam("id") Long id) {
+        return success(parkingLotInformationService.selectParkingLotInformationById(id));
     }
 
 }

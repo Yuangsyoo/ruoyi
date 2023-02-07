@@ -91,7 +91,7 @@
         <span style="color: yellow" v-if="scope.row.licensepllatecolor==2">黄色</span>
         <span style="color: black" v-if="scope.row.licensepllatecolor==3">白色</span>
         <span style="color: green" v-if="scope.row.licensepllatecolor==4">黑色</span>
-        <span style="color: green"  v-else-if="scope.row.licensepllatecolor===5">绿色</span>
+        <span style="color: green"  v-else-if="scope.row.licensepllatecolor==5">绿色</span>
         </template>
       </el-table-column>
       <el-table-column label="订单编号" align="center" prop="ordernumber" />
@@ -119,7 +119,7 @@
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -136,7 +136,7 @@
             v-hasPermi="['parking:record:remove']"
           >删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column>-->
     </el-table>
 
     <pagination
@@ -305,9 +305,9 @@ export default {
       this.queryParams.parkinglotinformationid=localStorage.getItem("uu")
       this.queryParams.paystate=0
       listRecord(this.queryParams).then(response => {
-        this.recordList = response.rows;
+        this.recordList = response.dataTable.rows;
 
-        this.total = response.total;
+        this.total = response.dataTable.total;
         this.loading = false;
       });
     },

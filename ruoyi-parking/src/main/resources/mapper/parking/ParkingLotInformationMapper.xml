@@ -38,7 +38,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="etcpaymentId"    column="etcPayment_id"    />
         <result property="ruralcreditpaymentId"    column="ruralCreditPayment_id"    />
         <result property="remainingParkingSpace"    column="remainingParkingSpace"    />
-        <result property="freetime"    column="freeTime"    />
         <result property="numberfour"    column="numberFour"    />
         <result property="onSiteQRCode"    column="onSiteQRCode"    />
     </resultMap>
@@ -94,7 +93,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="unionpaypaymentId != null "> and unionPayPayment_id = #{unionpaypaymentId}</if>
             <if test="etcpaymentId != null "> and etcPayment_id = #{etcpaymentId}</if>
             <if test="ruralcreditpaymentId != null "> and ruralCreditPayment_id = #{ruralcreditpaymentId}</if>
-
             <if test="remainingParkingSpace != null"> and remainingParkingSpace = #{remainingParkingSpace}</if>
             <if test="numberfour != null  and numberfour != ''"> and numberFour = #{numberfour}</if>
             <if test="onSiteQRCode != null  and onSiteQRCode != ''"> and onSiteQRCode = #{onSiteQRCode}</if>
@@ -220,7 +218,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="etcpaymentId != null">etcPayment_id = #{etcpaymentId},</if>
             <if test="ruralcreditpaymentId != null">ruralCreditPayment_id = #{ruralcreditpaymentId},</if>
             <if test="remainingParkingSpace != null">remainingParkingSpace = #{remainingParkingSpace},</if>
-
             <if test="numberfour != null">numberFour = #{numberfour},</if>
             <if test="onSiteQRCode != null">onSiteQRCode = #{onSiteQRCode},</if>
         </trim>
@@ -239,5 +236,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
     <select id="selectAllNumberOfCarParks" resultMap="ParkingLotInformationResult">
         select name,number,remainingParkingSpace from parking_lot_information
+    </select>
+   <!-- List<ParkingLotInformation> selectParkingLotInformationListOne();-->
+    <select id="selectParkingLotInformationListOne" resultMap="ParkingLotInformationResult">
+        select * from parking_lot_information
     </select>
 </mapper>
