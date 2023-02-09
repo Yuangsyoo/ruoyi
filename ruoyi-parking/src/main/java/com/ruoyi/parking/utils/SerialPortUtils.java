@@ -1186,23 +1186,16 @@ public class SerialPortUtils {
     public static String numToHex16(int b) {
         return String.format("%04x", b);
     }
-    //测试
-    public static void main(String[] args)  {
-        voicePlayback1(23L,15L,56L,"粤B12345","0b",22L);
-        // addSerialPort("一车一杆");
-        ///addSerialPort("欢迎光临");
-        //addSerialPort("ss");
-        //getString2("23天15小时56分");
-    }
+
     public static String advertisement(ParkingLotEquipment parkingLotEquipment) {
         String onedisplay = parkingLotEquipment.getOnedisplay();
-        String s1 = advertisement1(onedisplay);
+        String s1 = advertisement1(onedisplay,"01");
         String twodisplay = parkingLotEquipment.getTwodisplay();
-        String s2 = advertisement2(twodisplay);
+        String s2 = advertisement1(twodisplay,"02");
         String threedisplay = parkingLotEquipment.getThreedisplay();
-        String s3 = advertisement3(threedisplay);
+        String s3 = advertisement1(threedisplay,"03");
         String fourdisplay = parkingLotEquipment.getFourdisplay();
-        String s4 = advertisement4(fourdisplay);
+        String s4 = advertisement1(fourdisplay,"04");
         String s5 = advertisement5(String.valueOf(parkingLotEquipment.getVolume()));
         String[] split1 = s1.split(",");
         String[] split2 = s2.split(",");
@@ -1218,12 +1211,13 @@ public class SerialPortUtils {
                 "\"is_pay\":\"false\",\n" +
                 "\"serialData\" :[\n" +
                 "{\n" +
+                // TODO: 2023/2/7   .......................................... 
                 "\"serialChannel\":0,\n" +
                 "\"data\" : \""+split1[0]+"\",\n" +
                 "\"dataLen\" : "+split1[1]+"\n" +
                 "},\n" +
                 "{ \n" +
-                "\"serialChannel\":0,\n" +
+                "\"serialChannel\":1,\n" +
                 "\"data\" : \""+split2[0]+"\",\n" +
                 "\"dataLen\" : "+split2[1]+"\n" +
                 "},\n" +
@@ -1233,7 +1227,7 @@ public class SerialPortUtils {
                 "\"dataLen\" : "+split3[1]+"\n" +
                 "},\n" +
                 "{ \n" +
-                "\"serialChannel\":0,\n" +
+                "\"serialChannel\":1,\n" +
                 "\"data\" : \""+split4[0]+"\",\n" +
                 "\"dataLen\" : "+split4[1]+"\n" +
                 "},\n" +
@@ -1241,13 +1235,33 @@ public class SerialPortUtils {
                 "\"serialChannel\":0,\n" +
                 "\"data\" : \""+split5[0]+"\",\n" +
                 "\"dataLen\" : "+split5[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
                 "}\n" +
                 "]\n" +
                 "}\n" +
                 "}";
         return a;
     }
-    //广告位第4行
+   /* //广告位第4行
     private static String advertisement4(String data) {
         String test=null;
         try {
@@ -1323,24 +1337,23 @@ public class SerialPortUtils {
         //长度转换16进制
         String s3 = numToHex16(length);
         log.info("长度="+s3);
-        String s =  "01640011"+ s3+"02"+test+"0000";
+        String s = "00640011"+ s3+"02"+test+"0000";
         log.info(s);
-        String s1 = "01640011"+ s3+"02"+test;
+        String s1 = "00640011"+ s3+"02"+test;
         byte[] bytes1 = Hex.toByteArray(s);
         int i = CRCUtil.calcCrc16(bytes1);
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("广告位第二行指令集="+s4);
-        log.info(s4);
+        log.info("广告位第2行指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
         String base64_str = new String(base64_data);
         return base64_str+','+length1;
-    }
+    }*/
     //广告位第1行
-    private static String advertisement1(String data) {
+    private static String advertisement1(String data,String math) {
         String test=null;
         try {
             test = Hex.test( data);
@@ -1353,22 +1366,33 @@ public class SerialPortUtils {
         int length = bytes.length+1;
         //长度转换16进制
         String s3 = numToHex16(length);
-        log.info("长度="+s3);
-        String s = "00640011"+ s3+"01"+test+"0000";
-        log.info(s);
-        String s1 = "00640011"+ s3+"01"+test;
+
+        String s = "00640011"+ s3+math+test+"0000";
+
+        String s1 = "00640011"+ s3+math+test;
         byte[] bytes1 = Hex.toByteArray(s);
         int i = CRCUtil.calcCrc16(bytes1);
         String crc = String.format("%04x", i);
         System.out.println("校验位"+crc);
         String s4 = "AA55" + s1 + crc + "AF";
-        log.info("广告位第一行指令集="+s4);
+        log.info("广告位指令集="+s4);
         byte[] bytes2 = Hex.toByteArray(s4);
         int length1 = bytes2.length;
         byte base64_data[] = Base64.getEncoder().encode(bytes2);
         String base64_str = new String(base64_data);
         return base64_str+','+length1;
     }
+    /*--16:30:47:476 发送   AA55 05 6400 11000901BBB6D3ADB9E2C1D99517AF
+
+       --16:30:49:551 发送  AA55 06 6400 11 00 09 02 B3 B5 C5 C6 CA B6 B1 F0 1CD7AF
+                           AA5500640011000902b3b5c5c6cab6b1f0bd34AF
+AA55 0E 6400 11 00 02 02 33 4602AF
+AA55 00 6400 11 00 02 02 33 b363AF
+       --16:30:51:616 发送  AA55 07 6400 11 00 09 03 D2 BB B3 B5 D2 BB B8 CB EA05AF
+                           AA5500640011000903d2bbb3b5d2bbb8cbdbb7AF
+     --16:30:53:692 发送    AA55 08 6400 11 00 09 04BCF5CBD9C2FDD0D03978AF
+
+     */
     //设置音量
     private static String advertisement5(String data) {
         String s = "006400F000010"+data+"0000";
@@ -1421,6 +1445,15 @@ public class SerialPortUtils {
                 "}\n" +
                 "}";
         return a;
+    }
+    //测试
+    public static void main(String[] args)  {
+        //AA5500640011000902d2bbb3b5d2bbb8cb27b3AF
+        //voicePlayback1(23L,15L,56L,"粤B12345","0b",22L);
+         advertisement1("一车一杆","01");
+        ///addSerialPort("欢迎光临");
+        //addSerialPort("ss");
+        //getString2("23天15小时56分");
     }
 
 }

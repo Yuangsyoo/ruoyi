@@ -50,7 +50,7 @@ public class SysUser extends BaseEntity
 
     /** 用户性别 */
     @Excel(name = "用户性别", readConverterExp = "0=男,1=女,2=未知")
-    private String sex;
+    private Long sex;
 
     /** 用户头像 */
     private String avatar;
@@ -95,6 +95,15 @@ public class SysUser extends BaseEntity
     private SysRole sysRole;
 
     private ParkingLotEquipment parkingLotEquipment;
+    private ParkingLotEquipment parkingLotEquipment1;
+
+    public ParkingLotEquipment getParkingLotEquipment1() {
+        return parkingLotEquipment1;
+    }
+
+    public void setParkingLotEquipment1(ParkingLotEquipment parkingLotEquipment1) {
+        this.parkingLotEquipment1 = parkingLotEquipment1;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -184,11 +193,11 @@ public class SysUser extends BaseEntity
         this.phonenumber = phonenumber;
     }
 
-    public String getSex() {
+    public Long getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(Long sex) {
         this.sex = sex;
     }
 
@@ -276,7 +285,7 @@ public class SysUser extends BaseEntity
     {
         this.userId = userId;
     }
-    public SysUser(Long userId, Long parkinglotinformationId, String userName, String nickName, String email, Long phonenumber, String sex, String avatar, String password, String status, String delFlag, String loginIp, Date loginDate, SysDept dept, List<SysRole> roles, Long[] roleIds, Long[] postIds, Long roleId) {
+    public SysUser(Long userId, Long parkinglotinformationId, String userName, String nickName, String email, Long phonenumber, Long sex, String avatar, String password, String status, String delFlag, String loginIp, Date loginDate, SysDept dept, List<SysRole> roles, Long[] roleIds, Long[] postIds, Long roleId) {
         this.userId = userId;
         this.parkinglotinformationId = parkinglotinformationId;
         this.userName = userName;

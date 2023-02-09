@@ -284,6 +284,7 @@ public class ParkingController extends Thread {
                     parkingRecord.setDiscountamount(0L);
                     //应收金额
                     parkingRecord.setAmountpayable(0L);
+                    parkingRecord.setParkingeqid(parkingLotEquipment.getId());
                     //出场后修改停车场记录
                     parkingRecordService.updateParkingRecord(parkingRecord);
                     Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
@@ -485,6 +486,7 @@ public class ParkingController extends Thread {
                             // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
                             parkingRecord1.setEntranceandexitname(b+","+name1);
                         }
+                        parkingRecord1.setParkingeqid(parkingLotEquipment.getId());
                         parkingRecordService.updateParkingRecord(parkingRecord1);
                         ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
                         //超时补费金额
@@ -567,6 +569,7 @@ public class ParkingController extends Thread {
                         return s;
                     }
                     parkingRecord.setParkinglotequipmentid(parkingLotEquipment.getId());
+                    parkingRecord.setParkingeqid(parkingLotEquipment.getId());
                     parkingRecordService.updateParkingRecord(parkingRecord);
                     List<ParkingRecord> list = new ArrayList<>();
                     list.add(parkingRecord);
@@ -656,7 +659,7 @@ public class ParkingController extends Thread {
                     }
                     if (l<0) {
                         parkingRecord.setParkinglotequipmentid(parkingLotEquipment.getId());
-
+                        parkingRecord.setParkingeqid(parkingLotEquipment.getId());
                         parkingRecordService.updateParkingRecord(parkingRecord);
                         parkingRecharge.setBalance(0L);
                         parkingRechargeService.updateParkingRecharge(parkingRecharge);

@@ -510,7 +510,7 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
         long time = DateTime.dateDiff(parkingChargingDto.getStartTime(), parkingChargingDto.getEndTime());
         MoneyVo three = Three(parkingChargingDto);
         Long parkinglotinformationid = parkingChargingDto.getParkinglotinformationid();
-        //查询优惠卷 停车场id,车牌号码，状态部位1且不为2
+        //查询优惠卷 停车场id,车牌号码，状态不为1且不为2
         ParkingCouponrecord parkingCouponrecord = parkingCouponrecordService.findByParkingLotInformationIdAndLicenseAndState(parkinglotinformationid, parkingChargingDto.getLicense());
         if (parkingCouponrecord!=null){
             //判断是优惠卷 0是次卷

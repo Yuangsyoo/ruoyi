@@ -173,6 +173,13 @@
         <el-form-item label="数量" prop="count">
           <el-input v-model="form.count" placeholder="请输入数量" />
         </el-form-item>
+        <el-form-item label="次月刷新数量" prop="refresh">
+          <template>
+            <el-radio v-model="form.refresh" :label="0">刷新</el-radio>
+            <el-radio v-model="form.refresh" :label="1">不刷新</el-radio>
+
+          </template>
+        </el-form-item>
         <el-form-item label="二维码开始时间" prop="qrcodestarttime">
           <el-date-picker clearable
             v-model="form.qrcodestarttime"

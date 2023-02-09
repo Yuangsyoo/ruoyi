@@ -127,7 +127,7 @@ public class ParkingLotInformationServiceImpl implements IParkingLotInformationS
         user.setPassword(SecurityUtils.encryptPassword(loginPassword));
         user.setUserName(parkingLotInformation.getName());
         user.setNickName(parkingLotInformation.getName());
-        user.setSex("0");
+
         user.setCreateBy("添加停车场创建主账号");
         user.setCreateTime(new Date());
         user.setStatus("0");

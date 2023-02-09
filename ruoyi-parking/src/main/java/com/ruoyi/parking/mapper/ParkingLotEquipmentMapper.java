@@ -71,4 +71,6 @@ public interface ParkingLotEquipmentMapper
     ParkingLotEquipment selectParkingLotEquipmentFromId(Long parkinglotequipmentid);
 
     List<ParkingLotEquipment> byParkinglotinformationid1(Long parkinglotinformationid);
+
+    List<ParkingLotEquipment> getEquipmentOne(Long parkinglotinformationid);
 }

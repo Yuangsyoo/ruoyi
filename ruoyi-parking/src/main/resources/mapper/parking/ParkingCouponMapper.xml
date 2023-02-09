@@ -17,6 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="state"    column="state"    />
         <result property="qrcode"    column="qrCode"    />
         <result property="preferentialfacevalue"    column="preferentialFaceValue"    />
+        <result property="refresh"    column="refresh"    />
         <association property="parkingLotInformation" javaType="com.ruoyi.common.core.domain.entity.ParkingLotInformation">
             <id property="id" column="lid"></id>
             <result property="name" column="lname"></result>
@@ -41,6 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="state != null "> and  c.state = #{state}</if>
             <if test="qrcode != null  and qrcode != ''"> and  c.qrCode = #{qrcode}</if>
             <if test="preferentialfacevalue != null "> and  c.preferentialFaceValue = #{preferentialfacevalue}</if>
+            <if test="refresh != null "> and  c.refresh = #{refresh}</if>
         </where>
     </select>
     
@@ -64,7 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="state != null">state,</if>
             <if test="qrcode != null">qrCode,</if>
             <if test="preferentialfacevalue != null">preferentialFaceValue,</if>
-
+            <if test="refresh != null">refresh,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -79,6 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="state != null">#{state},</if>
             <if test="qrcode != null">#{qrcode},</if>
             <if test="preferentialfacevalue != null">#{preferentialfacevalue},</if>
+            <if test="refresh != null">#{refresh},</if>
 
          </trim>
     </insert>
@@ -97,6 +100,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="state != null">state = #{state},</if>
             <if test="qrcode != null">qrCode = #{qrcode},</if>
             <if test="preferentialfacevalue != null">preferentialFaceValue = #{preferentialfacevalue},</if>
+            <if test="refresh != null">refresh = #{refresh},</if>
 
         </trim>
         where id = #{id}

@@ -123,7 +123,8 @@
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
           <el-table-column prop="parkingLotInformation.name" label="所属停车场" width="120" sortable/>
           <el-table-column prop="sysRole.roleName" label="角色" width="120" sortable/>
-          <el-table-column label="出口" align="center" prop="parkingLotEquipment.name"  />
+          <el-table-column  label="出口" align="center" prop="parkingLotEquipment.name"  />
+          <el-table-column label="进口" align="center" prop="parkingLotEquipment1.name"  />
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
               <el-switch
@@ -207,10 +208,9 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row >
           <el-col :span="12">
-            <el-form-item label="出口" >
-<!--              <el-input v-model="form.phonenumber" placeholder="绑定出口" maxlength="11" />-->
+            <el-form-item label="出口"v-show="a!=0" >
               <el-select v-model="form.phonenumber" placeholder="绑定出口">
                 <el-option
                   v-for="dict in parkinglotequipments"
@@ -222,10 +222,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+            <el-form-item label="进口"v-show="a!=0" >
+              <el-select v-model="form.sex" placeholder="绑定进口">
+                <el-option
+                  v-for="dict in parkinglotequipmentss"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
+
         </el-row>
         <el-row>
           <el-col :span="12">
@@ -241,18 +249,6 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择性别">
-                <el-option
-                  v-for="dict in dict.type.sys_user_sex"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio
@@ -265,7 +261,11 @@
           </el-col>
         </el-row>
         <el-row>
-
+          <el-col :span="12">
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="角色">
               <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
@@ -331,6 +331,7 @@ import {
   listUser,
   getUser,
   delUser,
+  getEquipmentOne,
   getarkinglotinformations,
   addUser,
   updateUser,
@@ -349,6 +350,8 @@ export default {
   components: { Treeselect },
   data() {
     return {
+      a:null,
+      parkinglotequipmentss:"",
       parkinglotequipments:'',
       parkinglotinformations:[],
       // 遮罩层
@@ -449,6 +452,7 @@ export default {
 
   },
   created() {
+   this.a= localStorage.getItem("uu")
     this.getList();
     this.getDeptTree();
     this.getarkinglotinformations(localStorage.getItem("uu"));
@@ -461,6 +465,11 @@ export default {
       this.parkinglotequipments=[];
       getEquipment1(parkinglotinformationid).then(res=>{
         this.parkinglotequipments=res.data
+      })},
+    getEquipmentOne(parkinglotinformationid){
+      this.parkinglotequipments=[];
+      getEquipmentOne(parkinglotinformationid).then(res=>{
+        this.parkinglotequipmentss=res.data
       })},
     /** 查询用户列表 */
     getList() {
@@ -579,6 +588,7 @@ export default {
       this.reset();
       var a=localStorage.getItem("uu")
       this.getEquipment(a);
+      this.getEquipmentOne(a);
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
 

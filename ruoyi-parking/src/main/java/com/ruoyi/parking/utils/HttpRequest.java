@@ -224,7 +224,7 @@ public class HttpRequest {
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
        /* */
         // 创建Post请求
-        HttpPost httpPost = new HttpPost("http://203.25.215.64:9092/pay/unionPay");
+        HttpPost httpPost = new HttpPost("http://localhost:9092/pay/unionPay");
 
         // 我这里利用阿里的fastjson，将Object转换为json字符串;
         // (需要导入com.alibaba.fastjson.JSON包)

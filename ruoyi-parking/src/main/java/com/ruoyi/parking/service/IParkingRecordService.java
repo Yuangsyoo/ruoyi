@@ -116,4 +116,6 @@ public interface IParkingRecordService
     List<ParkingRecord> selectParkingRecordListOne(Long parkinglotinformationid);
 
     List<ParkingRecord> getPayRecord1(ParkingRecord parkingRecord);
+
+    AjaxResult refreshstate(Long id);
 }

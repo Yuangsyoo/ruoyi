@@ -165,6 +165,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
     @Override
     @Transactional
     public AjaxResult editPayState(ParkingRecordVo parkingRecordVo) {
+        log.info(parkingRecordVo.getPaymentmethod());
         if (parkingRecordVo.getFlag().equals("0")){
             return AjaxResult.success();
         }else {
@@ -291,6 +292,7 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
         return new ArrayList<ParkingRecord>();
     }
 
+
     //修改状态并开闸
     private void updateState(String license, ParkingLotEquipment parkingLotEquipment, ParkingRecord findbypaystateandlicense, Long money) {
         findbypaystateandlicense.setPayTime(new Date());
@@ -330,15 +332,18 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
 
         ParkingRecord parkingRecord=null;
             //通过车牌查看停车记录
-            if(license1==null){
+            if(null== license1){
                  parkingRecord = parkingRecordMapper.findByOpenid(openid, parkingLotEquipment.getParkinglotinformationid());
-                if (parkingRecord==null){
+                if (null==parkingRecord){
                     return AjaxResult.error("无停车记录");
                 }
-            }else {
-                parkingRecord = parkingRecordMapper.findByLicense(license1, parkingLotEquipment.getParkinglotinformationid());
             }
-
+        if(null!= license1) {
+                parkingRecord = parkingRecordMapper.findByLicense(license1, parkingLotEquipment.getParkinglotinformationid());
+                if (null==parkingRecord){
+                    return AjaxResult.error("无停车记录");
+                }
+            }
 
         ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());
         parkingRecord.setOrderstate("2");
@@ -845,6 +850,29 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
         return parkingRecordMapper.findByLicenseAndIndoorPayment(parkinglotinformationid,license1);
     }
 
+    @Override
+    @Transactional
+    public AjaxResult refreshstate(Long id) {
+        ParkingRecord parkingRecord = new ParkingRecord();
+        parkingRecord.setParkinglotinformationid(id);
+        parkingRecord.setOrderstate("2");
+        List<ParkingRecord> list = selectParkingRecordList(parkingRecord);
+        if (list.size()!=0){
+            for (ParkingRecord parkingRecord1 : list) {
+                parkingRecord1.setPaystate("1");
+                parkingRecord1.setFlee(1L);
+                parkingRecord1.setOrderstate("1");
+                updateParkingRecord(parkingRecord1);
+            }
+            ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(id);
+            parkingLotInformation.setRemainingParkingSpace( parkingLotInformation.getRemainingParkingSpace()+list.size());
+            parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
+        return AjaxResult.success("刷新成功");
+        }else {
+            return AjaxResult.error("无记录");
+        }
+
+    }
 
 
 

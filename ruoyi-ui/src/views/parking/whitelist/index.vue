@@ -190,7 +190,7 @@
         <el-form-item label="开始时间" prop="starttime">
           <el-date-picker clearable
             v-model="form.starttime"
-            type="c"
+            type="datetime"
             value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="请选择开始时间">
           </el-date-picker>

@@ -154,6 +154,12 @@ export function getEquipment1(parkinglotinformationid) {
     method: 'get'
   })
 }
+export function getEquipmentOne(parkinglotinformationid) {
+  return request({
+    url: '/parking/equipment/getEquipmentOne/'+parkinglotinformationid,
+    method: 'get'
+  })
+}
 // 查询用户详细
 export function getUserByName(name) {
   return request({

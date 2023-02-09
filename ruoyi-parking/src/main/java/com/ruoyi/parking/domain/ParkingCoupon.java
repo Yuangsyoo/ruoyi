@@ -74,8 +74,16 @@ public class ParkingCoupon extends BaseEntity
     /** 优惠金额 优惠卷必须是金额卷 */
     @Excel(name = "优惠金额 优惠卷必须是金额卷")
     private String discountamount;
-
+    private Long  refresh;
     public ParkingCoupon() {
+    }
+
+    public Long getRefresh() {
+        return refresh;
+    }
+
+    public void setRefresh(Long refresh) {
+        this.refresh = refresh;
     }
 
     public ParkingCoupon(Long id, Long parkinglotinformationid, Integer type, String name, Long count, Integer usetype, Date qrcodestarttime, Date qrcodeendtime, Long receiveccount, Integer state, String qrcode, Integer preferentialfacevalue, String discountamount, ParkingLotInformation parkingLotInformation) {

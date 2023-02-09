@@ -185,11 +185,7 @@
           <span style="color: red" v-else-if="scope.row.state==1">禁用</span>
         </template>
       </el-table-column>
-      <el-table-column label="免费时常" align="center" prop="freetime" width="75">
-        <template scope="scope">
-          <span style="color: green" >{{scope.row.freetime}}分钟</span>
-        </template>
-      </el-table-column>
+
 
       <el-table-column label="车位个数" align="center" prop="number" />
       <el-table-column label="剩余车位" align="center" prop="remainingParkingSpace" />

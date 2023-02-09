@@ -113,8 +113,10 @@ export default {
       getUserByName(name).then(res=>{
        if (res){
          console.log(res.data.phonenumber)
-        // localStorage.setItem("uu",res.data.name)
+        // localStorage.setItem
+         localStorage.setItem("bb",res.data.sex)
          localStorage.setItem("aa",res.data.phonenumber)
+
        }
       })
     },
@@ -131,6 +133,8 @@ export default {
 
           localStorage.removeItem("name")
           localStorage.removeItem("uu")
+          localStorage.removeItem("aa")
+          localStorage.removeItem("bb")
           location.href = '/index';
         })
       }).catch(() => {});

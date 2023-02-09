@@ -85,7 +85,7 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
                 parkingLotEquipment.setQrcode(s);
             }
             String advertisement = SerialPortUtils.advertisement(parkingLotEquipment);
-            redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber()+"revise",advertisement,30, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber()+"revise",advertisement);
 
             return parkingLotEquipmentMapper.updateParkingLotEquipment(parkingLotEquipment);
         } catch (Exception e) {
@@ -105,7 +105,7 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     public int updateParkingLotEquipment(ParkingLotEquipment parkingLotEquipment)
     {
         String advertisement = SerialPortUtils.advertisement(parkingLotEquipment);
-        redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber()+"revise",advertisement,30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber()+"revise",advertisement);
 
         return parkingLotEquipmentMapper.updateParkingLotEquipment(parkingLotEquipment);
     }
@@ -157,5 +157,10 @@ public class ParkingLotEquipmentServiceImpl implements IParkingLotEquipmentServi
     @Override
     public List<ParkingLotEquipment> byParkinglotinformationid1(Long parkinglotinformationid) {
         return parkingLotEquipmentMapper.byParkinglotinformationid1(parkinglotinformationid);
+    }
+
+    @Override
+    public List<ParkingLotEquipment> getEquipmentOne(Long parkinglotinformationid) {
+        return parkingLotEquipmentMapper.getEquipmentOne(parkinglotinformationid);
     }
 }

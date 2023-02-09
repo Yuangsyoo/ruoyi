@@ -46,6 +46,16 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="出口闸" prop="parkingeqid">
+        <el-select v-model="queryParams.parkingeqid" clearable  placeholder="请选择">
+          <el-option
+            v-for="item in parkingeqids"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="支付方式" prop="paymentmethod">
         <el-select v-model="queryParams.paymentmethod" clearable  placeholder="请选择">
           <el-option
@@ -105,7 +115,15 @@
           v-hasPermi="['parking:record:export']"
         >导出</el-button>
       </el-col>
-
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          @click="refresh"
+        >刷新逃费车辆</el-button>
+      </el-col>
 
 
 
@@ -300,13 +318,13 @@
 </template>
 
 <script>
-import { listRecord, getRecord1, delRecord, addRecord, updateRecord } from "@/api/parking/record";
-import {getarkinglotinformations} from "@/api/system/user";
-
+import { listRecord, getRecord1, delRecord, addRecord, updateRecord, refreshstate } from "@/api/parking/record";
+import {getarkinglotinformations, getEquipment1} from "@/api/system/user";
 export default {
   name: "Record",
   data() {
     return {
+      parkingeqids:[],
       paymentmethods:[{
         id: '农信',
         name: '农信'
@@ -369,6 +387,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        parkingeqid:null,
         paymentmethod:null,
         pageNum: 1,
         pageSize: 10,
@@ -400,10 +419,24 @@ export default {
     };
   },
   created() {
+    this.getEq(localStorage.getItem("uu"));
     this.getList();
     this.getarkinglotinformations(localStorage.getItem("uu"));
   },
+
   methods: {
+    refresh(){
+      var a=localStorage.getItem("uu")
+      refreshstate(a).then(res=>{
+        if (res.code===200){
+          this.$modal.msgSuccess("刷新成功");
+        }
+      })
+    },
+    getEq(parkinglotinformationid){
+      getEquipment1(parkinglotinformationid).then(res=>{
+        this.parkingeqids=res.data
+      })},
     getarkinglotinformations(id){
       getarkinglotinformations(id).then(res=>{
         this.parkinglotinformations=res.data

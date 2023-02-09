@@ -197,4 +197,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="byParkinglotinformationid1" resultType="com.ruoyi.common.core.domain.entity.ParkingLotEquipment">
         select *  from parking_lot_equipment  where parkingLotInformationId=#{parkinglotinformationid} and direction='1'
     </select>
+    <select id="getEquipmentOne" resultType="com.ruoyi.common.core.domain.entity.ParkingLotEquipment">
+        select *  from parking_lot_equipment  where parkingLotInformationId=#{parkinglotinformationid} and direction='0'
+    </select>
 </mapper>

@@ -261,4 +261,10 @@ public class ParkingRecordController extends BaseController {
             return AjaxResult.success("无记录");
         }
     }
+
+
+    @GetMapping("/refreshstate/{id}")
+    public AjaxResult refreshstate(@PathVariable Long id) {
+        return parkingRecordService.refreshstate(id);
+    }
 }

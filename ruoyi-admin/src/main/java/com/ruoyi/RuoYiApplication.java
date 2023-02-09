@@ -19,7 +19,6 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @EnableScheduling
-
 public class RuoYiApplication {
     public static void main(String[] args) {
         String version = SpringBootVersion.getVersion();

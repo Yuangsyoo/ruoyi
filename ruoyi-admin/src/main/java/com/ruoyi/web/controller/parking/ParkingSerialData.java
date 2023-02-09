@@ -43,14 +43,14 @@ private IParkingLotInformationService parkingLotInformationService;
                    @RequestParam(value = "pass_wd")String password,
                    @RequestParam(value = "serialno")String serialno,
                    @RequestParam(value = "channel_num")String channelNum) {
-                   /* log.info(deviceName);
+                    log.info(deviceName);
                     log.info(ipaddr);
                     log.info(port);
                     log.info(userName);
                     log.info(serialno);
-                  ;*/
+
         ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.findParkingLotEquipmentBySerialno(serialno);
-        ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());
+        /*ParkingLotInformation parkingLotInformation = parkingLotInformationService.selectParkingLotInformationById(parkingLotEquipment.getParkinglotinformationid());*/
         //log.info(parkingLotInformation.getName()+"停车场设备【"+parkingLotEquipment.getName()+"】心跳续约正常");
                     //可以考虑做后台向设备发送开杆指令
         // TODO: 2023/1/31 判断redis中是否有值，没有就是普通心调 有就是发送开干指令
@@ -70,7 +70,7 @@ private IParkingLotInformationService parkingLotInformationService;
         }
         //添加数据redis中  等待定时任务查询修改设备状态  设置10s过期时间
         redisTemplate.opsForValue().set(serialno+"state",serialno,10, TimeUnit.SECONDS);
-        return  s;
+      return s;
     }
 
 

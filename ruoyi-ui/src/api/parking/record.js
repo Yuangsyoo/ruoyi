@@ -98,3 +98,10 @@ export function updateToRecordFromCoupon1(id) {
     method: 'get',
   })
 }
+//手动刷新逃费车辆
+export function refreshstate(id) {
+  return request({
+    url: '/parking/record/refreshstate/' + id,
+    method: 'get'
+  })
+}
