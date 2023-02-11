@@ -112,4 +112,6 @@ public class ParkingRecord extends BaseEntity
     private Date endtime;
     //最近离场停车设备id
     private Long parkingeqid;
+
+    private String date;
 }

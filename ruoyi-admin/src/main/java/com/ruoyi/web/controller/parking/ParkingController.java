@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.parking;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.entity.ParkingLotEquipment;
 import com.ruoyi.common.core.domain.entity.ParkingLotInformation;
@@ -13,13 +14,13 @@ import com.ruoyi.common.utils.DateTime.DateTime;
 import com.ruoyi.framework.websocket.WebSocketService;
 import com.ruoyi.parking.domain.*;
 
-import com.ruoyi.parking.dto.Timeval;
-import com.ruoyi.parking.dto.Total;
+import com.ruoyi.parking.dto.*;
 import com.ruoyi.parking.mapper.ParkingBlackListMapper;
 import com.ruoyi.parking.mapper.ParkingLotInformationMapper;
 import com.ruoyi.parking.mapper.ParkingWhiteListMapper;
 import com.ruoyi.parking.service.*;
 import com.ruoyi.parking.service.impl.ParkingChargingServiceImpl;
+import com.ruoyi.parking.utils.HttpRequest;
 import com.ruoyi.parking.utils.SerialPortUtils;
 import com.ruoyi.parking.vo.*;
 import com.ruoyi.system.mapper.SysUserMapper;
@@ -225,12 +226,7 @@ public class ParkingController extends Thread {
         }
         else {
         log.info(license+"车牌在"+parkingLotInformation.getName()+"停车场"+"出场识别时间"+date);
-            //判断设备是否可用
-            /*if (parkingLotEquipment.getState().equals("1")){
-                String data = SerialPortUtils.equipmentAbnormality();
-                log.info(parkingLotEquipment.getName()+"设备异常");
-                return data;
-            }*/
+
             //查询没有支付得记录信息
             ParkingRecord parkingRecord=parkingRecordService.findByParkingLotInformationLicenseAndPayOrder(parkingLotInformation.getId(),license);
             ParkingWhiteList byLicense = parkingWhiteListMapper.findByLicense(license, parkingLotInformation.getId());
@@ -285,20 +281,29 @@ public class ParkingController extends Thread {
                     //应收金额
                     parkingRecord.setAmountpayable(0L);
                     parkingRecord.setParkingeqid(parkingLotEquipment.getId());
-                    //出场后修改停车场记录
-                    parkingRecordService.updateParkingRecord(parkingRecord);
-                    Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
-                    parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
-                    parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                    //计算停车时间
+                    String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                    parkingRecord.setDate(datePoor);
                     List<ParkingRecord> list = new ArrayList<>();
                     list.add(parkingRecord);
                     String s = JSON.toJSONString(list);
+                    try {
+                        //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+                        redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }finally {
+                        //出场后修改停车场记录
+                        parkingRecordService.updateParkingRecord(parkingRecord);
+                        Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                        parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
+                        parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                        log.info(license+"特定车辆，直接放行"+"【"+parkingLotInformation.getName()+"】"+date);
+                        String data = SerialPortUtils.specificvehicleexit(license);
+                        return data;
+                    }
 
-                        webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
 
-                    log.info(license+"特定车辆，直接放行"+"【"+parkingLotInformation.getName()+"】"+date);
-                    String data = SerialPortUtils.specificvehicleexit(license);
-                    return data;
                 }
             }
             // 判断是否在白名单范围  在直接放行
@@ -343,23 +348,30 @@ public class ParkingController extends Thread {
                     parkingRecord.setDiscountamount(0L);
                     //应收金额
                     parkingRecord.setAmountpayable(0L);
-                    //出场后修改停车场记录
-                    parkingRecordService.updateParkingRecord(parkingRecord);
-                    Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
-                    parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
-                    parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                    //计算停车时间
+                    String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                    parkingRecord.setDate(datePoor);
                     List<ParkingRecord> list = new ArrayList<>();
                     list.add(parkingRecord);
                     String s = JSON.toJSONString(list);
-
-                        webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
-
-                    Date starttime = byLicense.getStarttime();
-                    Date endtime = byLicense.getEndtime();
-                    long l = (endtime.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
-                    String data = SerialPortUtils.whiteList(license,l);
-                    log.info(license+"白名单车主，直接放行"+"【"+parkingLotInformation.getName()+"】"+data);
-                    return data;
+                    try {
+                        //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+                        redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }finally {
+                        //出场后修改停车场记录
+                        parkingRecordService.updateParkingRecord(parkingRecord);
+                        Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                        parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
+                        parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                        Date starttime = byLicense.getStarttime();
+                        Date endtime = byLicense.getEndtime();
+                        long l = (endtime.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
+                        String data = SerialPortUtils.whiteList(license,l);
+                        log.info(license+"白名单车主，直接放行"+"【"+parkingLotInformation.getName()+"】"+data);
+                        return data;
+                    }
                 }
             }
             //   判断有无优惠卷次卷 停车场id 车牌号  次卷  状态(待使用状态)
@@ -423,22 +435,31 @@ public class ParkingController extends Thread {
                 parkingRecord.setDiscountamount(0L);
                 //应收金额
                 parkingRecord.setAmountpayable(0L);
-                //出场后修改停车场记录
-                parkingRecordService.updateParkingRecord(parkingRecord);
-                Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
-                parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
-                parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                //计算停车时间
+                String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                parkingRecord.setDate(datePoor);
                 List<ParkingRecord> list = new ArrayList<>();
                 list.add(parkingRecord);
                 String s = JSON.toJSONString(list);
-                List<SysUser> list1 = sysUserMapper.findUserList(parkingLotInformation.getId());
-                for (SysUser user : list1) {
-                    webSocketService.sendMessage(user.getUserName(),s);
+                try {
+                   // webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+                    redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    //出场后修改停车场记录
+                    parkingRecordService.updateParkingRecord(parkingRecord);
+                    Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                    parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
+                    parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                    String data = SerialPortUtils.ExportSecondaryVolume(license);
+                    log.info(license+"固定停车位车主，直接放行"+"【"+parkingLotInformation.getName()+"】");
+                    return data;
                 }
-                String data = SerialPortUtils.ExportSecondaryVolume(license);
-                log.info(license+"固定停车位车主，直接放行"+"【"+parkingLotInformation.getName()+"】");
-                return data;
+
+
             }
+
 
             //停车场内支付业务逻辑
             //  查询是否有场内支付记录
@@ -554,26 +575,116 @@ public class ParkingController extends Thread {
                         parkingRecord.setOrderstate("1");
                         parkingRecord.setPayTime(date);
                         parkingRecord.setParkingeqid(parkingLotEquipment.getId());
-                        parkingRecordService.updateParkingRecord(parkingRecord);
-                        //停车位加一
-                        Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
-                        parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
-                        parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
                         String s = SerialPortUtils.ExportSecondaryVolume(license);
+                        //计算停车时间
+                        String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                        parkingRecord.setDate(datePoor);
                         List<ParkingRecord> list = new ArrayList<>();
                         list.add(parkingRecord);
                         String s1 = JSON.toJSONString(list);
-                        webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s1);
-                        log.info("车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】优惠卷后计算金额为0时，直接放行");
+                        try {
+                            //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s1);
+                            redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s1);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }finally {
+                            parkingRecordService.updateParkingRecord(parkingRecord);
+                            //停车位加一
+                            Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                            parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
+                            parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                            log.info("车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】优惠卷后计算金额为0时，直接放行");
+                            return s;
+                        }
 
-                        return s;
                     }
+                    //无感支付
+                    if (parkingLotInformation.getPlatformpaymentState().equals("0")){
+                        //判断是否签约农信无感停车
+                        Long count = judge(license);
+                        //签约
+                        if (count>0){
+                            log.info(license+"已签约农信无感支付");
+                            //无感支付
+                            String respCode = getString(license, parkingLotInformation, date, parkingRecord, moneyVo);
+                            String[] split = respCode.split(",");
+                            //查询无感支付状态
+                            PayState payState = new PayState();
+                            payState.setPayType("3");
+                            payState.setTradeCode("1011");
+                            InPayData inPayData = new InPayData();
+                            inPayData.setOrder_out_no("TCT_" + CodeGenerateUtils.generateUnionPaySn());
+                            inPayData.setOutTime( new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+                            //商户号
+                            inPayData.setMchtNo(parkingLotInformation.getRuralcreditpaymentId());
+                            inPayData.setOrigReqSsn(split[0]);
+                            inPayData.setOrigReqTime(split[1]);
+                            payState.setInPayData(inPayData);
+                            int timing=0;
+                            while (true) {
+                                try {
+                                    String s = HttpRequest.doPostTestTwo(payState);
+                                    System.out.println(s);
+                                    if (s!=null){
+                                        JSONObject jsonObject = JSONObject.parseObject(s);
+                                        String orderStat = (String) jsonObject.get("orderState");
+                                        if (orderStat!=null&&orderStat!="") {
+                                            if (orderStat.equals("00")) {
+                                                log.info("【订单号" + split[0] + "】" + "订单支付成功");
+                                                parkingRecord.setPaystate("1");
+                                                parkingRecord.setOrderstate("1");
+                                                parkingRecord.setPayTime(date);
+                                                parkingRecord.setPaymentmethod("无感支付");
+                                                parkingRecord.setOrdernumber(split[0]);
+                                                parkingRecord.setParkingeqid(parkingLotEquipment.getId());
+                                                String s2 = SerialPortUtils.ExportSecondaryVolume(license);
+                                                //计算停车时间
+                                                String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                                                parkingRecord.setDate(datePoor);
+
+                                                List<ParkingRecord> list = new ArrayList<>();
+                                                list.add(parkingRecord);
+                                                String s1 = JSON.toJSONString(list);
+                                                try {
+                                                    //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s1);
+                                                    redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s1);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }finally {
+                                                    parkingRecordService.updateParkingRecord(parkingRecord);
+                                                    //停车位加一
+                                                    Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                                                    parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
+                                                    parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                                                    log.info("车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】农信无感支付成功，直接放行");
+                                                    return s2;
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                    Thread.sleep(3000);
+                                    timing++;
+                                    if (timing == 60) {
+                                        log.info("【订单号" + split[0] + "】"+"订单未支付成功");
+                                        break;
+                                    }
+                                    log.info("正在查询订单状态【订单号" + split[0] + "】" + time);
+
+                                } catch (InterruptedException e) {
+                                    log.info(license+"无感支付错误"+e);
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        log.info(license+"未签约农信无感支付");
+                    }
+
+
+
                     parkingRecord.setParkinglotequipmentid(parkingLotEquipment.getId());
                     parkingRecord.setParkingeqid(parkingLotEquipment.getId());
                     parkingRecordService.updateParkingRecord(parkingRecord);
-                    List<ParkingRecord> list = new ArrayList<>();
-                    list.add(parkingRecord);
-                    String s = JSON.toJSONString(list);
 
                     ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
 
@@ -586,8 +697,16 @@ public class ParkingController extends Thread {
                     Date admissiontime = parkingRecord.getAdmissiontime();
                     long l1 = (date.getTime()-admissiontime.getTime()) / (1000*60);
                     String data1 = SerialPortUtils.ExitOne(license,l1,moneyVo.getMoney());
+                    //计算停车时间
+                    String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                    parkingRecord.setDate(datePoor);
+                    List<ParkingRecord> list = new ArrayList<>();
+                    list.add(parkingRecord);
+                    String s = JSON.toJSONString(list);
+
                     //WebSocketService发送给前端消息
-                        webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+                       // webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+                    redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
                     log.info(license+"门闸口支付业务逻辑 "+"【"+parkingLotInformation.getName()+"】");
                     return data1;
                 }
@@ -603,18 +722,31 @@ public class ParkingController extends Thread {
                         parkingRecord.setOrderstate("1");
                         parkingRecord.setParkingeqid(parkingLotEquipment.getId());
                         parkingRecord.setPayTime(date);
-                        parkingRecordService.updateParkingRecord(parkingRecord);
-                        String s = SerialPortUtils.ExportSecondaryVolume(license);
-                        Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
-                        parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
-                        parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
+                        //计算停车时间
+                        String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                        parkingRecord.setDate(datePoor);
                         List<ParkingRecord> list = new ArrayList<>();
                         list.add(parkingRecord);
                         String s1 = JSON.toJSONString(list);
-                        webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s1);
-                        log.info("充值卡车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】优惠卷后计算金额为0时，直接放行");
-                        return s;
+                        try {
+                            //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s1);
+                            redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s1);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }finally {
+                            parkingRecordService.updateParkingRecord(parkingRecord);
+                            String s = SerialPortUtils.ExportSecondaryVolume(license);
+                            Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                            parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
+                            parkingLotInformationService.updateParkingLotInformation(parkingLotInformation);
+                            log.info("充值卡车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】优惠卷后计算金额为0时，直接放行");
+                            return s;
+                        }
+
+
                     }
+
+
                     //充值卡余额
                     Long balance = parkingRecharge.getBalance();
                     long l = balance - moneyVo.getMoney();
@@ -645,11 +777,16 @@ public class ParkingController extends Thread {
                         parkingRecord.setAmountpayable( moneyVo.getMoney());
                         //出场后修改停车场记录
                         parkingRecordService.updateParkingRecord(parkingRecord);
+                        //计算停车时间
+                        String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                        parkingRecord.setDate(datePoor);
+
                         List<ParkingRecord> list = new ArrayList<>();
                         list.add(parkingRecord);
                         String s = JSON.toJSONString(list);
                         //WebSocketService发送给前端消息
-                            webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+                            //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+                        redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
 
                         Date admissiontime = parkingRecord.getAdmissiontime();
                         long l1 = (date.getTime()-admissiontime.getTime()) / (1000*60);
@@ -665,11 +802,97 @@ public class ParkingController extends Thread {
                         parkingRechargeService.updateParkingRecharge(parkingRecharge);
                         //补缴金额
                         long l2 = moneyVo.getMoney() - balance;
+                        //无感支付
+                        if (parkingLotInformation.getPlatformpaymentState().equals("0")){
+                            //判断是否签约农信无感停车
+                            Long count = judge(license);
+                            //签约
+                            if (count>0){
+                                log.info(license+"已签约农信无感支付");
+                                //无感支付
+                                moneyVo.setMoney(l2);
+                                String respCode = getString(license, parkingLotInformation, date, parkingRecord, moneyVo);
+                                String[] split = respCode.split(",");
+                                //查询无感支付状态
+                                PayState payState = new PayState();
+                                payState.setPayType("3");
+                                payState.setTradeCode("1011");
+                                InPayData inPayData = new InPayData();
+                                inPayData.setOrder_out_no("TCT_" + CodeGenerateUtils.generateUnionPaySn());
+                                inPayData.setOutTime( new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+                                //商户号
+                                inPayData.setMchtNo(parkingLotInformation.getRuralcreditpaymentId());
+                                inPayData.setOrigReqSsn(split[0]);
+                                inPayData.setOrigReqTime(split[1]);
+                                payState.setInPayData(inPayData);
+                                int timing=0;
+                                while (true) {
+                                    try {
+                                        String s = HttpRequest.doPostTestTwo(payState);
+                                        System.out.println(s);
+                                        if (s!=null){
+                                            JSONObject jsonObject = JSONObject.parseObject(s);
+                                            String orderStat = (String) jsonObject.get("orderState");
+                                            if (orderStat!=null&&orderStat!="") {
+                                                if (orderStat.equals("00")) {
+                                                    log.info("【订单号" + split[0] + "】" + "订单支付成功");
+                                                    parkingRecord.setPaystate("1");
+                                                    parkingRecord.setOrderstate("1");
+                                                    parkingRecord.setPayTime(date);
+                                                    parkingRecord.setOrdernumber(split[0]);
+                                                    parkingRecord.setPaymentmethod("充值车(无感支付)");
+                                                    parkingRecord.setParkingeqid(parkingLotEquipment.getId());
+                                                    String s2 = SerialPortUtils.ExportSecondaryVolume(license);
+                                                    //计算停车时间
+                                                    String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                                                    parkingRecord.setDate(datePoor);
+
+                                                    List<ParkingRecord> list = new ArrayList<>();
+                                                    list.add(parkingRecord);
+                                                    String s1 = JSON.toJSONString(list);
+                                                    try {
+                                                       // webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s1);
+                                                        redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s1);
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }finally {
+                                                        parkingRecordService.updateParkingRecord(parkingRecord);
+                                                        //停车位加一
+                                                        Long remainingParkingSpace = parkingLotInformation.getRemainingParkingSpace();
+                                                        parkingLotInformation.setRemainingParkingSpace(remainingParkingSpace+1);
+                                                        parkingLotInformationMapper.updateParkingLotInformation(parkingLotInformation);
+                                                        log.info("车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】农信无感支付成功，直接放行");
+                                                        return s2;
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                        Thread.sleep(3000);
+                                        timing++;
+                                        if (timing == 60) {
+                                            log.info("【订单号" + split[0] + "】"+"订单未支付成功");
+                                            break;
+                                        }
+                                        log.info("正在查询订单状态【订单号" + split[0] + "】" + time);
+
+                                    } catch (InterruptedException e) {
+                                        log.info(license+"无感支付错误"+e);
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                            log.info(license+"未签约农信无感支付");
+                        }
+                        //计算停车时间
+                        String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+                        parkingRecord.setDate(datePoor);
                         List<ParkingRecord> list = new ArrayList<>();
                         list.add(parkingRecord);
                         String s = JSON.toJSONString(list);
                         //WebSocketService发送给前端消息
-                            webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()), s);
+                           // webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()), s);
+                        redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
 
                         ParkingRecordVo parkingRecordVo = new ParkingRecordVo();
                         BeanUtils.copyProperties(parkingRecord, parkingRecordVo);
@@ -693,6 +916,55 @@ public class ParkingController extends Thread {
         }
         log.info("程序异常，请联系管理人员，停车场【"+parkingLotInformation.getName()+"】");
         return "{\"Response_AlarmInfoPlate\":{\"info\":\"no\",\"content\":\"程序异常，请联系管理人员\",\"is_pay\":\"true\"}}";
+    }
+
+    private String getString(String license, ParkingLotInformation parkingLotInformation, Date date, ParkingRecord parkingRecord, MoneyVo moneyVo) {
+        PayState payState = new PayState();
+        payState.setPayType("3");
+        payState.setTradeCode("1012");
+        InPayData inPayData = new InPayData();
+        //生成订单号
+        String s1 = "TCT_" + CodeGenerateUtils.generateUnionPaySn();
+        log.info(license +"生成订单交易号:"+s1);
+        inPayData.setOrder_out_no(s1);
+        //交易时间
+        String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        inPayData.setOrder_time(time);
+        //商户号
+        inPayData.setMchtNo(parkingLotInformation.getRuralcreditpaymentId());
+        //金额
+        inPayData.setOrder_amountl(String.valueOf(moneyVo.getMoney()));
+        //订单描述
+        inPayData.setOrder_subject(parkingLotInformation.getName()+"停车费支付");
+        //进场时间
+        inPayData.setInTime(new SimpleDateFormat("yyyyMMddHHmmss").format(parkingRecord.getAdmissiontime()));
+        //出场时间
+        inPayData.setOutTime(new SimpleDateFormat("yyyyMMddHHmmss").format(date));
+        //车牌号
+        inPayData.setCarId(license);
+        //停车场名称
+        inPayData.setCarpark(parkingLotInformation.getName());
+        String s = HttpRequest.doPostTestTwo(payState);
+        JSONObject jsonObject = JSONObject.parseObject(s);
+        String respCode = (String) jsonObject.get("respCode");
+        if (!respCode.equals("0000000000")){
+            log.info(license+"无感支付支付失败");
+        }
+        return s1+","+time;
+    }
+
+    //判断是否签约农信无感停车
+    private Long judge(String license) {
+        PayState payState = new PayState();
+        payState.setPayType("3");
+        payState.setTradeCode("1010");
+        InPayData inPayData = new InPayData();
+        inPayData.setCarId(license);
+        payState.setInPayData(inPayData);
+        String s = HttpRequest.doPostTestTwo(payState);
+        JSONObject jsonObject = JSONObject.parseObject(s);
+        Long count =(Long) jsonObject.get("recordCount");
+        return count;
     }
 
     //出场后修改停车场记录
@@ -731,12 +1003,16 @@ public class ParkingController extends Thread {
         }
         //出场后修改停车场记录
         parkingRecordService.updateParkingRecord(parkingRecord);
+        //计算停车时间
+        String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+        parkingRecord.setDate(datePoor);
         List<ParkingRecord> list = new ArrayList<>();
         list.add(parkingRecord);
         String s = JSON.toJSONString(list);
         //WebSocketService发送给前端消息
 
-            webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+            //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+        redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
 
     }
     //出场后修改停车场记录
@@ -780,16 +1056,26 @@ public class ParkingController extends Thread {
             // 把入口名字和提取出的最后一次出口名字进行拼接并赋值
             parkingRecord.setEntranceandexitname(b+","+name1);
         }
-        //出场后修改停车场记录
-        parkingRecordService.updateParkingRecord(parkingRecord);
+        //计算停车时间
+        String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
+        parkingRecord.setDate(datePoor);
         List<ParkingRecord> list = new ArrayList<>();
         list.add(parkingRecord);
         String s = JSON.toJSONString(list);
         //WebSocketService发送给前端消息
+        try {
+            //webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
+            redisTemplate.opsForValue().set(parkingLotEquipment.getId()+"aa",s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            //出场后修改停车场记录
+            parkingRecordService.updateParkingRecord(parkingRecord);
+            return parkingRecord.getOrdernumber();
+        }
 
-            webSocketService.sendMessage(String.valueOf(parkingLotEquipment.getId()),s);
 
-        return parkingRecord.getOrdernumber();
+
 
     }
     //停车场车位数加一
@@ -832,7 +1118,30 @@ public class ParkingController extends Thread {
         parkingRecord1.setEntranceandexitname(name);
         parkingRecordService.insertParkingRecord(parkingRecord1);
     }
+    //计算相差时间
+    public static String getDatePoor(Date endDate, Date nowDate) {
 
+        long nd = 1000 * 24 * 60 * 60;//每天毫秒数
 
+        long nh = 1000 * 60 * 60;//每小时毫秒数
+
+        long nm = 1000 * 60;//每分钟毫秒数
+
+        long diff = endDate.getTime() - nowDate.getTime(); // 获得两个时间的毫秒时间差异
+
+        long day = diff / nd;   // 计算差多少天
+
+        long hour = diff % nd / nh; // 计算差多少小时
+
+        long min = diff % nd % nh / nm;  // 计算差多少分钟
+
+        return day + "天" + hour + "小时" + min + "分钟";
+
+    }
+
+    public static void main(String[] args) {
+        String datePoor = getDatePoor(new Date(), new Date());
+        System.out.println(datePoor);
+    }
 
 }

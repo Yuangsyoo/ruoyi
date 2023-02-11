@@ -90,6 +90,13 @@ public class ParkingRecordController extends BaseController {
     public AjaxResult getInfo1(@PathVariable("id") Long id) {
         return success(parkingRecordService.selectParkingRecordById1(id));
     }
+    @GetMapping(value = "/moneyOne2/{id}")
+    public AjaxResult getInfo2(@PathVariable("id") Long id) {
+        String o =(String) redisTemplate.opsForValue().get(id + "aa");
+
+            return AjaxResult.success(o);
+
+    }
     /**
      * 新增停车记录
      */

@@ -23,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="maxmonths"    column="maxMonths"    />
         <result property="monthlycardpurchase"    column="monthlyCardPurchase"    />
         <result property="temporaryvehiclerestrictions"    column="temporaryVehicleRestrictions"    />
-        <result property="platformpaymentState"    column="platformPayment_state"    />
+        <result property="platformpaymentState"    column="platformpaymentState"    />
         <result property="overtimecompensation"    column="overtimeCompensation"    />
         <result property="norecorddeparture"    column="noRecordDeparture"    />
         <result property="alipaypaymentState"    column="alipayPayment_state"    />
@@ -79,7 +79,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maxmonths != null "> and maxMonths = #{maxmonths}</if>
             <if test="monthlycardpurchase != null  and monthlycardpurchase != ''"> and monthlyCardPurchase = #{monthlycardpurchase}</if>
             <if test="temporaryvehiclerestrictions != null  and temporaryvehiclerestrictions != ''"> and temporaryVehicleRestrictions = #{temporaryvehiclerestrictions}</if>
-            <if test="platformpaymentState != null  and platformpaymentState != ''"> and platformPayment_state = #{platformpaymentState}</if>
+            <if test="platformpaymentState != null  and platformpaymentState != ''"> and platformpaymentState = #{platformpaymentState}</if>
             <if test="overtimecompensation != null  and overtimecompensation != ''"> and overtimeCompensation = #{overtimecompensation}</if>
             <if test="norecorddeparture != null  and norecorddeparture != ''"> and noRecordDeparture = #{norecorddeparture}</if>
             <if test="alipaypaymentState != null  and alipaypaymentState != ''"> and alipayPayment_state = #{alipaypaymentState}</if>
@@ -125,7 +125,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maxmonths != null">maxMonths,</if>
             <if test="monthlycardpurchase != null and monthlycardpurchase != ''">monthlyCardPurchase,</if>
             <if test="temporaryvehiclerestrictions != null">temporaryVehicleRestrictions,</if>
-            <if test="platformpaymentState != null">platformPayment_state,</if>
+            <if test="platformpaymentState != null">platformpaymentState,</if>
             <if test="overtimecompensation != null">overtimeCompensation,</if>
             <if test="norecorddeparture != null">noRecordDeparture,</if>
             <if test="alipaypaymentState != null">alipayPayment_state,</if>
@@ -203,7 +203,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maxmonths != null">maxMonths = #{maxmonths},</if>
             <if test="monthlycardpurchase != null and monthlycardpurchase != ''">monthlyCardPurchase = #{monthlycardpurchase},</if>
             <if test="temporaryvehiclerestrictions != null">temporaryVehicleRestrictions = #{temporaryvehiclerestrictions},</if>
-            <if test="platformpaymentState != null">platformPayment_state = #{platformpaymentState},</if>
+            <if test="platformpaymentState != null">platformpaymentState = #{platformpaymentState},</if>
             <if test="overtimecompensation != null">overtimeCompensation = #{overtimecompensation},</if>
             <if test="norecorddeparture != null">noRecordDeparture = #{norecorddeparture},</if>
             <if test="alipaypaymentState != null">alipayPayment_state = #{alipaypaymentState},</if>

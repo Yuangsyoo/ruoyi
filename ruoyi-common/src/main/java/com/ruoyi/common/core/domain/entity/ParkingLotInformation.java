@@ -95,8 +95,8 @@ public class ParkingLotInformation extends BaseEntity
     @Excel(name = "是否开启临时车限制0开启1关闭")
     private String temporaryvehiclerestrictions;
 
-    /** 是否开启平台支付0开启1关闭 */
-    @Excel(name = "是否开启平台支付0开启1关闭")
+    /** 是否开启农信无感支付0开启1关闭 */
+    @Excel(name = "是否开启农信无感支付0开启1关闭")
     private String platformpaymentState;
 
     /** 超时补费0开启1关闭 */
@@ -153,14 +153,11 @@ public class ParkingLotInformation extends BaseEntity
     /** 备用字段2 */
     @Excel(name = "剩余车位")
     private Long remainingParkingSpace;
-
-
-
     /** 备用字段4 */
-    @Excel(name = "备用字段4")
+
     private String numberfour;
     /** 备用字段4 */
-    @Excel(name = "备用字段4")
+
     private String onSiteQRCode;
 
 

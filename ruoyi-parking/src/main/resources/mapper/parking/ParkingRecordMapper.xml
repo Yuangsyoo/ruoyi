@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="parkingeqid != null "> and p.parkingeqid = #{parkingeqid}</if>
             <if test="supplementaryfee != null "> and p.supplementaryfee = #{supplementaryfee}</if>
             <if test="wxorder != null "> and p.wxorder = #{wxorder}</if>
-            <if test="paymentmethod != null "> and p.paymentMethod = #{paymentmethod}</if>
+            <if test="paymentmethod != null "> and p.paymentMethod like concat('%',#{paymentmethod},'%')</if>
             <if test="starttime != null " >
                 and p.admissionTime <![CDATA[ >= ]]> CAST(CONCAT(#{starttime},' 00:00:00') AS datetime)
             </if>
@@ -96,7 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="flee != null "> and flee = #{flee}</if>
             <if test="supplementaryfee != null "> and supplementaryfee = #{supplementaryfee}</if>
             <if test="wxorder != null "> and wxorder = #{wxorder}</if>
-            <if test="paymentmethod != null "> and paymentMethod = #{paymentmethod}</if>
+            <if test="paymentmethod != null "> and paymentMethod like concat('%',#{paymentmethod},'%')</if>
             <if test="starttime != null " >
                 and admissionTime <![CDATA[ >= ]]> CAST(CONCAT(#{starttime},' 00:00:00') AS datetime)
             </if>
@@ -294,7 +294,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <!--List<ParkingRecord> selectParkingRecordListOne(Long parkinglotinformationid);-->
     <select id="selectParkingRecordListOne" resultType="com.ruoyi.parking.domain.ParkingRecord">
-        select * from parking_record  where parkingLotInformationId=#{parkinglotinformationid} ORDER BY exitTime desc limit 0,10
+        select license,admissionTime,exitTime,money,orderState  from parking_record  where parkingLotInformationId=#{parkingLotInformationId} and payState='1' ORDER BY exitTime desc limit 0,10
     </select>
 <!--   AjaxResult getPayRecord1(@Param("parkingLotInformationId")Long parkinglotinformationid, @Param("parkingeqid")Long parkingeqid);-->
     <select id="getPayRecord1" resultMap="ParkingRecordResult">

@@ -220,7 +220,7 @@
           <span style="color: red" v-else-if="scope.row.temporaryvehiclerestrictions==1">关闭</span>
         </template>
       </el-table-column>
-      <el-table-column label="无记录离场收起步价" align="center" prop="norecorddeparture" >
+      <el-table-column label="无记录离场" align="center" prop="norecorddeparture" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.norecorddeparture==0">开启</span>
           <span style="color: red" v-else-if="scope.row.norecorddeparture==1">关闭</span>
@@ -234,13 +234,13 @@
           </el-image>
         </template>
       </el-table-column>
-
-<!--      <el-table-column label="平台支付" align="center" prop="platformpaymentState" >
+      <el-table-column label="农信无感支付" align="center" prop="platformpaymentState" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.platformpaymentState==0">开启</span>
           <span style="color: red" v-else-if="scope.row.platformpaymentState==1">关闭</span>
         </template>
       </el-table-column>
+<!--
       <el-table-column label="超时补费" align="center" prop="overtimecompensation" >
         <template scope="scope">
           <span style="color: green" v-if="scope.row.overtimecompensation==0">开启</span>
@@ -375,7 +375,7 @@
             <el-radio v-model="form.temporaryvehiclerestrictions" label="1">关闭</el-radio>
           </template>
         </el-form-item>
-        <el-form-item v-show="false" label="平台支付" prop="platformpaymentState">
+        <el-form-item label="农信无感支付" prop="platformpaymentState">
           <template>
             <el-radio v-model="form.platformpaymentState" label="0">开启</el-radio>
             <el-radio v-model="form.platformpaymentState" label="1">关闭</el-radio>

@@ -196,6 +196,9 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
                     //开闸处理
                     extracted(parkingRecordVo.getLicense(), parkingLotEquipment);
                     updateParkingRecord(parkingRecord);
+                    //计算停车时间
+                    String datePoor = getDatePoor( parkingRecord.getExittime(),parkingRecord.getAdmissiontime());
+                    parkingRecord.setDate(datePoor);
                     List<ParkingRecord> list = new ArrayList<>();
                     list.add(parkingRecord);
                     send(parkingRecordVo.getParkinglotequipmentid(), list);
@@ -216,6 +219,10 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
                         log.info(parkingRecordVo.getLicense()+"在"+parkingLotInformation.getName()+"redis有补费金额信息开闸");
                         //改变状态
                         updateState(parkingRecordVo.getLicense(), parkingLotEquipment, findbypaystateandlicense, money);
+                        //计算停车时间
+                        String datePoor = getDatePoor(findbypaystateandlicense.getExittime(),findbypaystateandlicense.getAdmissiontime() );
+                        findbypaystateandlicense.setDate(datePoor);
+
                         List<ParkingRecord> list = new ArrayList<>();
                         list.add(findbypaystateandlicense);
                         send(parkingRecordVo.getParkinglotequipmentid(), list);
@@ -256,6 +263,10 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
             //开闸处理
             extracted(parkingRecordVo.getLicense(), parkingLotEquipment);
             updateParkingRecord(parkingRecord);
+            //计算停车时间
+            String datePoor = getDatePoor( parkingRecord.getExittime(),parkingRecord.getAdmissiontime());
+            parkingRecord.setDate(datePoor);
+
             List<ParkingRecord> list = new ArrayList<>();
             list.add(parkingRecord);
             send(parkingRecordVo.getParkinglotequipmentid(), list);
@@ -274,7 +285,25 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
 
     @Override
     public List<ParkingRecord> selectParkingRecordListOne(Long parkinglotinformationid) {
-        return parkingRecordMapper.selectParkingRecordListOne(parkinglotinformationid);
+        //前10条出场记录
+        List<ParkingRecord> list = parkingRecordMapper.selectParkingRecordListOne(parkinglotinformationid);
+        //订单正在进行中记录
+        ParkingRecord parkingRecord = new ParkingRecord();
+        parkingRecord.setParkinglotinformationid(parkinglotinformationid);
+        parkingRecord.setOrderstate("2");
+
+        List<ParkingRecord> list1 = parkingRecordMapper.selectParkingRecordList(parkingRecord);
+        if (list1.size()==0){
+            return list;
+        }
+        if (list1.size()>0 && list1.size()<10){
+            int i = 10 - list1.size();
+            for (int i1 = 0; i1 < i; i1++) {
+                list1.add(list.get(i1));
+            }
+            return list1;
+        }
+            return list1;
     }
 
     @Override
@@ -283,6 +312,10 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
             List<ParkingRecord> payRecord = parkingRecordMapper.getPayRecord1(parkingRecord.getParkinglotinformationid(),parkingRecord.getParkingeqid());
             if (payRecord.size()!=0){
                 ParkingRecord parkingRecord1 = payRecord.get(0);
+                //计算停车时间
+                String datePoor = getDatePoor( parkingRecord1.getExittime(),parkingRecord1.getAdmissiontime());
+                parkingRecord1.setDate(datePoor);
+
                 List<ParkingRecord> list = new ArrayList<>();
                 list.add(parkingRecord1);
                 return list;
@@ -314,7 +347,8 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
         String s = JSON.toJSONString(list);
         //WebSocketService发送给前端消息
 
-            webSocketService.sendMessage(String.valueOf(parkinglotequipmentid), s);
+            //webSocketService.sendMessage(String.valueOf(parkinglotequipmentid), s);
+        redisTemplate.opsForValue().set(parkinglotequipmentid+"aa",s);
 
     }
     //开闸
@@ -585,13 +619,12 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
             byParkingLotInformationIdAndLicense.setState("1");
             parkingCouponrecordMapper.updateParkingCouponrecord(byParkingLotInformationIdAndLicense);
         }
-       /* List<ParkingRecord> list = new ArrayList<>();
+        List<ParkingRecord> list = new ArrayList<>();
         list.add(parkingRecord);
         String s = JSON.toJSONString(list);
-        List<SysUser> list1 = sysUserMapper.findUserList(parkingRecord.getId());
-        for (SysUser user : list1) {
-            webSocketService.sendMessage(user.getUserName(),s);
-        }*/
+
+        //webSocketService.sendMessage(user.getUserName(),s);
+        redisTemplate.opsForValue().set(parkingRecord.getParkinglotequipmentid()+"aa",s);
         //停车场id加车牌
         ParkingLotEquipment parkingLotEquipment = parkingLotEquipmentService.selectParkingLotEquipmentById(parkingRecord.getParkinglotequipmentid());
         Date admissiontime = parkingRecord.getAdmissiontime();
@@ -632,6 +665,12 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
         Date exittime = parkingRecord.getExittime();
         long l1 = (exittime.getTime()-admissiontime.getTime()) / (1000*60);
         String data1 = SerialPortUtils.Exit(parkingRecord.getLicense(),l1);
+
+        List<ParkingRecord> list = new ArrayList<>();
+        list.add(parkingRecord);
+        String s = JSON.toJSONString(list);
+        redisTemplate.opsForValue().set(parkingRecord.getParkinglotequipmentid()+"aa",s);
+
         //心跳开闸指令
         redisTemplate.opsForValue().set(parkingLotEquipment.getCameraserialnumber(),data1,30,TimeUnit.SECONDS);
         //停车场id加车牌
@@ -873,7 +912,26 @@ public class ParkingRecordServiceImpl implements IParkingRecordService {
         }
 
     }
+    //计算相差时间
+    public static String getDatePoor(Date endDate, Date nowDate) {
 
+        long nd = 1000 * 24 * 60 * 60;//每天毫秒数
+
+        long nh = 1000 * 60 * 60;//每小时毫秒数
+
+        long nm = 1000 * 60;//每分钟毫秒数
+
+        long diff = endDate.getTime() - nowDate.getTime(); // 获得两个时间的毫秒时间差异
+
+        long day = diff / nd;   // 计算差多少天
+
+        long hour = diff % nd / nh; // 计算差多少小时
+
+        long min = diff % nd % nh / nm;  // 计算差多少分钟
+
+        return day + "天" + hour + "小时" + min + "分钟";
+
+    }
 
 
 }

@@ -30,6 +30,13 @@ export function getRecord1(id) {
     method: 'get'
   })
 }
+// 查询停车记录详细
+export function getRecord2(id) {
+  return request({
+    url: '/parking/record/moneyOne2/' + id,
+    method: 'get'
+  })
+}
 // 新增停车记录
 export function addRecord(data) {
   return request({

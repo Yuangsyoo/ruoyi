@@ -67,13 +67,15 @@ public class CodeGenerateUtils {
 	}
 	
 	public static void main(String[] args) {
-		for(long i=0;i<100;i++)
+		/*for(long i=0;i<100;i++)
 		{
 			//String timestampPart = ""+(Math.random() * 10000) * (System.currentTimeMillis()/10000);
 			//System.out.println(timestampPart);
 			//System.out.println(generateOrderSn(i));
-			System.out.println(generateUnionPaySn());
-		}
+			System.out.println(generateUnionPaySn());*/
+		String s = generateUnionPaySn();
+		System.out.println(s);
+
 	}
 	
 }

@@ -12,9 +12,9 @@ spring:
             # 主库数据源
 
             master:
-                url: jdbc:mysql://localhost:3306/parking_management?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://47.108.163.36:3306/parking_management?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
-                password: ycwl123456
+                password: 123456
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭

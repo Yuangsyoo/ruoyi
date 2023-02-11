@@ -332,8 +332,8 @@ export default {
         id: '微信',
         name: '微信'
       }, {
-        id: '支付宝',
-        name: '支付宝'
+        id: '无感支付',
+        name: '无感支付'
       }, {
         id: '免费',
         name: '免费'
