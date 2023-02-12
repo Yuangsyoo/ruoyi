@@ -254,9 +254,10 @@ export default {
 
     // 初始化websocket
     //this.initWebSocket();
-    this.setInterval1();
+
     this.getPayRecord1();
     this.setInterval2();
+    this.setInterval1();
   },
   destroyed() {
     //销毁

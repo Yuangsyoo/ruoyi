@@ -115,6 +115,63 @@ public class SerialPortUtils {
 
     }
     //出口待缴费临显指令
+    public static String ExitOne1(String data,Long time,Long money)  {
+        //天数
+        long l = time /(24 * 60 );
+        //天数后剩余分钟
+        long l3 = time % (24 * 60 );
+        //停车小时
+        long l1 = l3 /60;
+        //停车剩余分钟
+        long l2 = l3 % 60;
+        String s4 = getString4("待支付金额:"+money);
+        String s3 = getString3("卡内余额不足,请扫码缴费");
+        String s2 = getString2(data);
+        String s1 = getString1("停车时长:"+l+"天"+l1+"小时"+l2+"分钟");
+        String[] split2 = s2.split(",");
+        String[] split1 = s1.split(",");
+        String[] split3 = s3.split(",");
+        String[] split4 = s4.split(",");
+        String s5 = voicePlayback1(l,l1,l2,data, "0b",money);
+        String[] split5 = s5.split(",");
+        String a="{\n" +
+                "\"Response_AlarmInfoPlate\": {\n" +
+                "\"info\":\"no\",\n" +
+                "\"channelNum\" : 0, \n" +
+                "\"manualTrigger\" : \"no\",\n" +
+                "\"is_pay\":\"false\",\n" +
+                "\"serialData\" :[\n" +
+                "{\n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split1[0]+"\",\n" +
+                "\"dataLen\" : "+split1[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split3[0]+"\",\n" +
+                "\"dataLen\" : "+split3[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split5[0]+"\",\n" +
+                "\"dataLen\" : "+split5[1]+"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "}";
+        return a;
+    }
+    //出口待缴费临显指令
     public static String ExitOne(String data,Long time,Long money)  {
         //天数
         long l = time /(24 * 60 );
@@ -137,6 +194,59 @@ public class SerialPortUtils {
         String a="{\n" +
                 "\"Response_AlarmInfoPlate\": {\n" +
                 "\"info\":\"no\",\n" +
+                "\"channelNum\" : 0, \n" +
+                "\"manualTrigger\" : \"no\",\n" +
+                "\"is_pay\":\"false\",\n" +
+                "\"serialData\" :[\n" +
+                "{\n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split1[0]+"\",\n" +
+                "\"dataLen\" : "+split1[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split2[0]+"\",\n" +
+                "\"dataLen\" : "+split2[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split3[0]+"\",\n" +
+                "\"dataLen\" : "+split3[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split4[0]+"\",\n" +
+                "\"dataLen\" : "+split4[1]+"\n" +
+                "},\n" +
+                "{ \n" +
+                "\"serialChannel\":0,\n" +
+                "\"data\" : \""+split5[0]+"\",\n" +
+                "\"dataLen\" : "+split5[1]+"\n" +
+                "}\n" +
+                "]\n" +
+                "}\n" +
+                "}";
+        return a;
+    }
+    //室内支付正常出场显示  免费时长
+    public static String Exit2(String data,Long time,Long money) {
+        //停车小时
+        long l = time /60;
+        //停车剩余分钟
+        long l1 = time % 60;
+        String s4 = getString4("充值卡抵扣"+money+"元");
+        String s3 = getString3("停车时长:"+l+"小时"+l1+"分钟");
+        String s2 = getString2(data);
+        String s1 = getString1("一路顺风");
+        String[] split2 = s2.split(",");
+        String[] split1 = s1.split(",");
+        String[] split3 = s3.split(",");
+        String[] split4 = s4.split(",");
+        String s5 = voicePlayback(data, "02");
+        String[] split5 = s5.split(",");
+        String a="{\n" +
+                "\"Response_AlarmInfoPlate\": {\n" +
+                "\"info\":\"ok\",\n" +
                 "\"channelNum\" : 0, \n" +
                 "\"manualTrigger\" : \"no\",\n" +
                 "\"is_pay\":\"false\",\n" +

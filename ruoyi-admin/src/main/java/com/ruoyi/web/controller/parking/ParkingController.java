@@ -790,7 +790,7 @@ public class ParkingController extends Thread {
 
                         Date admissiontime = parkingRecord.getAdmissiontime();
                         long l1 = (date.getTime()-admissiontime.getTime()) / (1000*60);
-                        String data1 = SerialPortUtils.Exit(license,l1);
+                        String data1 = SerialPortUtils.Exit2(license,l1, moneyVo.getMoney());
                         log.info("充值卡车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】充值卡抵扣放行");
                         return data1;
                     }
@@ -904,7 +904,7 @@ public class ParkingController extends Thread {
                         //进场时间  出场时间date
                         Date admissiontime = parkingRecord.getAdmissiontime();
                         long l1 = (date.getTime() - admissiontime.getTime()) / (1000 * 60);
-                        String data1 = SerialPortUtils.ExitOne(license, l1, l2);
+                        String data1 = SerialPortUtils.ExitOne1(license, l1, l2);
                         log.info("充值卡车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】充值卡抵扣不足");
                         return data1;
                     }
@@ -956,7 +956,7 @@ public class ParkingController extends Thread {
     //判断是否签约农信无感停车
     private Long judge(String license) {
         PayState payState = new PayState();
-        payState.setPayType("3");
+        payState.setPayType("5");
         payState.setTradeCode("1010");
         InPayData inPayData = new InPayData();
         inPayData.setCarId(license);
