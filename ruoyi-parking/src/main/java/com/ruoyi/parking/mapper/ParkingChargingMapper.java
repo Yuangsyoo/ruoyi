@@ -87,4 +87,5 @@ public interface ParkingChargingMapper
     public int deleteParkingBillingPeriodByParkingChargingId(Long id);
 
     ParkingCharging findByParkinglotinformationid(@Param("parkinglotinformationid") Long parkinglotinformationid, @Param("distinguish") Long distinguish);
+
 }

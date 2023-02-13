@@ -129,7 +129,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                         ,"/parking/record/getByOpend"
                         ,"/parking/record/obtain"
                         ,"parking/couponrecord/add"
-                        ,"/parking/information/getInfoOne"
+                        ,"/parking/information/getInfoOne",
+                               "/parking/charging/get"
                        
                 ).permitAll()
                 // 静态资源，可匿名访问

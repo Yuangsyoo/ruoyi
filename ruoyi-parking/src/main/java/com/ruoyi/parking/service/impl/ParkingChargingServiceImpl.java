@@ -163,6 +163,13 @@ public class ParkingChargingServiceImpl implements IParkingChargingService
 
     }
 
+    @Override
+    public ParkingCharging getInfo1(Long parkingLotInformationId, Long distinguish) {
+        return parkingChargingMapper.findByParkinglotinformationid(parkingLotInformationId,distinguish);
+    }
+
+
+
     /**
      * 新增计费时间段信息
      * 

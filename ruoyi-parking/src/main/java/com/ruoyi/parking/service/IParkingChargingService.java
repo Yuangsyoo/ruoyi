@@ -62,4 +62,7 @@ public interface IParkingChargingService
     public int deleteParkingChargingById(Long id);
 
     MoneyVo overtimeCompensation(ParkingChargingDto parkingChargingDto);
+
+
+    ParkingCharging getInfo1(Long parkingLotInformationId,Long distinguish);
 }

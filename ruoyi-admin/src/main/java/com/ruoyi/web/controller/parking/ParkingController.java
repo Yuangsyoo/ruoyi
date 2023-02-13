@@ -610,7 +610,7 @@ public class ParkingController extends Thread {
                             String[] split = respCode.split(",");
                             //查询无感支付状态
                             PayState payState = new PayState();
-                            payState.setPayType("3");
+                            payState.setPayType("5");
                             payState.setTradeCode("1011");
                             InPayData inPayData = new InPayData();
                             inPayData.setOrder_out_no("TCT_" + CodeGenerateUtils.generateUnionPaySn());
@@ -637,7 +637,7 @@ public class ParkingController extends Thread {
                                                 parkingRecord.setPaymentmethod("无感支付");
                                                 parkingRecord.setOrdernumber(split[0]);
                                                 parkingRecord.setParkingeqid(parkingLotEquipment.getId());
-                                                String s2 = SerialPortUtils.ExportSecondaryVolume(license);
+                                                String s2 = SerialPortUtils.ExportSecondaryVolume1(license,moneyVo.getMoney());
                                                 //计算停车时间
                                                 String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
                                                 parkingRecord.setDate(datePoor);
@@ -679,8 +679,6 @@ public class ParkingController extends Thread {
                         }
                         log.info(license+"未签约农信无感支付");
                     }
-
-
 
                     parkingRecord.setParkinglotequipmentid(parkingLotEquipment.getId());
                     parkingRecord.setParkingeqid(parkingLotEquipment.getId());
@@ -790,7 +788,7 @@ public class ParkingController extends Thread {
 
                         Date admissiontime = parkingRecord.getAdmissiontime();
                         long l1 = (date.getTime()-admissiontime.getTime()) / (1000*60);
-                        String data1 = SerialPortUtils.Exit2(license,l1, moneyVo.getMoney());
+                        String data1 = SerialPortUtils.Exit2(license,l1, moneyVo.getMoney(),l);
                         log.info("充值卡车牌【"+license+"】在停车场【"+parkingLotInformation.getName()+"】充值卡抵扣放行");
                         return data1;
                     }
@@ -815,7 +813,7 @@ public class ParkingController extends Thread {
                                 String[] split = respCode.split(",");
                                 //查询无感支付状态
                                 PayState payState = new PayState();
-                                payState.setPayType("3");
+                                payState.setPayType("5");
                                 payState.setTradeCode("1011");
                                 InPayData inPayData = new InPayData();
                                 inPayData.setOrder_out_no("TCT_" + CodeGenerateUtils.generateUnionPaySn());
@@ -842,7 +840,7 @@ public class ParkingController extends Thread {
                                                     parkingRecord.setOrdernumber(split[0]);
                                                     parkingRecord.setPaymentmethod("充值车(无感支付)");
                                                     parkingRecord.setParkingeqid(parkingLotEquipment.getId());
-                                                    String s2 = SerialPortUtils.ExportSecondaryVolume(license);
+                                                    String s2 = SerialPortUtils.ExportSecondaryVolume2(license,moneyVo.getMoney());
                                                     //计算停车时间
                                                     String datePoor = getDatePoor(date,parkingRecord.getAdmissiontime());
                                                     parkingRecord.setDate(datePoor);
@@ -920,7 +918,7 @@ public class ParkingController extends Thread {
 
     private String getString(String license, ParkingLotInformation parkingLotInformation, Date date, ParkingRecord parkingRecord, MoneyVo moneyVo) {
         PayState payState = new PayState();
-        payState.setPayType("3");
+        payState.setPayType("5");
         payState.setTradeCode("1012");
         InPayData inPayData = new InPayData();
         //生成订单号

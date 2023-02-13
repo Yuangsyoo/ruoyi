@@ -142,4 +142,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                  left join parking_billing_period b on b.parkingChargingId = a.id
         where a.parkingLotInformationId = #{parkinglotinformationid} and a.distinguish=#{distinguish}
     </select>
+    <!--  ParkingCharging get(Long parkingLotInformationId);-->
+    <select id="get"  resultMap="ParkingChargingParkingBillingPeriodResult">
+        select a.id,a.freetime, a.startingPrice,a.distinguish, a.startingPriceDuration, a.increaseIncome,  a.freeTimeState,a.startingpriceState, a.superiorLimit, a.parkingLotInformationId, a.type,
+               b.parkingChargingId as sub_parkingChargingId, b.minutecharge as sub_minuteCharge,b.superiorlimit as sub_superiorLimit,b.starTime as sub_starTime, b.endTime as sub_endTime, b.addMoney as sub_addMoney, b.startingPrice as sub_startingPrice, b.startingTime as sub_startingTime, b.type as sub_type
+        from parking_charging a
+                 left join parking_billing_period b on b.parkingChargingId = a.id
+        where a.parkingLotInformationId = #{parkingLotInformationId}
+    </select>
 </mapper>
